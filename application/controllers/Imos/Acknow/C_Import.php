@@ -1,0 +1,163 @@
+<?php
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class C_Import extends Controller {
+
+    public function __construct() {
+        parent::__construct();
+        $this->ValidateSession();
+        $this->load->model("Imos/Acknow/M_Import");
+    }
+
+    public function index() {
+        $array['menus'] = $this->M_Main->ListMenu();
+
+        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, TREE_CSS);
+        $this->load->view('Template/V_Header', $Header);
+
+        $recordDetail['tbody'] = array();
+        $data['tabInfo'] = $this->load->view('Imos/Acknow/Tab/V_Tab_Info', null, true);
+        $data['tabStyle'] = $this->load->view('Imos/Acknow/Tab/V_Tab_Style', null, true);
+        $data['tabDetail'] = $this->load->view('Imos/Acknow/Tab/V_Tab_Detail', $recordDetail, true);
+
+        $this->load->view('Imos/Acknow/V_Import', $data);
+
+        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, TREE_JS, TREE_JS2);
+        $this->load->view('Template/V_Footer', $Footer);
+    }
+    
+    function vali_saveack(){
+        $vali_ack = $this->M_Import->get_ack($_POST['order']);
+        if(count($vali_ack) > 0){
+            echo json_encode(array('rs' => 'true', 'data' => $vali_ack));
+        }else{
+            echo json_encode(array('rs' => 'false'));
+        }
+    }
+
+    function SaveAck() {
+        $result = $this->M_Import->SaveAck();
+        $tabDetail = "";
+        if ($result == "OK"):
+            $recordDetail['tbody'] = array();
+            $tabDetail = $this->load->view('Imos/Acknow/Tab/V_Tab_Detail', $recordDetail, true);
+        endif;
+        echo json_encode(array("res" => $result, "detail" => $tabDetail));
+    }
+    
+    function UpdateAck() {
+        $result = $this->M_Import->UpdateAck();
+        $tabDetail = "";
+        if ($result == "OK"):
+            $recordDetail['tbody'] = array();
+            $tabDetail = $this->load->view('Imos/Acknow/Tab/V_Tab_Detail', $recordDetail, true);
+        endif;
+        echo json_encode(array("res" => $result, "detail" => $tabDetail));
+    }
+
+    function Readfile($process = 4) {
+        require_once(dirname(__FILE__) . '/../../../includes/phpexcel/Classes/PHPExcel.php');
+
+        $folder = $this->input->post('folder');
+        $dir = $this->input->post('dir');
+       
+        $error = "";
+        
+        $array = scandir($dir);
+        for ($i = 0; $i < count($array); $i++) {
+            $posName = strpos($array[$i], "Acknowledgment");
+            $posFormat = strpos($array[$i], "xlsx");
+            
+            if ($posName !== false && $posFormat !== false) {
+                $file = $dir . $array[$i];
+                $error = "";
+                break;
+            }
+            
+        }
+        
+
+ 
+        if ($error == "" && isset($file)) {
+            if (file_exists(NETWORK_UNIT_ACK)) {
+                if (file_exists($file)) {
+
+                    $Reader = PHPExcel_IOFactory::createReaderForFile($file);
+                    $Reader->setReadDataOnly(true);
+                    $objXLS = $Reader->load($file);
+                    
+                    $page = $objXLS->getSheetByName("FormatoACK");
+                    $sheet1 = empty($page)?$objXLS->getSheetByName("Formato ACK"):$page;
+
+                    $ResulParameters = $this->M_Import->ParametersFile($process);
+                    $ResultCell = $this->M_Import->ConfigCell($process);
+                    $ResultCellDet = $this->M_Import->ConfigCellDet($process);
+
+                    $info = array();
+                    foreach ($ResultCell as $cell) {
+                        
+                        $code = trim($sheet1->getCell($cell->row)->getValue());
+                        if (strstr($code, '=') == true) { //validar si es formulado
+                            $code = trim($sheet1->getCell($cell->row)->getOldCalculatedValue());
+                            if ($code == "#N/A") {
+                                $error .= $cell->row .",";
+                            }
+                        }
+                        
+                        if ($cell->type_field == 9) {
+                            $timestamp = PHPExcel_Shared_Date::ExcelToPHP($code);
+                            $info[$cell->field] = date("Y-m-d", $timestamp);
+                        } else {
+                            $info[$cell->field] = trim($code);
+                        }
+                    }
+
+                    $recordDetail['tbody'] = array();
+                    $star = $ResulParameters->second_table_start;
+                    $keyValidateEnd = $ResulParameters->details_key;
+
+                    $loop = true;
+                    $item = 1;
+                    while ($loop) {
+                        $detail = array();
+                        foreach ($ResultCellDet as $cell) {
+                            if ($cell->type_field == 9) {
+                                $timestamp = PHPExcel_Shared_Date::ExcelToPHP($sheet1->getCell($cell->row . $star)->getValue());
+                                $detail[$cell->field] = date("Y-m-d", $timestamp);
+                            } else {
+
+                                $code = trim($sheet1->getCell($cell->row . $star)->getValue());
+                                if (strstr($code, '=') == true) { //validar si es formulado
+                                    $code = trim($sheet1->getCell($cell->row . $star)->getOldCalculatedValue());
+                                    if ($code == "#N/A") {
+                                        $error .= $cell->row . $star . ",";
+                                    }
+                                }
+                                $detail[$cell->field] = $code;
+                            }
+                        }
+                        $recordDetail['tbody'][] = $detail;
+                        $star++;
+                        $item++;
+                        $loop = ($sheet1->getCell($keyValidateEnd . $star)->getValue() == '') ? false : true;
+                    }
+
+                    $HtmlDetail = $this->load->view("Imos/Acknow/Tab/V_Tab_Detail", $recordDetail, true);
+
+                    $array = Array('msg' => "OK", 'info' => $info, 'detail' => $HtmlDetail, 'item' => $item, 'error' => $error);
+                } else {
+                    $array = Array('msg' => "La order $folder no tienen el archivo Acknowledgment (xlsx)!");
+                }
+            } else {
+                $array = Array('msg' => "La Unidad De Red (" . NETWORK_UNIT_ACK . ") No Esta Conectada, Comunicalo A Sistemas");
+            }
+        }else{
+            $array = Array('msg' => "No Existe un Acknowledgment(xlsx) valido en esta ubicacion");
+        }
+        echo json_encode($array);
+    }
+
+}
