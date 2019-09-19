@@ -542,7 +542,7 @@
     }
     
     function delete_pq(order,number_pack){
-        //validation_supplies
+        //validation_supplies d
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/validation_supplies",{order:order,number_pack:number_pack},function(data){
             console.log(data);
             $("#content-table").html(data.table);

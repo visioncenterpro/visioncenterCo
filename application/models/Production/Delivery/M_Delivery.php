@@ -565,20 +565,20 @@ class M_Delivery extends VS_Model {
                     if(array_search($cont_y,$pack_val)){
                         //echo $pack_val2[$cont_y2];
                         $data = array(
-                            "number_pack" => ($pack_val[$cont_y2] - 1)
+                            "number_pack" => $cont_y
                         );
                         $this->db->where("id_order_package_supplies", $pack_val2[$cont_y2]);
                         $rs = $this->db->update("access_order_package_supplies", $data);
                         //echo $this->db->last_query();
                         $cont_y2++;
                         $cont_y++;
-                    }else{
+                    }
                         $data = array(
                             "number_pack" => $cont_y
                         );
                         $this->db->where("id_order_package_supplies", $array_id_update[$e]);
                         $rs = $this->db->update("access_order_package_supplies", $data);
-                    }
+                    
                 }
             }
             
