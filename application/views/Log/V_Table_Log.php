@@ -1,1 +1,0 @@
-<table id="example" class="table table-bordered table-striped table-condensed "></table>
