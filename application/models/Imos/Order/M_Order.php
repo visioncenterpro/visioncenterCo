@@ -187,7 +187,7 @@ class M_Order extends VS_Model {
         GROUP BY    dbo.PROADMIN.ID,dbo.PROADMIN.NAME, dbo.IDBGRPS.ORDERID,dbo.IDBSPP.ORDER_ID,dbo.IDBSPP.ARTICLE_ID,dbo.IDBGRPS.HIGHARTID,
         dbo.IDBSPP.SUPPLIER,dbo.IDBSPP.COST_1,dbo.IDBSPP.TEXT_SHORT, dbo.IDBSPP.LENGTH
         HAVING      (dbo.PROADMIN.NAME =  '$order')");
-        //echo $this->db->last_query();
+        //echo $this->ix->last_query();
         return $result->result();
     }
     

@@ -36,6 +36,7 @@
             <th>PESO TOTAL</th>
             <th>CANTIDAD EMPACADA EN PQ</th>
             <th>SALDO TOTAL</th>
+            <th>SALDO DISPONIBLE</th>
             <?php if($type == 'A'){ ?>
             <th>SELECCIONAR <br><input type="checkbox" onclick="selection_all_edit(this.checked)"> </th>
             <th>NÚMERO A EMPACAR</th>
@@ -46,6 +47,7 @@
         <?php
         $count = 0;
         foreach ($supplies as $s) :
+            //echo $s->quantity ."-". $quantity_total[$count]."<br>";
             //echo round($s->quantity)." - ".$quantity_packaged[$count]."<br>";
             if($quantity_packaged[$count] != 0){
                 //echo round($s->quantity)." - ".$quantity_packaged[$count]."<br>";
@@ -66,6 +68,7 @@
                 <td><?= $s->weight_per_supplies ?></td>
                 <td><?= $s->weight_per_supplies *  $quantity_packaged[$count]?></td>
                 <td id="packed-edit-<?=$count?>"><?=$quantity_packaged[$count]?></td>
+                <td id="packed-edit-<?=$count?>"><?=$s->quantity?></td>
                 <td style="text-align: center" id="sum-edit-<?=$count?>"><?=round($s->quantity) - $quantity_total[$count]?></td>
                 <?php if($type == 'A'){ ?>
                 <td>
@@ -78,9 +81,9 @@
                 <td>
                     <?php
                         if(round($s->quantity) - $quantity_total[$count] == 0){ ?>
-                    <input type="number" min="0" max="<?=round($s->quantity) - $quantity_total[$count]?>" value="<?=round($s->quantity) - $quantity_total[$count]?>" id="quantity_pack_edit" style="width: 100%;" disabled="true">
+                        <input type="number" min="0" max="<?=round($s->quantity) - $quantity_total[$count]?>" value="<?=round($s->quantity) - $quantity_total[$count]?>" id="quantity_pack_edit" style="width: 100%;" disabled="true" onkeypress="validation_total(event,this,'<?=round($s->quantity) - $quantity_total[$count]?>')">
                     <?php }else{ ?>
-                    <input type="number" min="0" max="<?=round($s->quantity) - $quantity_total[$count]?>" value="<?=round($s->quantity) - $quantity_total[$count]?>" id="quantity_pack_edit" style="width: 100%;">
+                        <input type="number" min="0" max="<?=round($s->quantity) - $quantity_total[$count]?>" value="<?=round($s->quantity) - $quantity_total[$count]?>" id="quantity_pack_edit" style="width: 100%;" onkeypress="validation_total(event,this,'<?=round($s->quantity) - $quantity_total[$count]?>')">
                     <?php } ?>
                     <input type="hidden" id="id_order_supplies_edit" value="<?=$s->id_order_supplies?>">
                     <input type="hidden" id="id_supplies_edit" value="<?=$s->id_supplies?>">

@@ -11,6 +11,8 @@
                             <label for="type">Tipo Entrega</label>
                             <select class="form-control input-sm required" id="type" onchange="Filtrar()">
                                 <option value="">. . .</option>
+                                <option value="1">Modulado SD</option>
+                                <option value="2">Insumos SD</option>
                                 <?php foreach ($type as $v) : ?>
                                     <option value="<?= $v->view ?>"><?= $v->description ?></option>
                                 <?php endforeach; ?>
@@ -19,7 +21,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label for="type">Número</label>
+                            <label for="type">Número Entrega</label>
                             <input type="number" class="form-control input-sm required" id="id_delivery" name="number" onchange="Filtrar()">
                         </div>
                     </div>

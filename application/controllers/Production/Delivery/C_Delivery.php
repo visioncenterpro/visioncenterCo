@@ -875,6 +875,46 @@ class C_Delivery extends Controller {
         }
         
     }
+
+    function get_data_add(){
+        $order = $this->input->post('order');
+        $vali_number = $this->M_Delivery->get_number_pack_order($order);
+        if(count($vali_number) > 0){
+            $data['number'] = $vali_number;
+            $data['res_number'] = true;
+        }else{
+            $data['number'] = 1;
+            $data['res_number'] = false;
+        }
+        $data['supplies'] = $this->M_Delivery->get_data_manual($order);
+        foreach ($data['supplies'] as $key => $value) {
+            //echo $value->id_order_supplies.'  ';
+            $res = $this->M_Delivery->get_supplies_detail_modal($value->id_order_supplies);
+            if(count($res)>0){
+                foreach ($res as $value) {
+                    $data['quantity_packaged'][] = $value->quantity_packaged;
+                } 
+            }else{
+                $data['quantity_packaged'][] = 0;
+            }
+        }
+        $data['packs'] = $this->M_Delivery->get_order_package_supplies($this->input->post("order"));
+        $data['iss'] = 0;
+        foreach ($data['packs'] as $value) {
+            $data['vali_pack'][] = $this->M_Delivery->get_items_supplies($this->input->post("order"),$value->id_order_package_supplies,$value->number_pack);
+            for($i = 0; $i < count($data['vali_pack']); $i++){
+                if($data['vali_pack'][$i]->total_pack == 0){
+                    $data['iss'] = 1;
+                    break;
+                }
+            }
+        }
+        $data['empty_p'] = $this->M_Delivery->get_empty_packs($this->input->post("order"));
+        $data['order'] = $order;
+        $data['number_pack'] = $this->input->post('number_pack');
+        $data['table'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_add',$data, true);
+        echo json_encode($data);
+    }
     
     function get_data_manual(){
         $order = $this->input->post('order');
@@ -926,17 +966,21 @@ class C_Delivery extends Controller {
         $validation = $this->M_Delivery->get_data_manual($this->input->post('order'));
         foreach ($validation as $key => $value) {
             $rs['weight_per_supplies'][] = $value->weight_per_supplies;
-            $res = $this->M_Delivery->get_supplies_detail($value->id_order_supplies);
+            $res = $this->M_Delivery->get_supplies_detail2($this->input->post('id_order_package_supplies'),$value->id_order_supplies,0,$this->input->post('order'));
             $val = 0;
+            $res2 = $this->M_Delivery->get_supplies_detail21($this->input->post('id_order_package_supplies'),$value->id_order_supplies,0,$this->input->post('order'));
             if(count($res)>0){
                 $count_total = 0;
                 foreach ($res as $value) {
-                    $count_total = $count_total + $value->quantity_packaged;
+                    //$count_total = $count_total + $value->quantity_packaged;
                     //echo $this->input->post('id_order_package_supplies')." - ".$value->access_order_package_supplies."<br>";
                     if($this->input->post('id_order_package_supplies') == $value->access_order_package_supplies){
                         $val = 1;
                         $rs['quantity_packaged'][] = $value->quantity_packaged;
                     }
+                }
+                foreach ($res2 as $value21) {
+                    $count_total = $count_total + $value21->quantity_packaged;
                 }
                 //echo $count_total."---";
                 if(isset($val) && $val == 1){
@@ -958,6 +1002,46 @@ class C_Delivery extends Controller {
     
     function validation_header(){
         echo json_encode($this->M_Delivery->update_header());
+    }
+    function validation_header_RE(){
+        $rs['update'] = $this->M_Delivery->update_h();
+        $rs['record'] = $this->M_Delivery->searchOrderSupplies2($this->input->post("order"));
+        if(count($rs['record'])>0){
+            $data_q = $this->M_Delivery->total_order_supplies($this->input->post("order"));
+            $total = 0;
+            foreach ($data_q as $valueq) {
+                $total = $total + round($valueq->quantity);
+            }
+            foreach ($rs['record'] as $valuer) {
+                $data2 = $this->M_Delivery->get_quantity_supplies($this->input->post("order"),$valuer->id_order_supplies,$valuer->id_supplies);
+                $countr = 0;
+                foreach ($data2 as $value2) {
+                    $countr = $countr + $value2->quantity_packaged;
+                }
+                $rs['delivered'][] = $countr;
+            }
+            $rs['total_quantity'] = $total;
+            $rs['res'] = "OK";
+            $rs['rows'] = count($rs['record']);
+            $rs['packs'] = $this->M_Delivery->get_order_package_supplies($this->input->post("order"));
+            foreach ($rs['packs'] as $value) {
+                $data = $this->M_Delivery->get_data_weight($this->input->post("order"),$value->id_order_package_supplies);
+                $cont = 0;
+                foreach ($data as $valued) {
+                    $cont = $cont + $valued->total;
+                }
+                $rs['weight'][] = $cont;
+            }
+            $var = $this->input->post('positionpb');
+            $rs['pos'] = 0;
+            if(isset($var)){
+                $rs['pos'] = $this->input->post('positionpb');
+            }
+            $rs['order'] = $this->input->post('order');
+            $rs['table_pack'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_Pack', $rs, true);
+            $rs['table'] = $this->load->view("Production/Delivery/Supplies/Enlist/V_Table_Supplies", $rs, true);
+        }
+        echo json_encode($rs);
     }
     
     function Update_Packed(){
@@ -981,7 +1065,13 @@ class C_Delivery extends Controller {
                 //echo '-g-';
                 $rs['sum'][] = $this->M_Delivery->Update_Packed_Detail($id,$array_order_supplies[$i],$array_id_supplies[$i],$pack_total[$i],$array_quantity_edit[$i]);
                 $rs['data2'][] = $this->M_Delivery->get_supplies_detail_sum($array_order_supplies[$i]);
-                $rs['data'][] = $this->M_Delivery->get_supplies_detail2($id,$array_order_supplies[$i],$this->input->post('number_pack'),$this->input->post('order'));
+                $pb = $this->M_Delivery->get_supplies_detail2($id,$array_order_supplies[$i],$this->input->post('number_pack'),$this->input->post('order'));
+                if(count($pb) > 0){
+                    $rs['data'][] = $pb;
+                }else{
+                    $rs['data'][] = array(array('quantity_packaged' => 0));
+                }
+                //$rs['data'][] = $this->M_Delivery->get_supplies_detail2($id,$array_order_supplies[$i],$this->input->post('number_pack'),$this->input->post('order'));
             }else{
                 $rs['data'][] = array(array('quantity_packaged' => 0));
             }
@@ -1133,9 +1223,9 @@ class C_Delivery extends Controller {
     function Go_Back_Pack_Edit(){
         //$rs['edit'] = $this->M_Delivery->update_header();
         $rs['delete'] = $this->M_Delivery->delete_packed_detail();
+        //$rs['update'] = $this->M_Delivery->update_h();
         $rs['data'] = $this->M_Delivery->get_order_supplies();
         $rs['data2'] = $this->M_Delivery->get_supplies_detail_sum($this->input->post('id_order_supplies'));
-        
         $rs['record'] = $this->M_Delivery->searchOrderSupplies2($this->input->post("order"));
         if(count($rs['record'])>0){
             $data_q = $this->M_Delivery->total_order_supplies($this->input->post("order"));
@@ -1172,6 +1262,7 @@ class C_Delivery extends Controller {
             $rs['table_pack'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_Pack', $rs, true);
             $rs['table'] = $this->load->view("Production/Delivery/Supplies/Enlist/V_Table_Supplies", $rs, true);
         }
+        
         echo json_encode($rs);
     }
     

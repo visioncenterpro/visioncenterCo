@@ -35,7 +35,7 @@ class C_Delivery_Dispatch extends Controller {
         $all = $this->M_Delivery_Dispatch->SelectDelivery($id_delivery,$type);
         $array = array();
         foreach ($rows['result'] as $v) {
-            $array[] = array($v->id, $v->date, $v->order, $v->client, $v->type,'<span class="label label-' . $v->color . '">' . $v->description . '</span>', '<button class="btn btn-block btn-primary btn-xs" onclick="window.location.href = \' '.base_url().'Production/Delivery/C_Delivery/'.$v->view.'/'.$v->id.'/'.$v->order.'/Dispatch \'"><span class="fa fa-sign-in" aria-hidden="true"></span></button>');
+            $array[] = array($v->type, $v->id, $v->date, $v->order, $v->client, '<span class="label label-' . $v->color . '">' . $v->description . '</span>', '<button class="btn btn-block btn-primary btn-xs" onclick="window.location.href = \' '.base_url().'Production/Delivery/C_Delivery/'.$v->view.'/'.$v->id.'/'.$v->order.'/Dispatch \'"><span class="fa fa-sign-in" aria-hidden="true"></span></button>');
         }
 
         echo json_encode(array('draw' => $this->input->get("draw"), 'recordsFiltered' => $all['num'], 'datos' => $array));

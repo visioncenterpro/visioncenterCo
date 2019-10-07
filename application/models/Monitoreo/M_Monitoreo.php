@@ -44,7 +44,7 @@ class M_Monitoreo extends VS_Model {
                 . " FROM dis_request_sd_detail d WHERE d.id_request_sd = $request  AND d.`order` = $order AND type = 'Modulado' GROUP BY d.id_forniture");
         $result = $this->db->query($query);
         //echo $this->db->last_query();
-        return $result->row();
+        return $result->result();
     }
     
     public function get_sd_detail_m($order,$request){
@@ -85,7 +85,7 @@ class M_Monitoreo extends VS_Model {
     }
     
     public function get_supplies_detail($order,$request){
-        $query = ("SELECT sd.pack, sd.id_order_package, sd.`order`"
+        $query = (" SELECT sd.pack, sd.id_order_package, sd.`order` "
                 . " FROM dis_request_sd_detail sd "
                 . " WHERE sd.`order` = $order AND sd.id_request_sd = $request AND type = 'Insumos'");
         $result = $this->db->query($query);
@@ -94,13 +94,13 @@ class M_Monitoreo extends VS_Model {
     }
     
     public function get_supplies($order,$id_order_package_supplies){
-        $query = ("SELECT A.id_order_package_supplies,A.number_pack,ATP.code as L_code,P.name,P.code, AO.quantity_packaged,P.weight_per_supplies "
+        $query = (" SELECT A.id_order_package_supplies,A.number_pack,ATP.code as L_code,P.name,P.code, AO.quantity_packaged,P.weight_per_supplies "
                 . " FROM access_order_package_supplies A INNER JOIN access_order_package_supplies_detail AO ON "
                 . " A.id_order_package_supplies = AO.access_order_package_supplies INNER JOIN pro_supplies P ON AO.id_supplies = P.id_supplies"
                 . " INNER JOIN access_type_package ATP ON A.type_package = ATP.id_type_package WHERE A.`order` = $order "
                 . " AND A.id_order_package_supplies = $id_order_package_supplies");
-        //echo $this->db->last_query();
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->result();
     }
     

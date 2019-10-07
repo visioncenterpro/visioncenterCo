@@ -129,6 +129,7 @@ class M_Dispatch extends VS_Model {
                 . " AO.id_order_supplies = AOS.id_order_supplies INNER JOIN pro_supplies P ON AO.id_supplies = P.id_supplies "
                 . " WHERE AOS.`order` = $this->order AND AO.access_order_package_supplies = $this->id_order_package_supplies");
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->result();
     }
     

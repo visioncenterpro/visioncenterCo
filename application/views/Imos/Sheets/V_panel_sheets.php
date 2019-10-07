@@ -265,7 +265,7 @@
                     $("#content").html(data.table);
                     $('#table_sheets').DataTable({});
                     if($("#description").val() == ""){
-                        $("#description")..val(data.rs['description']);
+                        $("#description").val(data.rs['description']);
                     }
                     swal({title: 'Exito', text: "Registro guardado", type: 'success'});
                     $("#modal_new").modal("hide");
@@ -280,6 +280,7 @@
     
     function modal_edit(id_wood_sheet){
         $.post("<?= base_url()?>Imos/Sheets/C_Sheets/get_data_edit",{id_wood_sheet:id_wood_sheet},function(data){
+            console.log(data);
             data.sheet.forEach(function(element){
                 $("#before-id").val(element.id_pro_sheet_area);
                 $("#id-wood-edit").val(element.id_wood_sheet);

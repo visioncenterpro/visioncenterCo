@@ -36,6 +36,7 @@
                 <td style="text-align: center"><?= $weight[$key] ?></td>
                 <td>
                     <button class="btn btn-success" onclick="modal_edit('<?=$t->id_order_package_supplies?>','<?=$t->number_pack?>','<?=$order?>')"><span class="fa fa-edit" aria-hidden="true"></span></button>
+                    <button class="btn btn-primary" onclick="modal_add_supplies('<?=$t->id_order_package_supplies?>','<?=$t->number_pack?>','<?=$order?>')"><span class="fa fa-plus" aria-hidden="true"></span></button>
                     <?php if($t->quantity_per_package == 0){ ?>
                             <button class="btn btn-danger" onclick="delete_pq('<?=$order?>',<?= $t->number_pack ?>)"><span class="fa fa-trash" aria-hidden="true"></span></button>
                     <?php } ?>

@@ -17,6 +17,7 @@ class M_Sheets extends VS_Model {
                 ->from("pro_wood_sheet p")
                 ->join("pro_sheet_caliber pc","p.id_caliber = pc.id_caliber","left")
                 ->get();
+        //echo $this->db->last_query();
         return $result->result();
     }
     
@@ -78,9 +79,10 @@ class M_Sheets extends VS_Model {
     function get_sheet_id(){
         $result = $this->db->select("*")
                 ->from("pro_wood_sheet p")
-                ->join("pro_sheet_caliber pc","p.id_caliber = pc.id_caliber")
+                ->join("pro_sheet_caliber pc","p.id_caliber = pc.id_caliber","LEFT")
                 ->where("id_wood_sheet",$this->id_wood_sheet)
                 ->get();
+        //echo $this->db->last_query();
         return $result->result();
     }
     
@@ -106,7 +108,38 @@ class M_Sheets extends VS_Model {
         );
         $this->db->where("id_wood_sheet", $this->id);
         $rs = $this->db->update("pro_wood_sheet", $data);
+        //echo $this->db->last_query();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return array("res" => "Error " . $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+            return $rs;
+        }
+    }
+    
+    function update_sheet2(){
         
+        $this->db->trans_begin();
+        
+        if($this->description == ""){
+            $get_reference = $this->GetReference($this->code);
+            foreach ($get_reference as $value) {
+                $this->description = $value->ITEMNAME;
+            }
+        }
+        
+        $data = array(
+            "description" => $this->description,
+            "format"    => $this->format,
+            "waste"     => $this->waste,
+            "id_caliber"   => $this->caliber,
+            "id_pro_sheet_area" => $this->id_format,
+            "modified_by"   => $this->session->IdUser
+        );
+        $this->db->where("id_wood_sheet", $this->id);
+        $rs = $this->db->update("pro_wood_sheet", $data);
+        //echo $this->db->last_query();
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             return array("res" => "Error " . $this->db->last_query());
@@ -129,7 +162,7 @@ class M_Sheets extends VS_Model {
         $date = $this->date;
         $date2 = $this->date2;
         $vali = $this->GetReferenceDate(date("d/m/Y", strtotime($date)), date("d/m/Y", strtotime($date2)));
-        
+        $rs = "";
         foreach ($vali as $value) {
             $format = "";
             $id_pro_sheet_area = "";

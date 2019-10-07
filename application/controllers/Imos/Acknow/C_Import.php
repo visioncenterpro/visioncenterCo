@@ -30,11 +30,36 @@ class C_Import extends Controller {
     }
     
     function vali_saveack(){
+        $arrayDetail = json_decode($_POST['detail']);
+        $val_empty = 0;
+        $array_exception = array(
+            array('type' => '#N/A', 'description' => 'valor no disponible en la formula o función'),
+            array('type' => '#¡NULO!', 'description' => 'rango en la funcion, incorrecto'),
+            array('type' => '#¡VALOR!', 'description' => 'se espera tipo de datos diferente en la funcion'),
+            array('type' => '#¡DIV/0!', 'description' => 'division entre 0'),
+            array('type' => '#¡REF!', 'description' => 'celda no se encuentra'),
+            array('type' => '#¿NOMBRE?', 'description' => 'nombre de formula no valido')
+        );
+        foreach ($arrayDetail as $value) {
+            //echo $value[13];
+            //for ($i = 0; $i <= count($arrayDetail); $i++){
+                //if($value[10] == "" || $value[13] == "" || $value[14] == "" || $value[15] == ""){
+                    foreach ($array_exception as $valueE) {
+                        if($value[10] == $valueE['type'] || $value[13] == $valueE['type'] || $value[14] == $valueE['type'] || $value[15] == $valueE['type']){
+                            $val_empty = 1;
+                            break;
+                        }
+                    }
+                //}
+            //}
+            //print_r($value);
+        }
+        //echo $val_empty;
         $vali_ack = $this->M_Import->get_ack($_POST['order']);
         if(count($vali_ack) > 0){
-            echo json_encode(array('rs' => 'true', 'data' => $vali_ack));
+            echo json_encode(array('rs' => 'true', 'data' => $vali_ack, 'val_empty' => $val_empty));
         }else{
-            echo json_encode(array('rs' => 'false'));
+            echo json_encode(array('rs' => 'false', 'val_empty' => $val_empty));
         }
     }
 
@@ -95,15 +120,17 @@ class C_Import extends Controller {
                     $ResulParameters = $this->M_Import->ParametersFile($process);
                     $ResultCell = $this->M_Import->ConfigCell($process);
                     $ResultCellDet = $this->M_Import->ConfigCellDet($process);
-
+                    
                     $info = array();
                     foreach ($ResultCell as $cell) {
                         
                         $code = trim($sheet1->getCell($cell->row)->getValue());
+                        //print_r(trim($sheet1->getCell($cell->row)->getValue())." - ".$cell->row." / ");
                         if (strstr($code, '=') == true) { //validar si es formulado
                             $code = trim($sheet1->getCell($cell->row)->getOldCalculatedValue());
                             if ($code == "#N/A") {
-                                $error .= $cell->row .",";
+                                //$error .= $cell->row .",";
+                                //$detail[$cell->field] = "#N/A";
                             }
                         }
                         
@@ -114,7 +141,14 @@ class C_Import extends Controller {
                             $info[$cell->field] = trim($code);
                         }
                     }
-
+                    //exit;
+                    $array_exception = array(
+                        array('type' => '#N/A', 'description' => 'valor no disponible en la formula o función'),
+                        array('type' => '#¡NULO!', 'description' => 'rango en la funcion, incorrecto'),
+                        array('type' => '#¡VALOR!', 'description' => 'se espera tipo de datos diferente en la funcion'),
+                        array('type' => '#¡DIV/0!', 'description' => 'division entre 0'),
+                        array('type' => '#¡REF!', 'description' => 'celda no se encuentra'),
+                        array('type' => '#¿NOMBRE?', 'description' => 'nombre de formula no valido'));
                     $recordDetail['tbody'] = array();
                     $star = $ResulParameters->second_table_start;
                     $keyValidateEnd = $ResulParameters->details_key;
@@ -128,15 +162,27 @@ class C_Import extends Controller {
                                 $timestamp = PHPExcel_Shared_Date::ExcelToPHP($sheet1->getCell($cell->row . $star)->getValue());
                                 $detail[$cell->field] = date("Y-m-d", $timestamp);
                             } else {
-
+                                
                                 $code = trim($sheet1->getCell($cell->row . $star)->getValue());
+                                $detail[$cell->field] = $code;
                                 if (strstr($code, '=') == true) { //validar si es formulado
                                     $code = trim($sheet1->getCell($cell->row . $star)->getOldCalculatedValue());
-                                    if ($code == "#N/A") {
-                                        $error .= $cell->row . $star . ",";
+                                    $detail[$cell->field] = $code;
+                                    foreach ($array_exception as $valueE) {
+                                        if($code == $valueE['type']){
+                                            //print_r($code." - ".$valueE['type']);
+                                            //$detail[$cell->field] = $valueE['description'];
+                                            $detail[$cell->field] = $valueE['type'];
+                                            break;
+                                        }
                                     }
+                                    
+//                                    if ($code == "#N/A") { 
+//                                        $error .= $cell->row . $star . ",";
+//                                        $detail[$cell->field] = "#N/A";
+//                                    }
                                 }
-                                $detail[$cell->field] = $code;
+                                
                             }
                         }
                         $recordDetail['tbody'][] = $detail;
@@ -144,7 +190,7 @@ class C_Import extends Controller {
                         $item++;
                         $loop = ($sheet1->getCell($keyValidateEnd . $star)->getValue() == '') ? false : true;
                     }
-
+                    //exit;
                     $HtmlDetail = $this->load->view("Imos/Acknow/Tab/V_Tab_Detail", $recordDetail, true);
 
                     $array = Array('msg' => "OK", 'info' => $info, 'detail' => $HtmlDetail, 'item' => $item, 'error' => $error);

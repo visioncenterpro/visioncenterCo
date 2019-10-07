@@ -81,6 +81,17 @@ class M_Delivery extends VS_Model {
         return $result->result();
     }
     
+    function get_data_add(){
+        $query = ("SELECT OP.*, P.name, P.code, A.`order`, A.weight_per_package, OS.quantity, P.weight_per_supplies FROM access_order_package_supplies_detail OP "
+                . "INNER JOIN access_order_package_supplies A ON OP.access_order_package_supplies = A.id_order_package_supplies "
+                . "INNER JOIN pro_supplies P ON OP.id_supplies = P.id_supplies INNER JOIN access_order_supplies OS "
+                . "ON OP.id_order_supplies = OS.id_order_supplies WHERE A.`order` = $this->order AND A.number_pack != $this->number_pack "
+                . " AND OS.exclude = 0 ORDER BY OP.id_order_supplies ASC");
+        $result = $this->db->query($query);
+        //echo $this->db->last_query();
+        return $result->result();
+    }
+    
     function get_items_supplies($order,$id_order_package_supplies,$number_pack){
         $query = ("SELECT A.number_pack, COUNT(*) AS total_pack FROM access_order_package_supplies_detail AO INNER JOIN access_order_package_supplies A "
                 . " ON AO.access_order_package_supplies = A.id_order_package_supplies "
@@ -114,10 +125,11 @@ class M_Delivery extends VS_Model {
     }
     
     function get_supplies_detail($id_order_supplies){
-        $query = ("SELECT * FROM access_order_package_supplies_detail WHERE id_order_supplies = $id_order_supplies ORDER BY id_order_supplies ASC");
+        $query = ("SELECT * FROM access_order_package_supplies_detail WHERE id_order_supplies = $id_order_supplies "
+                . " ORDER BY id_order_supplies ASC");
         $result = $this->db->query($query);
-        return $result->result();
         //echo $this->db->last_query();
+        return $result->result();
     }
     
     function get_supplies_detail_modal($id_order_supplies){
@@ -138,6 +150,14 @@ class M_Delivery extends VS_Model {
         return $result->result();
     }
     
+    function get_supplies_detail21($access_order_package_supplies,$id_order_supplies,$number_pack,$order){
+        $query = ("SELECT a.* FROM access_order_package_supplies_detail a INNER JOIN access_order_package_supplies aos "
+                . " ON aos.id_order_package_supplies = a.access_order_package_supplies WHERE a.id_order_supplies = $id_order_supplies "
+                . " AND aos.`order` = $order ORDER BY a.id_order_supplies ASC");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+    
     function get_supplies_detail3($access_order_package_supplies,$id_order_supplies,$number_pack,$order){
         $query = ("SELECT  a.id_order_package_supplies_detail,SUM(a.quantity_packaged) as quantity_packaged FROM "
                 . " access_order_package_supplies_detail a INNER JOIN access_order_package_supplies aos ON "
@@ -145,12 +165,12 @@ class M_Delivery extends VS_Model {
                 . " aos.`order` = $order  ORDER BY a.id_order_supplies ASC");
         $result = $this->db->query($query);
         return $result->result();
-        //echo $this->db->last_query();
     }
     
     function get_supplies_detail_sum($id_order_supplies){
         $query = ("SELECT SUM(A.quantity_packaged) AS quantity_packaged, AO.quantity FROM access_order_package_supplies_detail A "
-                . " INNER JOIN access_order_supplies AO ON AO.id_order_supplies = A.id_order_supplies WHERE A.id_order_supplies = $id_order_supplies");
+                . " INNER JOIN access_order_supplies AO ON AO.id_order_supplies = A.id_order_supplies "
+                . " WHERE A.id_order_supplies = $id_order_supplies AND AO.`order` = $this->order");
         $result = $this->db->query($query);
         //echo $this->db->last_query();
         return $result->result();
@@ -299,6 +319,8 @@ class M_Delivery extends VS_Model {
     }
     
     function Update_Packed_Detail($id_access_order_package_supplies,$id_order_supplies,$id_supplies,$quantity_packaged){
+        $this->db->trans_begin();
+        
         $query = ("SELECT ao.*, aos.quantity FROM access_order_package_supplies a INNER JOIN access_order_package_supplies_detail ao "
                 . " ON a.id_order_package_supplies = ao.access_order_package_supplies INNER JOIN access_order_supplies aos "
                 . " ON aos.id_order_supplies = ao.id_order_supplies WHERE a.`order` = $this->order "
@@ -306,47 +328,77 @@ class M_Delivery extends VS_Model {
                 . " AND ao.access_order_package_supplies = $id_access_order_package_supplies "
                 . " ORDER BY ao.id_order_supplies ASC");
         $result = $this->db->query($query);
-        //echo $this->db->last_query();
+        //echo $this->db->last_query();exit;
         $total = 0;
         $quantity_packaged_sum = 0;
+        $id_order_package_supplies_detail = "";
         foreach ($result->result() as $key => $value) {
             $id_order_package_supplies_detail = $value->id_order_package_supplies_detail;
             $quantity_packaged_sum = $value->quantity_packaged + $quantity_packaged;
-            $total = $value->quantity;
+        }
+        $query_quantity = ("SELECT * FROM access_order_supplies WHERE `order` = $this->order AND id_supplies = $id_supplies");
+        $result_q = $this->db->query($query_quantity);
+        //echo $this->db->last_query();
+        foreach ($result_q->result() as $value_q){
+            $total = $value_q->quantity; // 72
         }
         $validation = ("SELECT * FROM access_order_package_supplies_detail WHERE id_order_supplies = $id_order_supplies");
         $result_vali = $this->db->query($validation);
+        //echo $this->db->last_query();exit;
         $quantity_packaged_sum2 = 0;
         $count_total = 0;
+        $count_id = 0;
         foreach ($result_vali->result() as $value_r) {
-            //echo $value_r->quantity_packaged."-";
+            //echo $value_r->id_order_package_supplies_detail ."-". $id_order_package_supplies_detail."<br>";
             $count_total = $count_total + $value_r->quantity_packaged;
             //$count_total =  $value_r->quantity_packaged;
-            $quantity_packaged_sum2 = $quantity_packaged_sum + $value_r->quantity_packaged;
+            if($value_r->id_order_package_supplies_detail != $id_order_package_supplies_detail){
+                //echo $value_r->quantity_packaged;
+                $quantity_packaged_sum2 = $quantity_packaged_sum2 + $value_r->quantity_packaged;
+            }else{
+                //echo '-g-';
+                $count_id = 1;
+                $quantity_packaged_sum2 = $quantity_packaged + $quantity_packaged_sum2;
+            }
         }
-        $quantity_packaged_sum2 = $quantity_packaged + $count_total;
-        //echo $quantity_packaged_sum2;
+        //echo $quantity_packaged_sum2." - ".$total;
+        //$rs = "";
         if($quantity_packaged_sum2 <= $total){
-            $data = array(
-                "quantity_packaged" => $quantity_packaged
-            );
-            $qt = $quantity_packaged;
-            $this->db->where("id_order_package_supplies_detail", $id_order_package_supplies_detail);
-            $rs = $id_order_package_supplies_detail;
-            $this->db->update("access_order_package_supplies_detail", $data); 
-            //echo $id_order_package_supplies_detail;
+            //echo 'netx ecos de amor';exit;
+            if($count_id == 1){
+                //echo 'update';
+                $data = array(
+                    "quantity_packaged" => $quantity_packaged
+                );
+                $qt = $quantity_packaged;
+                $this->db->where("id_order_package_supplies_detail", $id_order_package_supplies_detail);
+                $rs = $id_order_package_supplies_detail;
+                $this->db->update("access_order_package_supplies_detail", $data);
+            }else{
+                $data = array(
+                    "access_order_package_supplies" => $id_access_order_package_supplies,
+                    "id_order_supplies"             => $id_order_supplies,
+                    "id_supplies"                   => $id_supplies,
+                    "quantity_packaged"             => $quantity_packaged
+                );
+                $qt = $quantity_packaged;
+                $this->db->insert("access_order_package_supplies_detail", $data);
+                $rs = $this->db->insert_id();
+            }
+            //echo $id_order_package_supplies_detail;   
         }else{
-            $data = array(
-                "access_order_package_supplies" => $id_access_order_package_supplies,
-                "id_order_supplies"             => $id_order_supplies,
-                "id_supplies"                   => $id_supplies,
-                "quantity_packaged"             => $quantity_packaged
-            );
-            $qt = $quantity_packaged;
-            $this->db->insert("access_order_package_supplies_detail", $data);
-            $rs = $this->db->insert_id();
+            $rs = 0;
         }
         //$this->validation_supplies($this->order);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+
+            $rs = array("rs" => $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+
+            $rs = $rs;
+        }
         return $rs;
     }
     
@@ -355,8 +407,9 @@ class M_Delivery extends VS_Model {
                 . " ON A.access_order_package_supplies = O.id_order_package_supplies WHERE A.id_order_package_supplies_detail = $this->id_order_package_supplies_detail "
                 . " AND O.`order` = $this->order");
         $result = $this->db->query($query);
-        //echo $this->db->last_query(); end();
+        //echo $this->db->last_query(); exit;
         if(count($result->result()) > 0){
+            $cnt = 0;
             foreach ($result->result() as $key => $value) {
                 $id_order_package_supplies_detail = $value->id_order_package_supplies_detail;
                 $id_supplies = $value->id_supplies;
@@ -369,22 +422,41 @@ class M_Delivery extends VS_Model {
         }else{
             $rs = 0;
         }
-        $this->update_h();
+        //$this->update_h();
         //$res = $this->validation_supplies($this->order);
         return $rs;
     }
     
     function update_h(){
-        $query2 = ("SELECT * FROM access_order_package_supplies WHERE `order` = $this->order AND number_pack = $this->number_pack "
-                . "");
+        $query2 = ("SELECT * FROM access_order_package_supplies WHERE `order` = $this->order AND number_pack = $this->number_pack");
         $result = $this->db->query($query2);
+        
+        $val_cnt = ("SELECT AO.* FROM access_order_package_supplies A INNER JOIN access_order_package_supplies_detail AO ON "
+                . " A.id_order_package_supplies = AO.access_order_package_supplies WHERE A.`order` = $this->order "
+                . " AND A.number_pack = $this->number_pack ");
+        $result_val = $this->db->query($val_cnt);
+        //echo $this->db->last_query();
+        $cnt = 0;
+        $weight = 0;
+        if(count($result_val->result()) != null){
+            //print_r($result_val->result());
+            foreach ($result_val->result() as $value) {
+                $cnt = $cnt + $value->quantity_packaged;
+                $query_w = (" SELECT * FROM access_order_package_supplies_detail A INNER JOIN pro_supplies P ON A.id_supplies = P.id_supplies "
+                        . " WHERE A.id_order_package_supplies_detail = $value->id_order_package_supplies_detail");
+                $result_w = $this->db->query($query_w);
+                foreach ($result_w->result() as $valuew) {
+                    $weight = $weight + ( $valuew->quantity_packaged * $valuew->weight_per_supplies);
+                }
+            }
+        }
         //echo $this->db->last_query();
         foreach ($result->result() as $key => $value2) {
             $data = array(
-                "quantity_per_package"  => 0,
-                "quantity_total_supplies"   => 0,
-                "quantity_supplies"     => 0,
-                "weight_per_package" => $this->weight
+                "quantity_per_package"  => $cnt,
+                "quantity_total_supplies"   => $cnt,
+                "quantity_supplies"     => $cnt,
+                "weight_per_package" => $weight
             );
             $this->db->where("id_order_package_supplies", $value2->id_order_package_supplies);
             $rs = $this->db->update("access_order_package_supplies", $data); 
@@ -502,86 +574,34 @@ class M_Delivery extends VS_Model {
     }
     
     function validation_supplies2($order){
-        $res = true;
-        $where = "";
-        if(isset($this->number_pack)){
-            $where = " AND number_pack = $this->number_pack ";
-        }
-        $query = ("SELECT * FROM access_order_package_supplies WHERE `order` = $order ".$where);
+        $this->db->trans_begin();
+        $query = ("SELECT * FROM access_order_package_supplies WHERE `order` = $order AND number_pack = $this->number_pack ");
         $result = $this->db->query($query);
-        //echo $this->db->last_query();
+        //echo $this->db->last_query();exit;
         if(count($result->result()) > 0){
-            $number_pack_total = 0;
             foreach ($result->result() as $value) {
-                //$number_pack_total++;
-                $array_id_order_package = $value->id_order_package_supplies;
+                $this->db->where("id_order_package_supplies", $value->id_order_package_supplies);
+                $rs = $this->db->delete("access_order_package_supplies");
             }
-            
-            $qr2 = ("SELECT * FROM access_order_package_supplies WHERE `order` = $order ");
-            $rs2 = $this->db->query($qr2);
-            $pack_val = array();
-            $pack_val2 = array();
-            foreach ($rs2->result() as $value) {
-                $number_pack_total++;
-                if($value->quantity_total_supplies == 0){
-                    $pack_val[] = $value->number_pack;
-                    $pack_val2[] = $value->id_order_package_supplies;
-                }
-                $array_id_order_package2[] = $value->id_order_package_supplies;
+            $query2 = ("SELECT * FROM access_order_package_supplies WHERE `order` = $order");
+            $result2 = $this->db->query($query2);
+            $count = $result2->result();
+            foreach ($count as $key => $value2) {
+                $data = array(
+                    "number_pack" => $key + 1
+                );
+                $this->db->where("id_order_package_supplies", $value2->id_order_package_supplies);
+                $rs = $this->db->update("access_order_package_supplies", $data);
             }
-            
-            $number_pack = 0;
-            $total_packs_detail = 0;
-            $count = 0;
-            foreach ($rs2->result() as $value2) {
-                $number_pack++;
-                $query2 = ("SELECT A.* FROM access_order_package_supplies A INNER JOIN access_order_package_supplies_detail AO "
-                        . " ON A.id_order_package_supplies = AO.access_order_package_supplies WHERE A.`order` = $order AND A.number_pack = $value2->number_pack "
-                        . " AND AO.access_order_package_supplies = $array_id_order_package2[$count] GROUP BY AO.access_order_package_supplies");
-                $result2 = $this->db->query($query2);
-                //echo $this->db->last_query();
-                if(count($result2->result()) > 0){
-                    $total_packs_detail++;
-                    $array_id_update[] = $array_id_order_package2[$count];
-                }else{
-                    $array_id_delete = $array_id_order_package;
-                }
-                $count++;
-            }
-            
-            if(isset($array_id_delete)){
-                for($i = 0; $i < count($array_id_delete); $i++){
-                    $this->db->where("id_order_package_supplies", $array_id_delete);
-                    $rs = $this->db->delete("access_order_package_supplies");
-                }
-                $res = 1;
-            }
-            
-            if(isset($total_packs_detail) && isset($array_id_update)){
-                $cont_y = 0;
-                $cont_y2 = 0;
-                for($e = 0; $e < count($array_id_update); $e++){
-                    $cont_y++;
-                    if(array_search($cont_y,$pack_val)){
-                        //echo $pack_val2[$cont_y2];
-                        $data = array(
-                            "number_pack" => $cont_y
-                        );
-                        $this->db->where("id_order_package_supplies", $pack_val2[$cont_y2]);
-                        $rs = $this->db->update("access_order_package_supplies", $data);
-                        //echo $this->db->last_query();
-                        $cont_y2++;
-                        $cont_y++;
-                    }
-                        $data = array(
-                            "number_pack" => $cont_y
-                        );
-                        $this->db->where("id_order_package_supplies", $array_id_update[$e]);
-                        $rs = $this->db->update("access_order_package_supplies", $data);
-                    
-                }
-            }
-            
+        }
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+
+            $res = array("res" => $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+
+            $res = true;
         }
         return $res;
     }
@@ -1352,8 +1372,8 @@ class M_Delivery extends VS_Model {
         if ($reg->balance > 0) {
 
             $data = array("id_delivery_package" => $this->delivery, "quantity" => $this->quantity, "id_order_package" => $this->id_order_package);
-            $rs = 1;
-            //$rs = $this->db->insert("pro_delivery_package_detail", $data);
+            //$rs = 1;
+            $rs = $this->db->insert("pro_delivery_package_detail", $data);
 
             if ($rs) {
 
@@ -1456,7 +1476,7 @@ class M_Delivery extends VS_Model {
     }
     
     function Listfurniture($order){
-        $rs = $this->db->select("`pp`.`id_forniture`,`m`.description")
+        $rs = $this->db->select("`pp`.`id_forniture`,`m`.description, pp.delivered_quantity")
                 ->from("access_order_package  pp")
                 ->join("view_forniture_sd m ", " pp.id_forniture = m.id_forniture")
                 ->join("access_type_package tp ", " pp.type_package = tp.id_type_package")

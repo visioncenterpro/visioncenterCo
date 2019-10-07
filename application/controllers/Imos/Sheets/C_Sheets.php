@@ -53,7 +53,9 @@ class C_Sheets extends Controller {
     public function update_sheet(){
         $validation = $this->M_Sheets->get_sheet();
         if(count($validation) > 0){
-            $data['rs'] = "RE";
+            $data['rs'] = $this->M_Sheets->update_sheet2();
+            $data['sheets'] = $this->M_Sheets->get_sheets_all();
+            $data['table'] = $this->load->view('Imos/Sheets/V_table_sheets', $data, true);
         }else{
             $data['rs'] = $this->M_Sheets->update_sheet();
             $data['sheets'] = $this->M_Sheets->get_sheets_all();

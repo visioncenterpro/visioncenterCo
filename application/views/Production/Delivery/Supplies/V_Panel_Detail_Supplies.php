@@ -7,7 +7,7 @@
                         <span class="username" style="margin-left: 0px;"><a href="#">Entrega De Paquetes De Insumos N&deg; </b><?= $delivery ?></b>.</a> (<a class="status"><?= explode("(", $info->description)[0] ?></a>)</span>
                         <br>
                         <?php if(count($empty_p) > 0){ ?>
-                            <span class="description" style="margin-left: 0px;font-size: 21px; font-weight: bold; color:#000">Observacion : Hay paquetes vacios, Eliminelos o editelos</span>
+                            <span class="description" style="margin-left: 0px;font-size: 21px; font-weight: bold; color:#f13e3e">Observacion : Hay paquetes vacios, Eliminelos o editelos</span>
                         <?php }else{ ?>
                             <span class="description" style="margin-left: 0px;">Observacion : <?=ucwords($info->observation,'_')?></span>
                         <?php } ?>
@@ -21,7 +21,7 @@
                     <?php } ?>
                     <button  id="btn-print" class="btn  btn-default btn-sm"><i class="fa fa-print"></i> Imprimir</button>
                     <button  onclick="history.back()" class="btn  btn-default btn-sm"><i class="fa fa-backward"></i> Atras</button>
-
+                    
                 </div>
             </div>
             <div class="box-body">

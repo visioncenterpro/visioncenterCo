@@ -97,7 +97,15 @@ class C_Monitoreo extends Controller {
         foreach ($get_orders as $key => $valueo) {
             $cont = 0;
             $cont2 = 0;
-            $get_data[] = $this->M_Monitoreo->get_packages_m($request,$valueo->order);
+            $valip = $this->M_Monitoreo->get_packages_m($request,$valueo->order);
+            foreach ($valip as $valued) {
+                $get_data[] = array(
+                    'name' => $valued->name,
+                    'packet_sum'    => $valued->packet_sum,
+                    'total_weight'  => round($valued->total_weight,4),
+                );
+            }
+            //print_r($this->M_Monitoreo->get_packages_m($request,$valueo->order));
             $get_data2 = $this->M_Monitoreo->get_sd_detail_m($valueo->order,$request);
             foreach ($get_data2 as $value) {
                 $cont = 0;
@@ -152,7 +160,7 @@ class C_Monitoreo extends Controller {
                 $arreglo['supplies'][] = array(
                     'pack'              => $pack,
                     'quantity_total'    => $total_q,
-                    'weight_total'      => $weigh_t,
+                    'weight_total'      => round($weigh_t,4),
                     'packet_quantity'   => $packet_status
                 );
             }

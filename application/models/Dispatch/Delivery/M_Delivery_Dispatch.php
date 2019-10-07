@@ -41,8 +41,14 @@ class M_Delivery_Dispatch extends VS_Model {
         if($fin)
             $this->db->limit($fin,$ini);
         
-        if($type != 'all')
+        if($type != 'all'){
+            if($type == '1'){
+                $type = "InfoDeliveryPackage";
+            }else{
+                $type = "InfoDeliverySupplies";
+            }
             $this->db->where("s.view",$type);
+        }
         
         if($id_delivery != 'all')
             $this->db->where("s.id",$id_delivery);

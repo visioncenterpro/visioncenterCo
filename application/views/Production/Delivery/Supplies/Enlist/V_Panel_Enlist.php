@@ -85,7 +85,7 @@
                 <h4 class="modal-title">Agregar Paquete manual - order  #<label id="order"></label></h4>
             </div>
             <div class="modal-body" id="content_manual">
-               
+                <label id="edit_label">No puede superar el limite de número a empacar</label>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
@@ -97,7 +97,7 @@
 
 <div class="modal fade" id="modal_edit_manual">
     <div class="modal-dialog" >
-        <div class="modal-content">
+        <div class="modal-content" style="width: 103%;">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
@@ -109,6 +109,25 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary pull-right" id="update_btn" onclick="Update_packet()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_add_supplies">
+    <div class="modal-dialog" >
+        <div class="modal-content" style="width: 103%;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Agregar insumo - order  #<label id="order-add"></label></h4>
+            </div>
+            <div class="modal-body" id="content_add_supplies">
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary pull-right" id="update_btn" onclick="add_supplies()">Guardar</button>
             </div>
         </div>
     </div>
@@ -137,6 +156,7 @@
 
 <script>
     $(function () {
+        $("#edit_label").hide();
         $("#table_orders").DataTable();
         $("#btnload").click(function () {
             if (ValidateInput("txt-order")) {
@@ -172,7 +192,40 @@
                 }, "json");
             }
         });
+        $("#comment").keypress(function(character){
+            //console.log(character);
+            var characters_count = $("#comment").val().length;
+            if(parseInt(characters_count) + 1 > 80){
+                $("#warning").attr("style", "color:red");
+                return false;
+            }
+            
+        });
+         $("#comment").bind('paste', function(e){
+            var characters_count = $("#comment").val().length;
+            var data = e.originalEvent.clipboardData.getData('Text');
+            if(parseInt(data.length) + parseInt(characters_count) > 80){
+                $("#warning").attr("style", "color:red");
+                return false;
+            }
+         });
     });
+
+    var pbt = 0;
+    function validation_total(e,value,max){
+        pbt++;
+        //console.log(value);
+        if(pbt == 1){
+            value.value = value.value + e.key;
+        }
+        if(parseInt(value.value+ e.key) > parseInt(max)){
+            value.value = "";
+            $("#edit_label").show();
+            $("#edit_label").attr("style", "color:red");
+            //return false;
+        }
+        //value.value = "1";
+    }
     
     function search(order){
         $("#order_value").val(order);
@@ -270,6 +323,19 @@
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
     }
+
+    function modal_add_supplies(id_order_package_supplies,number_pack,order){
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/get_data_add",{order:order,number_pack:number_pack},function(data){
+            //console.log(data);
+            $("#order-add").text(order);
+            $("#content_add_supplies").html(data.table);
+            $("#modal_add_supplies").modal("show");
+            
+
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+    }
     
     function Update_packet(){
         var order = $("#order_value").val();
@@ -288,7 +354,7 @@
         var counter_val = 0;
         var val_chk = 0;
         array.forEach(function(element) {
-            if(array_check[counter_val] == false && element.value != 0){
+            if((array_check[counter_val] == false && element.value == 0)){
                 val_chk = 1;
                 return false;
             }
@@ -298,6 +364,9 @@
         array.forEach(function(element) {
             if(array_check[counter] == true){
                 chk = 1;
+            }
+            if(element.value == ""){
+                element.value = 1;
             }
             pack_total.push(element.value);
             counter++;
@@ -354,7 +423,7 @@
                             TableData("table_supplies", false, false, true);
                             TableData("table_pack", false, false, true);
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
-                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-bookmark-o"></i> Etiquetas</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
@@ -404,22 +473,24 @@
                             });
 
                             var count_q2 = 0;
+                            var count_q21 = 0;
                             var array = document.querySelectorAll("input[id=quantity_pack_edit]");
                             console.log(array);
                             array.forEach(function(element){
-                                console.log(data.data[count_q2][0]['quantity_packaged']);
+                                console.log(count_q2);
                                 if(data.data[count_q2][0]['quantity_packaged'] != 0){
                                     //element.value = parseInt(data_quantity[count_q2]) - parseInt(data.data[count_q2][0]['quantity_packaged']);
                                     //element.setAttribute("max", parseInt(data_quantity[count_q2]) - parseInt(data.data2[0][0]['quantity_packaged']));
                                     //element.value = parseInt(parseInt(data_quantity[count_q2]) - parseInt(quantity_packaged));
                                     //console.log(count_q2);
-                                    element.value = parseInt(data.data2[count_q2][0]['quantity']) - parseInt(data.data2[count_q2][0]['quantity_packaged']);
-                                    element.setAttribute("max", parseInt(data.data2[count_q2][0]['quantity']) - parseInt(data.data2[count_q2][0]['quantity_packaged']));
-                                    if(parseInt(data.data2[count_q2][0]['quantity']) - parseInt(data.data2[count_q2][0]['quantity_packaged']) == 0){
+                                    element.value = parseInt(data.data2[count_q21][0]['quantity']) - parseInt(data.data2[count_q21][0]['quantity_packaged']);
+                                    element.setAttribute("max", parseInt(data.data2[count_q21][0]['quantity']) - parseInt(data.data2[count_q21][0]['quantity_packaged']));
+                                    if(parseInt(data.data2[count_q21][0]['quantity']) - parseInt(data.data2[count_q21][0]['quantity_packaged']) == 0){
                                         element.setAttribute("disabled", "true");
                                     }
-                                    count_q2++;
+                                    count_q21++;
                                 }
+                                count_q2++;
                             });
                             var count_q3 = 0;
                             var array_s = document.querySelectorAll("input[id=select_edit]");
@@ -427,8 +498,8 @@
                                 element.checked = false;
                                 if(parseInt(data_quantity[count_q3]) - parseInt(data.data[count_q3][0]['quantity_packaged']) == 0){
                                     element.setAttribute("disabled", "true");
-                                    $("#id_order_package_supplies_all_edit"+count_q3).val(data.sum[count_q3]);
                                 }
+                                $("#id_order_package_supplies_all_edit"+count_q3).val(data.sum[count_q3]);
                                 count_q3++;
                             });
                             //validation_header(order);
@@ -449,7 +520,7 @@
                     TableData("table_supplies", false, false, true);
                     TableData("table_pack", false, false, true);
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
-                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-bookmark-o"></i> Etiquetas</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
@@ -499,6 +570,7 @@
                     });
 
                     var count_q2 = 0;
+                    var count_q21 = 0;
                     var array = document.querySelectorAll("input[id=quantity_pack_edit]");
                     console.log(array);
                     array.forEach(function(element){
@@ -508,13 +580,14 @@
                             //element.setAttribute("max", parseInt(data_quantity[count_q2]) - parseInt(data.data2[0][0]['quantity_packaged']));
                             //element.value = parseInt(parseInt(data_quantity[count_q2]) - parseInt(quantity_packaged));
                             //console.log(count_q2);
-                            element.value = parseInt(data.data2[count_q2][0]['quantity']) - parseInt(data.data2[count_q2][0]['quantity_packaged']);
-                            element.setAttribute("max", parseInt(data.data2[count_q2][0]['quantity']) - parseInt(data.data2[count_q2][0]['quantity_packaged']));
-                            if(parseInt(data.data2[count_q2][0]['quantity']) - parseInt(data.data2[count_q2][0]['quantity_packaged']) == 0){
+                            element.value = parseInt(data.data2[count_q21][0]['quantity']) - parseInt(data.data2[count_q21][0]['quantity_packaged']);
+                            element.setAttribute("max", parseInt(data.data2[count_q21][0]['quantity']) - parseInt(data.data2[count_q21][0]['quantity_packaged']));
+                            if(parseInt(data.data2[count_q21][0]['quantity']) - parseInt(data.data2[count_q21][0]['quantity_packaged']) == 0){
                                 element.setAttribute("disabled", "true");
                             }
-                            count_q2++;
+                            count_q21++;
                         }
+                        count_q2++;
                     });
                     var count_q3 = 0;
                     var array_s = document.querySelectorAll("input[id=select_edit]");
@@ -522,8 +595,8 @@
                         element.checked = false;
                         if(parseInt(data_quantity[count_q3]) - parseInt(data.data[count_q3][0]['quantity_packaged']) == 0){
                             element.setAttribute("disabled", "true");
-                            $("#id_order_package_supplies_all_edit"+count_q3).val(data.sum[count_q3]);
                         }
+                        $("#id_order_package_supplies_all_edit"+count_q3).val(data.sum[count_q3]);
                         count_q3++;
                     });
                     //validation_header(order);
@@ -549,7 +622,7 @@
             TableData("table_supplies", false, false, true);
             TableData("table_pack", false, false, true);
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-bookmark-o"></i> Etiquetas</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
@@ -587,6 +660,9 @@
         var counter = 0;
         array.forEach(function(element) {
             if(array_check[counter] == true){
+                if(element.value == ""){
+                    element.value = 1;
+                }
                 count = count + parseInt(element.value);
             }
             pack_total.push(element.value);
@@ -621,7 +697,7 @@
                     TableData("table_supplies", false, false, true);
                     TableData("table_pack", false, false, true);
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
-                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-bookmark-o"></i> Etiquetas</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
@@ -709,6 +785,63 @@
         }
     }
     
+    function add_supplies(id_supplies,pack){
+        $(".overlay_ajax").show();
+        var order = $("#order_value").val();
+        var array_c = document.querySelectorAll("input[id=select_add]");
+        var array_check = [];
+        array_c.forEach(function(element){
+           array_check.push(element.checked);
+        });
+        console.log(array_check.length);
+        var array = document.querySelectorAll("input[id=quantity_add2]");
+        var pack_total = [];
+        var count = 0;
+        var counter = 0;
+        array.forEach(function(element) {
+            if(array_check[counter] == true){
+                if(element.value == ""){
+                    element.value = 1;
+                }
+                count = count + parseInt(element.value);
+            }
+            pack_total.push(element.value);
+            counter++;
+        }, this);
+        console.log(pack_total.length);
+        var package_number = $("#package_number_add").val();
+        var weight_package = $("#weight_add").val();
+        var array_o = document.querySelectorAll("input[id=id_order_supplies_add]");
+        var array_order_supplies = [];
+        array_o.forEach(function(element) {
+            array_order_supplies.push(element.value);
+        }, this);
+        var array_s = document.querySelectorAll("input[id=id_supplies_add]");
+        var array_id_supplies = [];
+        array_s.forEach(function(element) {
+            array_id_supplies.push(element.value);
+        }, this);
+       
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_Packed",{id_supplies:id_supplies,order:order,pack:pack,package_number:package_number,pack_total:pack_total,weight_package:weight_package,count:count,array_order_supplies:array_order_supplies,array_id_supplies:array_id_supplies,array_check:array_check},function(data){
+            $(".overlay_ajax").hide();
+            $(".loader_ajax2").text("");
+
+            $("#order-lbl").html(order);
+            $("#order-lbl2").html(order);
+
+            $("#modal_add_supplies").modal("hide");
+
+            //swal({title: 'Exito', text: "Se han guardado los datos", type: 'success'});
+            
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+        
+        var myVar = setTimeout(validation_header_re,1000,order,package_number);
+        //myVar = setTimeout(alertFunc, 3000);
+        //clearInterval(myVar);
+    }
+    
     function go_back_all_edit(){
         var array1 = document.querySelectorAll("input[id=quantity_edit_packed]");
         var cont_array = [];
@@ -719,19 +852,19 @@
         var count = 0;
         var total = array.length;
         var order = $("#order_value").val();
+        var package_number = $("#package_number_edit").val();
         var positionpb = 0;
         //console.log(array.length);
         array.forEach(function(element){
             var id_supplies = $("#id_supplies_all_edit"+count).val();
             var id_order_supplies = $("#id_order_supplies_all_edit"+count).val();
-            var package_number = $("#package_number_edit").val();
             var pack = $("#packed_all_edit"+count).val();
             var weight = $("#weight_package_edit").val();
             var id_order_package_supplies_detail = $("#id_order_package_supplies_all_edit"+count).val();
-            //console.log(id_order_package_supplies_detail);
+            console.log(id_order_package_supplies_detail);
             if(pack != "0"){
                 if(cont_array[count] !== "0"){
-                    
+                    //validation_header_re(order, package_number);
                     $.post("<?= base_url()?>Production/Delivery/C_Delivery/Go_Back_Pack_Edit",{id_supplies:id_supplies,order:order,id_order_supplies:id_order_supplies,package_number:package_number,id_order_package_supplies_detail:id_order_package_supplies_detail,number_pack:package_number,weight:weight,positionpb:positionpb},function(data){
                         if(count == total){
                             //console.log(data.pos);
@@ -739,7 +872,7 @@
                             TableData("table_supplies", false, false, true);
                             TableData("table_pack", false, false, true);
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
-                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-bookmark-o"></i> Etiquetas</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
@@ -814,10 +947,45 @@
             }
             count++;
         });
-        swal({title: '', text: '', type: 'success'});
-        $("#order-lbl").html(order);
-        $("#order-lbl2").html(order);
-        //validation_header(order);
+        //swal({title: '', text: '', type: 'success'});
+        var myVar = setTimeout(validation_header_re,2000,order,package_number);
+        //myVar = setTimeout(alertFunc, 3000);
+        //clearInterval(myVar);
+    }
+    
+    function validation_header_re(order,pack_number){
+        $(".overlay_ajax").show();
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/validation_header_RE",{order:order,number_pack:pack_number},function(data){
+            console.log(data);
+            $("#content-table").html(data.table);
+            TableData("table_supplies", false, false, true);
+            TableData("table_pack", false, false, true);
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
+            $('input.minimal:checkbox').iCheck({
+                checkboxClass: 'icheckbox_minimal-blue'
+            }).on('ifChanged', function (e) {
+                var isChecked = e.currentTarget.checked;
+                if (isChecked == true) {
+                    var exclude = 1;
+                } else {
+                    var exclude = 0;
+                }
+                Exclude_modal(this.value, exclude);
+            });
+
+            $("#count").html(data.packs.length);
+            swal({title: '', text: '', type: 'success'});
+            $("#order-lbl").text(order);
+            $("#order-lbl2").text(order);
+            $(".overlay_ajax").hide();
+            $(".loader_ajax2").text("");
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
     }
     
     function go_back_all(){
@@ -840,7 +1008,7 @@
                         TableData("table_supplies", false, false, true);
                         TableData("table_pack", false, false, true);
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
-                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-bookmark-o"></i> Etiquetas</span></a></label>');
+                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
@@ -908,7 +1076,7 @@
             TableData("table_supplies", false, false, true);
             TableData("table_pack", false, false, true);
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-bookmark-o"></i> Etiquetas</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
@@ -973,12 +1141,15 @@
         var package_number = $("#number_pack").val();
         var number_pack = $("#number_pack").val();
         var weight = $("#weight_package_edit").val();
-        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Go_Back_Pack_Edit",{id_supplies:id_supplies,order:order,id_order_supplies:id_order_supplies,package_number:package_number,number_pack:number_pack,id_order_package_supplies_detail:id_order_package_supplies_detail,number_pack:package_number,weight:weight},function(data){
+        var id_order_package_supplies_detail2 = $("#id_order_package_supplies_all_edit"+position).val();
+        console.log(id_order_package_supplies_detail2);
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Go_Back_Pack_Edit",{id_supplies:id_supplies,order:order,id_order_supplies:id_order_supplies,package_number:package_number,number_pack:number_pack,id_order_package_supplies_detail:id_order_package_supplies_detail2,number_pack:package_number,weight:weight},function(data){
+            validation_header_re(order,package_number);
             $("#content-table").html(data.table);
             TableData("table_supplies", false, false, true);
             TableData("table_pack", false, false, true);
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-bookmark-o"></i> Etiquetas</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
@@ -1050,8 +1221,8 @@
                 
             }
             //$("#modal_edit_manual").modal("hide");
-            $("#order-lbl").html(order);
-            $("#order-lbl2").html(order);
+            $("#order-lbl").text(order);
+            $("#order-lbl2").text(order);
             
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});

@@ -4,9 +4,11 @@
         <label>Muebles</label>
         <div class="form-inline">
             <select class="form-control" id="furniture">
-                <?php foreach ($furniture as $key => $value) { ?>
-                    <option value="<?=$value->id_forniture?>"><?=$value->description?></option>
-                <?php } ?> 
+                <?php foreach ($furniture as $key => $value) {
+                    //if($value->delivered_quantity != 0){ ?>
+                        <option value="<?=$value->id_forniture?>"><?=$value->description?></option>
+                <?php //}
+                } ?> 
             </select>
             <button class="btn btn-primary" onclick="add_furniture()"><span class="fa fa-sign-in" aria-hidden="true"></span></button>
         </div>

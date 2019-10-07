@@ -14,7 +14,7 @@
                 <td style="text-align:center"><?= $d->code ?></td>
                 <td style="text-align:center"><?= $d->name ?></td>
                 <td style="text-align:center"><?= $d->weight_per_supplies ?></td>
-                <td style="text-align:center"><?= $d->qp * $d->weight_per_supplies ?></td>
+                <td style="text-align:center"><?= round(($d->qp * $d->weight_per_supplies),4) ?></td>
                 <td style="text-align:center"><?= $d->qp ?></td>
             </tr>
         <?php endforeach; ?>

@@ -437,12 +437,12 @@ class C_Pdf extends Controller {
         foreach ($cantos as $c) :
             if (array_key_exists($c->PRFNAME, $array)) {
                 $array[$c->PRFNAME]["mtr"] += $c->CONTLEN;
-                $array[$c->PRFNAME]["total"] += ($c->CONTLEN + $desp);
+                $array[$c->PRFNAME]["total"] += ($c->CONTLEN + DESP);
             } else {
                 $descAX = $this->M_Order->ChargedCodeAXiron($c->PRFNAME);
                 $desc = (!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $c->PRFNAME . "(Crear En AX)";
 
-                $array[$c->PRFNAME] = array("desc" => $desc, "mtr" => $c->CONTLEN, "total" => ($c->CONTLEN + $desp));
+                $array[$c->PRFNAME] = array("desc" => $desc, "mtr" => $c->CONTLEN, "total" => ($c->CONTLEN + DESP));
             }
         endforeach;
 
@@ -1187,7 +1187,7 @@ class C_Pdf extends Controller {
                 <td style="text-align: center">'. number_format($value['mts_sheet'],4,'.',',') .'</td>
                 <td style="text-align: center">Lam</td>
             </tr>';
-        $total_l = $total_l + $value['mts_sheet'];
+            $total_l = $total_l + $value['mts_sheet'];
         endforeach;
         $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Láminas</th><th>'.number_format((float)$total_l , 4, '.', '').'</th><th></th></tr>';
         
@@ -1196,16 +1196,17 @@ class C_Pdf extends Controller {
         $cantos = $this->M_Order->ListConsCanto($order);
         
         $total_c = 0;
-        $desp = 0.02;
+        $desp = 0.06; // cambio pd bogota
         $array_c = array();
         foreach ($cantos as $ca) :
             if (array_key_exists($ca->PRFNAME, $array_c)) {
-                $array_c[$ca->PRFNAME]["mtr"] += $ca->CONTLEN;
+                //print_r($array_c[$ca->PRFNAME]["mtr"]."<br>");
+                //$array_c[$ca->PRFNAME]["mtr"] += $ca->CONTLEN;
+                $array_c[$ca->PRFNAME]["total"] += ($ca->CONTLEN + DESP);
             } else {
                 $descAX = $this->M_Order->ChargedCodeAXiron($ca->PRFNAME);
                 $desc = (!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $ca->PRFNAME . "(Crear En AX)";
-                
-                $array_c[$ca->PRFNAME] = array("desc" => $desc, "mtr" => $ca->CONTLEN);
+                $array_c[$ca->PRFNAME] = array("desc" => $desc, "mtr" => $ca->CONTLEN, "total" => ($ca->CONTLEN + DESP));
             }
         endforeach;
         
@@ -1217,12 +1218,12 @@ class C_Pdf extends Controller {
                 <td style="text-align:center">'.$item++.'</td>
                 <td style="text-align:center">'. $key.'</td>
                 <td>' . $value['desc'] . '</td>
-                <td style="text-align: center">' .number_format((float)$value['mtr'] , 4, '.', ''). '</td>
+                <td style="text-align: center">' .number_format((float)$value['total'] , 2, '.', ','). '</td>
                 <td style="text-align: center">MTS</td>
             </tr>';
-        $total_c = $total_c + $value['mtr'];
+        $total_c = $total_c + $value['total'];
         endforeach;
-        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Cantos</th><th>'.number_format((float)$total_c , 4, '.', '').'</th><th></th></tr>';
+        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Cantos</th><th>'.number_format((float)$total_c , 2, '.', '').'</th><th></th></tr>';
         
         //print_r($array);
         
@@ -1333,12 +1334,12 @@ class C_Pdf extends Controller {
         $array_c = array();
         foreach ($cantos as $ca) :
             if (array_key_exists($ca->PRFNAME, $array_c)) {
-                $array_c[$ca->PRFNAME]["mtr"] += $ca->CONTLEN;
+                $array_c[$ca->PRFNAME]["mtr"] += ($ca->CONTLEN + DESP);
             } else {
                 $code_c[] = $ca->PRFNAME;
                 $descAX = $this->M_Order->ChargedCodeAXiron($ca->PRFNAME);
                 $desc = (!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $ca->PRFNAME . "(Crear En AX)";
-                $array_c[$ca->PRFNAME] = array("code" => $ca->PRFNAME,"desc" => $desc, "mtr" => $ca->CONTLEN);
+                $array_c[$ca->PRFNAME] = array("code" => $ca->PRFNAME,"desc" => $desc, "mtr" => ($ca->CONTLEN + DESP));
                 //return false;
             }
         endforeach;

@@ -34,7 +34,7 @@
 </div>
 <hr>
 <?php if(count($empty_p) > 0){ ?>
-<label> 
+<label style="color: #f13e3e; font-size: 140%;"> 
     Los paquetes :
     <?php
         foreach ($empty_p as $value){
@@ -66,10 +66,10 @@
             ?>
             <tr>
                 
-                    <input type="hidden" id="id_supplies_all_<?=$count?>" value="<?= $s->id_supplies ?>">
-                    <input type="hidden" id="id_order_supplies_all_<?=$count?>" value="<?= $s->id_order_supplies ?>">
-                    <input type="hidden" id="count_all" value="<?= $count ?>">
-                    <input type="hidden" id="packed_all_<?=$count?>" value="<?=$quantity_packaged[$count]?>">
+                <input type="hidden" id="id_supplies_all_<?=$count?>" value="<?= $s->id_supplies ?>">
+                <input type="hidden" id="id_order_supplies_all_<?=$count?>" value="<?= $s->id_order_supplies ?>">
+                <input type="hidden" id="count_all" value="<?= $count ?>">
+                <input type="hidden" id="packed_all_<?=$count?>" value="<?=$quantity_packaged[$count]?>">
 <!--                    <input type="hidden" id="id_order_package_supplies_all_<?=$count?>" value="<?=$s->id_order_package_supplies?>">-->
 <!--                    <button class="btn btn-block btn-danger btn-xs" onclick="go_back('<?=$s->id_supplies?>','<?=$s->order?>','<?=$s->id_order_supplies?>','<?=$count?>')"><span class="fa fa-trash" aria-hidden="true"></span></button>-->
                 
@@ -87,16 +87,15 @@
                 </td>
                 <td style="text-align: center" id="sum-<?=$count?>"><?=round($s->quantity) - $quantity_packaged[$count]?></td>
                 <td>
-                    <?php
-                        if(round($s->quantity) - $quantity_packaged[$count] == 0){ ?>
-                    <input type="number" min="0" max="<?=round($s->quantity) - $quantity_packaged[$count]?>" value="<?=round($s->quantity) - $quantity_packaged[$count]?>" id="quantity_pack" style="width: 100%;" disabled="true">
+                    <?php if(round($s->quantity) - $quantity_packaged[$count] == 0){ ?>
+                        <input type="number" min="0" max="<?=round($s->quantity) - $quantity_packaged[$count]?>" value="<?=round($s->quantity) - $quantity_packaged[$count]?>" id="quantity_pack" style="width: 100%;" disabled="true" onkeypress="validation_total(event,this,'<?=round($s->quantity) - $quantity_packaged[$count]?>')">
                     <?php }else{ ?>
-                    <input type="number" min="0" max="<?=round($s->quantity) - $quantity_packaged[$count]?>" value="<?=round($s->quantity) - $quantity_packaged[$count]?>" id="quantity_pack" style="width: 100%;">
+                        <input type="number" min="0" max="<?=round($s->quantity) - $quantity_packaged[$count]?>" value="<?=round($s->quantity) - $quantity_packaged[$count]?>" id="quantity_pack" style="width: 100%;" onkeypress="validation_total(event,this,'<?=round($s->quantity) - $quantity_packaged[$count]?>')">
                     <?php } ?>
-                    <input type="hidden" id="id_order_supplies" value="<?=$s->id_order_supplies?>">
-                    <input type="hidden" id="id_supplies" value="<?=$s->id_supplies?>">
-                    <input type="hidden" id="quantity" value="<?=$s->quantity?>">
-                    <input type="hidden" id="weight" value="<?php if($s->weight_per_supplies == NULL){echo '0';}else{echo $s->weight_per_supplies;} ?>">
+                        <input type="hidden" id="id_order_supplies" value="<?=$s->id_order_supplies?>">
+                        <input type="hidden" id="id_supplies" value="<?=$s->id_supplies?>">
+                        <input type="hidden" id="quantity" value="<?=$s->quantity?>">
+                        <input type="hidden" id="weight" value="<?php if($s->weight_per_supplies == NULL){echo '0';}else{echo $s->weight_per_supplies;} ?>">
                 </td>
             </tr>
         <?php //} 

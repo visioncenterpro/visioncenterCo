@@ -5,7 +5,7 @@
                 <div class="box-title col-md-6">
                     <div class="user-block">
                         <span class="username" style="margin-left: 0px;"><a href="#">Entrega De Paquetes SD N&deg; </b><?= $delivery ?></b>.</a> (<a class="status"><?= explode("(", $info->description)[0] ?></a>)</span>
-                        <span class="description" style="margin-left: 0px;">Observacion : <?=ucwords($info->observation)?></span>
+                        <br><span class="description" style="margin-left: 0px;font-size: 18px;">Observacion : <?=ucwords($info->observation)?></span>
                     </div>
                 </div>
                 <div class="col-md-6" style="text-align: right">

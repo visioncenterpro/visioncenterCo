@@ -528,7 +528,7 @@
                     var data = new FormData(form);
                     var formValues = data.entries();
                     while (!(ent = formValues.next()).done) {
-                        formData.append(`${ent.value[0]}`, ent.value[1])
+                        formData.append(`${ent.value[0]}`, ent.value[1]);
                     }
                 }
             }
@@ -558,10 +558,10 @@
                 async: false,
                 success: function (data) {
                     var obj = jQuery.parseJSON(data);
-                    if(obj.rs == "true"){
+                    if(obj.val_empty == "1"){
                         swal({
                             title: 'Atención',
-                            text: "La order ya se encuentra registrada, quiere actualizar los datos?",
+                            text: "Hay datos vacios, desea importar los datos?",
                             type: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
@@ -569,11 +569,43 @@
                             confirmButtonText: 'Si'
                         }).then((result) => {
                             if (result) {
-                                SAck_update(SAck,obj.data);
+                                if(obj.rs == "true"){
+                                    swal({
+                                        title: 'Atención',
+                                        text: "La order ya se encuentra registrada, quiere actualizar los datos?",
+                                        type: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#d33',
+                                        confirmButtonText: 'Si'
+                                    }).then((result) => {
+                                        if (result) {
+                                            SAck_update(SAck,obj.data);
+                                        } 
+                                    });
+                                }else{
+                                    SAck(SAck);
+                                }
                             } 
                         });
                     }else{
-                        SAck(SAck);
+                        if(obj.rs == "true"){
+                            swal({
+                                title: 'Atención',
+                                text: "La order ya se encuentra registrada, quiere actualizar los datos?",
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Si'
+                            }).then((result) => {
+                                if (result) {
+                                    SAck_update(SAck,obj.data);
+                                } 
+                            });
+                        }else{
+                            SAck(SAck);
+                        }
                     }
                 },
                 global: true,
