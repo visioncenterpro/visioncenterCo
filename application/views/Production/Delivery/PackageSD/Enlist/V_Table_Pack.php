@@ -1,6 +1,22 @@
 <table id="table_pack"  class="display table table-bordered table-striped table-condensed ">
     <thead>
         <tr>
+            <?php 
+                $total_packs = 0;
+                $total_w = 0;
+                foreach ($packs['data'] as $t) : 
+                    $total_packs += $t->quantity_packets;
+                    $total_w = $total_w + round($t->weight,2);
+                endforeach;
+            ?>
+            <td style="text-align: center">Total paquetes</td>
+            <td style="text-align: center"><?=$total_packs?></td>
+            <td style="text-align: center">Total Peso</td>
+            <td style="text-align: center"><?=$total_w?></td>
+            <td style="text-align: center">Total Peso integral</td>
+            <td style="text-align: center"><?=($total_w * PORCENT_WEIGHT) + $total_w?></td>
+        </tr>
+        <tr>
             <th style="width: 70px;text-align: center">NUMERO</th>
             <th>MUEBLE</th>
             <th style="width: 70px;text-align: center">TIPO</th>
@@ -15,8 +31,10 @@
     <tbody>
         <?php 
         $total_packs = 0;
+        $total_w = 0;
         foreach ($packs['data'] as $t) : 
         $total_packs += $t->quantity_packets;
+        $total_w = $total_w + round($t->weight,2);
         ?>
             <tr>
                 <td style="text-align: center"><?= $t->number_pack ?></td>
@@ -33,11 +51,22 @@
             <tr>
                 <td style="text-align: center"></td>
                 <td></td>
-                <td style="text-align: center"</td>
+                <td style="text-align: center">Total paquetes</td>
                 <td style="text-align: center" id="total-packs"><?=$total_packs?></td>
                 <td style="text-align: center"></td>
+                <td style="text-align: center">Total Peso</td>
+                <td style="text-align: center"><?=$total_w?></td>
                 <td style="text-align: center"></td>
                 <td style="text-align: center"></td>
+            </tr>
+            <tr>
+                <td style="text-align: center"></td>
+                <td></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center">Total Peso integral</td>
+                <td style="text-align: center"><?=($total_w * PORCENT_WEIGHT) + $total_w?></td>
                 <td style="text-align: center"></td>
                 <td style="text-align: center"></td>
             </tr>

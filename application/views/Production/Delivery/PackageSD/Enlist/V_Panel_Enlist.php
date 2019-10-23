@@ -225,7 +225,7 @@
                         $("#content-table").html(data.table);
                         TableData("table_pieces", false, false, true);
                         if(data.packs.count > 0){
-                            TableData("table_pack", false, false, true);
+                            TableDatap("table_pack", false, false, true,order);
                         }
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Empaque</span></a></label>');
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Range(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
@@ -234,18 +234,18 @@
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
                         
                         $("#count").html($("#total-packs").text());
-                        console.log(parseFloat(data.packs.total_weight) * <?= PORCENT_WEIGHT ?>);
-                        $("#count-weight").html(data.packs.total_weight+" kg");
+                        console.log(parseFloat(data.packs.total_weight));
+                        $("#count-weight").html(Number((parseFloat(data.packs.total_weight)).toFixed(2))+" kg");
                         var integral = (parseFloat(data.packs.total_weight) * <?= PORCENT_WEIGHT ?>) + parseFloat(data.packs.total_weight);
                         $("#order-lbl").html(order);
-                        $("#count-integral").html(integral+" kg");
+                        $("#count-integral").html(Number((integral).toFixed(2))+" kg");
                         window.scroll({
                             top: 700,
                             left: 700,
                             behavior: 'smooth'
                         });
                         //swal({title: 'Datos Cargados!', text: "", type: 'success'});
-                       // Weight(order);
+                        // Weight(order);
 
                     } else {
                         swal({title: 'Error!', text: "No existen registros para este pedido", type: 'error'});
@@ -255,6 +255,20 @@
                 }
             }, "json");
         }
+    }
+
+    function excel(order){
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/excel_one_m",{order:order},function(data){
+            var a=$("<a>");
+            a.attr("href",data.data);
+            $("body").append(a);
+            a.attr("download","ReporteModuladosPendientes.xls");
+            a[0].click();
+            a.remove();
+            
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
     }
     
     function Pending(order){

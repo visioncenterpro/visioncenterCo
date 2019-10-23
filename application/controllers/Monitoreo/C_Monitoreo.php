@@ -81,8 +81,8 @@ class C_Monitoreo extends Controller {
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
         $this->load->view('Template/V_Header', $Header);
         
-        $this->load->view('Monitoreo/prueba');
-        
+        //$this->load->view('Monitoreo/prueba');
+        $this->load->view('Monitoreo/form_pb');
         // carga el footer y los js
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);

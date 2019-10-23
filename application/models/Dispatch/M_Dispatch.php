@@ -591,9 +591,27 @@ class M_Dispatch extends VS_Model {
             return $array;
         }
     }
+
+    function get_data_remission_ini($id_request){
+        $query = ("SELECT * FROM dis_remission R WHERE R.id_request_sd = $id_request");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_data_remission_ini2($id_request){
+        $query = ("SELECT dt.`order`,dr.`client`,dr.project FROM dis_request_sd d INNER JOIN dis_request_sd_detail dt ON d.id_request_sd =  dt.id_request_sd LEFT JOIN dis_remission dr ON d.id_request_sd = dr.id_request_sd  WHERE d.id_request_sd = $id_request GROUP BY dt.`order`");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
     
     function get_data_remission(){
         $query = ("SELECT * FROM dis_remission R WHERE R.id_request_sd = $this->id_request GROUP BY R.`order`");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_data_remission2(){
+        $query = ("SELECT dt.`order`,dr.`client`,dr.project FROM dis_request_sd d INNER JOIN dis_request_sd_detail dt ON d.id_request_sd =  dt.id_request_sd LEFT JOIN dis_remission dr ON d.id_request_sd = dr.id_request_sd  WHERE d.id_request_sd = $this->id_request GROUP BY dt.`order`");
         $result = $this->db->query($query);
         return $result->result();
     }

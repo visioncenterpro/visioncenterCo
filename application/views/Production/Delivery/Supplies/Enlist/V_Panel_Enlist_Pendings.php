@@ -5,7 +5,7 @@
     <section class="content">
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title">Insumos Pendientes</h3>
+                <h3 class="box-title">Insumos pendientes por entregar a despachos</h3>
             </div>
             <div class="box-body">
                 <div class="row">

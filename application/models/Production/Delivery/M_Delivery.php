@@ -38,6 +38,7 @@ class M_Delivery extends VS_Model {
         $query = ("SELECT p.*,i.*,u.description,u.code as cd FROM access_order_supplies p JOIN pro_supplies i ON "
                 . " p.id_supplies = i.id_supplies JOIN pro_unit u ON u.id_unit = i.id_unit WHERE p.`order` = $order");
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->result();
     }
     
@@ -60,6 +61,7 @@ class M_Delivery extends VS_Model {
         $query = ("SELECT A.* FROM access_order A INNER JOIN access_order_supplies S ON A.`order` = S.`order`"
                 . " INNER JOIN pro_supplies P ON S.id_supplies = P.id_supplies WHERE A.`order` = $order GROUP BY A.`order`");
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->result();
     }
     
@@ -1504,8 +1506,8 @@ class M_Delivery extends VS_Model {
         $query = ("SELECT A.* FROM access_order A INNER JOIN access_order_package P ON A.`order` = P.`order` "
                 . " INNER JOIN view_forniture_sd F ON P.id_forniture = F.id_forniture GROUP BY P.`order`");
         $result = $this->db->query($query);
-        return $result->result();
         //echo $this->db->last_query();
+        return $result->result();
     }
 
     function DeliverPacksSD() {
@@ -2278,6 +2280,7 @@ class M_Delivery extends VS_Model {
                 ->where("order",$this->order)
                 ->get();
         $reg = $res_pack->row();
+        echo $reg->delivered_quantity ."-". $this->quantity;
         $data = array(
             "delivered_quantity"=> $reg->delivered_quantity - $this->quantity
         );

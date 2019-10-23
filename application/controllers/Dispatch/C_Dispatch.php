@@ -18,7 +18,15 @@ class C_Dispatch extends Controller {
         $this->load->view('Template/V_Header', $Header);
         
         $data['rows'] = $this->M_Dispatch->ListRequest();
-        
+        $rili = $this->M_Dispatch->ListRequest();
+        foreach ($rili as $key => $value) {
+            $vali = $this->M_Dispatch->get_data_remission_ini($value->id_request_sd);
+            if(count($vali) > 0){
+                $data['orders'][$value->id_request_sd] = $this->M_Dispatch->get_data_remission_ini($value->id_request_sd);
+            }else{
+                $data['orders'][$value->id_request_sd] = $this->M_Dispatch->get_data_remission_ini2($value->id_request_sd);
+            }
+        }
         $data['table'] = $this->load->view('Dispatch/Request/V_Table_Request',$data,true);
         
         $this->load->view('Dispatch/Request/V_Panel',$data);
@@ -31,7 +39,13 @@ class C_Dispatch extends Controller {
     
     function get_data_remission(){
         $get_data = $this->M_Dispatch->get_data_remission();
-        echo json_encode($get_data);
+        if(count($get_data) > 0){
+            echo json_encode($get_data);    
+        }else{
+            $get_data = $this->M_Dispatch->get_data_remission2();
+            echo json_encode($get_data);
+        }
+        
     }
     
     function InfoRequestDispatchSD($id){

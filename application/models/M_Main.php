@@ -44,13 +44,36 @@ class M_Main extends VS_Model {
                 ->where("m.root", $father)
                 ->where("m.status", 1)
                 ->where("type in (2,4)")
-                ->order_by("title")
+                ->order_by("line")
                 ->get();
 
         foreach ($result_hijo->result() as $h) {
             $arrayChilds = array();
             if ($h->type == 4 || $h->type == 2) {
-                $arrayChilds = $this->LoadChild($h->id_menu, $rol);
+                $arrayChilds = $this->LoadChild2($h->id_menu, $rol);
+            }
+            $array[$h->id_menu] = array("title" => $h->title, "url" => $h->url, "icon" => $h->icon, "type" => $h->type, "childs" => $arrayChilds);
+        }
+        return $array;
+    }
+
+    function LoadChild2($father, $rol) {
+        $array = array();
+
+        $result_hijo = $this->db->select("m.*")
+                ->from("sys_roles_menu t")
+                ->join("sys_menu m", "t.id_menu = m.id_menu")
+                ->where("t.id_roles", $rol)
+                ->where("m.root", $father)
+                ->where("m.status", 1)
+                ->where("type in (2,4)")
+                ->order_by("title","ASC")
+                ->get();
+
+        foreach ($result_hijo->result() as $h) {
+            $arrayChilds = array();
+            if ($h->type == 4 || $h->type == 2) {
+                $arrayChilds = $this->LoadChild2($h->id_menu, $rol);
             }
             $array[$h->id_menu] = array("title" => $h->title, "url" => $h->url, "icon" => $h->icon, "type" => $h->type, "childs" => $arrayChilds);
         }
