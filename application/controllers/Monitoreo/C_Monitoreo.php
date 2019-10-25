@@ -78,14 +78,14 @@ class C_Monitoreo extends Controller {
         $array['menus'] = $this->M_Main->ListMenu();
 
         $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
-        $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
+        $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, DATEPICKER_CSS);
         $this->load->view('Template/V_Header', $Header);
         
         //$this->load->view('Monitoreo/prueba');
         $this->load->view('Monitoreo/form_pb');
         // carga el footer y los js
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
-        $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
+        $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, DATEPICKER_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
         $this->load->view('Template/V_Footer', $Footer);
     }
