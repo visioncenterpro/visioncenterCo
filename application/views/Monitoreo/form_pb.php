@@ -147,41 +147,41 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>Date census</label>
-                                                                <input type="text" name="date_census" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onkeypress="json_array(event,this)" />
+                                                                <input type="text" name="date_census" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onchange="json_array(event,this)" />
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>date_asign_crm</label>
-                                                                <input type="text" name="date_asign_crm" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onkeypress="json_array(event,this)" />
+                                                                <input type="text" name="date_asign_crm" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onchange="json_array(event,this)" />
                                                             </div>
                                                         </div>
 
                                                         <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label>date_invoice_1</label>
-                                                                <input type="text" name="date_invoice_1" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onkeypress="json_array(event,this)" />
+                                                                <input type="text" name="date_invoice_1" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onchange="json_array(event,this)" />
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>date_invoice_2</label>
-                                                                <input type="text" name="date_invoice_2" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onkeypress="json_array(event,this)" />
+                                                                <input type="text" name="date_invoice_2" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onchange="json_array(event,this)" />
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>date_quotation_census</label>
-                                                                <input type="text" name="date_quotation_census" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onkeypress="json_array(event,this)" />
+                                                                <input type="text" name="date_quotation_census" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onchange="json_array(event,this)" />
                                                             </div>
                                                         </div>
                                                         
                                                         <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label>date_invoice_3</label>
-                                                                <input type="text" name="date_invoice_3" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onkeypress="json_array(event,this)" />
+                                                                <input type="text" name="date_invoice_3" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onchange="json_array(event,this)" />
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>date_final_closing</label>
-                                                                <input type="text" name="date_final_closing" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onkeypress="json_array(event,this)" />
+                                                                <input type="text" name="date_final_closing" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onchange="json_array(event,this)" />
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>date_owner_delivery</label>
-                                                                <input type="text" name="date_owner_delivery" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onkeypress="json_array(event,this)" />
+                                                                <input type="text" name="date_owner_delivery" class="form-control datepicker" id="" data-date-format="yyyy-mm-dd" onchange="json_array(event,this)" />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -472,9 +472,12 @@
     }
 
     function json_array(e,v){
-        //console.log(v.name);
         var name = v.name;
-        json_array_arr[v.name] = v.value+e.key;
+        if(e.key ===  undefined){
+            json_array_arr[v.name] = v.value;
+        }else{
+            json_array_arr[v.name] = v.value+e.key;
+        }
         console.log(json_array_arr);
     }
 

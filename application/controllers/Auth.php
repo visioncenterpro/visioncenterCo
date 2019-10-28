@@ -15,7 +15,8 @@ class Auth extends REST_Controller
 	
     public function login_post()
     {
-		 
+		//$pswd=md5($this->input->post("psw"));
+		$message="Unauthorised";//+$pswd;
 		
 		$data = $this->M_Ws->Validar_User();
 		
@@ -27,7 +28,8 @@ class Auth extends REST_Controller
 			$output['res'] = $data['res'];
 			$this->set_response($output, REST_Controller::HTTP_OK);
 		}else{
-			$this->set_response(array('res'=>"Unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
+			
+			$this->set_response(array('res'=>$message,'password'=>$data['Password']), REST_Controller::HTTP_UNAUTHORIZED);
 		}
         
     }

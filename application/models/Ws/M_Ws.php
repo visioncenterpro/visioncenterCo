@@ -10,13 +10,15 @@ class M_Ws extends CI_Model
     }
 	
 	function Validar_User() {
-      
+      //$pswd=$this->input->post("psw");
+	  $pswd=md5($this->input->post("psw"));
+	  
         $result = $this->db->select("*")
                 ->from("sys_users u")
                 ->join("sys_roles r","u.rol = r.id_roles")
                 ->join("sys_preferences_html p","u.id_users = p.id_users","left")
 				->where("u.user", $this->input->post("usr"))
-				->where("u.password", md5($this->input->post("psw")))
+				->where("u.password",$pswd )
                 ->where("u.status", 1)
                 ->get();
 
@@ -27,11 +29,12 @@ class M_Ws extends CI_Model
             $this->db->update("sys_users",array("last_entry"=>date("Y-m-d H:i:s")));
             
             $newdata = array(
-                'IdUser' => $reg->id_users,
+                'IdUser' =>$reg->id_users,
                 'NameUser' => $reg->name,
                 'IdRol' => $reg->rol,
                 'Rol' => $reg->description,
                 'Email' => $reg->email,
+				'Password' => $pswd,
             );
             
             
@@ -40,7 +43,12 @@ class M_Ws extends CI_Model
 			$newdata['res'] = 'OK';
             
         } else {
-			$newdata['res'] = 'ERROR';
+			//Jaym Valid password
+			$newdata = array(
+                'res' =>'ERROR',
+				'Password' => $pswd,
+            );
+			//$newdata['res'] = "ERROR";
         }
 		return $newdata;
 		

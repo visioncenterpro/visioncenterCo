@@ -21,7 +21,10 @@
                     <td style="text-align:center"><?= $t->pack ?></td>
                     <td style="text-align:center" id="scont-quantity-<?= $t->id_order_package ?>"><?= $t->quantity_packets ?></td>
                     <td style="text-align:center" id="scont-weight-<?= $t->id_order_package ?>"><?= round($t->weight, 6) ?></td>
-                    <td style="text-align:center;width:15px" ><button type="button" class="btn btn-danger btn-xs btn-tabla" onclick="DeleteSupplies('<?= $t->id_request_detail ?>','<?= $t->id_order_package ?>','<?= $t->order?>')"><i class="fa fa-trash"></i></button></td>
+                    <td style="text-align:center;width:15px" >
+                        <button type="button" class="btn btn-danger btn-xs btn-tabla" onclick="DeleteSupplies('<?= $t->id_request_detail ?>','<?= $t->id_order_package ?>','<?= $t->order?>')" title="Quitar Paquete del contenedor"><i class="fa fa-trash"></i></button>
+                        <button type="button" class="btn btn-default btn-xs btn-tabla" onclick="modal_goBack('S','<?= $t->id_order_package ?>')" title="Revertir Paquete de la entrega"><i class="fa fa-backward"></i></button>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

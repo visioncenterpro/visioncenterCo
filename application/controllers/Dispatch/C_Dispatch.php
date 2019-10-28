@@ -122,6 +122,23 @@ class C_Dispatch extends Controller {
         $this->load->view('Template/V_Footer', $Footer);
     }
     
+    function get_data_goBack(){
+        $data = array('type' => $this->input->post('type'));
+        if($this->input->post('type') == 'M'){
+            $data['data'] = $this->M_Dispatch->get_data_goBack();
+            $data['content'] = $this->load->view('Dispatch/Request/Modulated/content_goBack',$data,true);
+        }else{
+            $data['data'] = $this->M_Dispatch->get_data_goBackSupplies();
+            $data['content'] = $this->load->view('Dispatch/Request/Modulated/content_goBackSupplies',$data,true);
+        }
+        echo json_encode($data);
+    }
+
+    function goBack_Package(){
+        $data = $this->M_Dispatch->goBack_Package();
+        echo json_encode($data);
+    }
+
     // Created by Ivan Contreras 27/03/2019
     function get_vehicle(){
         $id_vehicle = $this->input->post('id_vehicle');

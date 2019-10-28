@@ -93,6 +93,19 @@ class M_Dispatch extends VS_Model {
                 ->get();
         return $result->result();
     }
+
+    function get_data_goBack(){
+        $query = ("SELECT * FROM access_order_package A INNER JOIN access_forniture AF ON
+        A.id_forniture = AF.id_forniture INNER JOIN access_type_package AT ON A.type_package = AT.id_type_package WHERE A.id_order_package = $this->id_order_package");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_data_goBackSupplies(){
+        $query = ("SELECT * FROM access_order_package_supplies A WHERE A.id_order_package_supplies = $this->id_order_package");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
     
     function get_weight($id_order_package_supplies,$order){
         $query = ("SELECT A.id_order_package_supplies,P.name,P.code,AO.quantity_packaged,P.weight_per_supplies FROM "

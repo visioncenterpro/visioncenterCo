@@ -200,6 +200,25 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_goBack">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Revertir paquete de la solicutd de despacho</h4>
+            </div>
+            <div class="modal-body" id="content-goBack">
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary pull-right" onclick="save_goBack()">Guardar</button>
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     
     $(function () {
@@ -259,6 +278,35 @@
             });
         }
     });
+
+    function modal_goBack(type,id_order_package){
+        $.ajax({
+            url:  "<?= base_url() ?>Dispatch/C_Dispatch/get_data_goBack",
+            type: 'POST',
+            data: {type:type,id_order_package:id_order_package},
+            success: function(data){
+                dato = JSON.parse(data);
+                $("#content-goBack").html(dato.content);
+                $("#modal_goBack").modal("show");
+            }
+        });
+    }
+
+    function save_goBack(){
+        var cnt = $("#cnt").val();
+        var description = $("#description").val();
+        var id_order_package = $("#id_order_package").val();
+        var number_pack = $("#number_pack_back").val();
+        $.ajax({
+            url:  "<?= base_url() ?>Dispatch/C_Dispatch/goBack_Package",
+            type: 'POST',
+            data: {cnt:cnt,description:description,id_order_package:id_order_package,number_pack:number_pack},
+            success: function(data){
+                dato = JSON.parse(data);
+                
+            }
+        });
+    }
     
     // Created Ivan Contreras 27/03/2019
     function max_weight(id_vehicle){
