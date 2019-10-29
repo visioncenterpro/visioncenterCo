@@ -1,3 +1,4 @@
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <div class="content-wrapper">
     <section class="content">
         <div class="row">
@@ -375,6 +376,7 @@
     </section>
 </div>
 <script type="text/javascript">
+    //const axios = require('axios').default;
     $(document).ready(function(){
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
@@ -468,7 +470,19 @@
             }
         });
 
-        console.log(json_array_arr);
+        if (vali == 1) {
+            swal({title: 'error!', text: 'Ingrese todos los campos al formulario', type: 'error'});
+        }else{
+            axios.post('http://192.168.0.116:8000/api/projects/createProject', {
+                json_array: json_array
+            }).then(function (response) {
+                console.log(response);
+            }).catch(function (error) {
+                console.log(error);
+            });
+
+            console.log(json_array_arr);
+        }
     }
 
     function json_array(e,v){

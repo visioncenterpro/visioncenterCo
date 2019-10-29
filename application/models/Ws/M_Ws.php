@@ -121,16 +121,22 @@ class M_Ws extends CI_Model
 		$this->db->where_in('a.id_status',$this->input->post('idstatus'));
 
 		$result = $this->db->select(" a.id_request_sd,a.date,a.license_plate,a.dispatch_date,
-									  a.quantity_packages,b.description as vehicle_type,b.max_weight,a.id_status,c.description as description_status ")
+									  a.quantity_packages,b.description as vehicle_type,b.max_weight,`b`.`max_weight` AS Document,a.id_status,c.description as description_status ")
 		->from('dis_request_sd a')
 		->JOIN('sys_status c','a.id_status = c.id_status') 
 		->JOIN('dis_weight_vehicle b', 'a.id_weight_vehicle = b.id_weight_vehicle')
 		->ORDER_BY('a.id_request_sd','asc')
 		->get();
-
+		//echo $this->db->last_query();
 		return $result->result();
 
 
+	}
+
+	function get_data_detail($id_request_sd){
+		$query = ("SELECT * FROM dis_remission D WHERE D.id_request_sd = $id_request_sd GROUP BY D.`order` , D.`client`");
+        $result = $this->db->query($query);
+		return $result->result();
 	}
 
 	/**

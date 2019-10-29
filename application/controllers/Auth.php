@@ -62,7 +62,7 @@ class Auth extends REST_Controller
 
             if ($decodedToken != false) {
              $message                =''; 
-             $trasaction_err         ='OK';  
+             $trasaction_err         ='OK';
              $statusmessage          =true;
              $idorder                ="";
              $client                 ='*';
@@ -194,8 +194,17 @@ class Auth extends REST_Controller
                 
                 $arr_error->database_msg                    =(count($arr_db )>0) ? 'DataFound' : 'DataNotFound';
                 
+                foreach ($arr_db as $key => $value) {
+                    $get_data_detail = $this->M_Ws->get_data_detail($value->id_request_sd);
+                    $value->Document = array();
+                    foreach ($get_data_detail as $key => $value2) {
+
+                        $value->Document[] = $value2->order." - ".$value2->client;
+                    }
+                    
+                }
                 $response->data                             = $arr_db ;
-                
+                //$response->data['Document']                 = 'order - client';
                                       
                  $response->Warning =  $arr_error;
                 

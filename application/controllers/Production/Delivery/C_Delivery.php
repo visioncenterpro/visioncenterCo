@@ -1359,6 +1359,7 @@ class C_Delivery extends Controller {
         $result = $this->M_Delivery->WeightForPackSD();
 
         $table = "";
+        $rs['packs'] = "";
         if ($result == "OK") {
             $rs['packs'] = $this->M_Delivery->InfoPackSD($this->input->post("order"));
             $table = $this->load->view('Production/Delivery/PackageSD/Enlist/V_Table_Pack', $rs, true);
