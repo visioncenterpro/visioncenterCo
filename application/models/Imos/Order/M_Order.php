@@ -125,6 +125,54 @@ class M_Order extends VS_Model {
         //echo $this->db->last_query();
         return ($result->num_rows()>0)?$result->row():0;
     }
+
+    function UpdateIDSheet(){
+    	$query = $this->db->select("*")
+    			->from("pro_wood_sheet")
+    			->get();
+    	foreach ($query->result() as $key => $value) {
+    		if($value->id_pro_sheet_area == ""){
+    			$result = $this->db->select("*")
+    			->from("pro_sheet_area")
+    			->where("format",$value->format)
+    			->get();
+    			echo count($result->result());
+    			if (count($result->result()) > 0) {
+					$data_r = $result->row();
+					print_r($data_r);
+					$data = array(
+						'id_pro_sheet_area' => $data_r->id_pro_shet_area
+					);
+    				$this->db->where("id_wood_sheet",$value->id_wood_sheet);
+        			$miwa = $this->db->update("pro_wood_sheet",$data);
+    			}
+    		}
+    	}
+    }
+
+    function UpdateIDSheet_waste(){
+    	$query = $this->db->select("*")
+    			->from("pro_wood_sheet")
+    			->get();
+    	foreach ($query->result() as $key => $value) {
+    		if($value->id_caliber == "" && $value->waste != ""){
+    			$result = $this->db->select("*")
+    			->from("pro_sheet_caliber")
+    			->where("caliber",$value->waste)
+    			->get();
+    			echo count($result->result());
+    			if (count($result->result()) > 0) {
+					$data_r = $result->row();
+					print_r($data_r);
+					$data = array(
+						'id_caliber' => $data_r->id_caliber
+					);
+    				$this->db->where("id_wood_sheet",$value->id_wood_sheet);
+        			$miwa = $this->db->update("pro_wood_sheet",$data);
+    			}
+    		}
+    	}
+    }
     
     function ListConsCanto($order) {
         $result = $this->ix->select("PRFNAME,PRFID,RENDERP,(CONTLEN/1000) AS CONTLEN")
@@ -453,7 +501,6 @@ class M_Order extends VS_Model {
                 ->where("MATNAME <> ''")
                 ->group_by("MATNAME")
                 ->get();
-        
         return array("res"=>($result)?"OK":"Error ".$this->ix->last_query(),"dato"=>$result->result());
     }
     

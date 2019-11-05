@@ -121,14 +121,14 @@ class CI_Log {
 	public function __construct()
 	{
 		$config =& get_config();
-                $config['log_path'] = 'logs_users/'.$_SERVER['REMOTE_ADDR'].'/';
+                //$config['log_path'] = 'logs_users/'.$_SERVER['REMOTE_ADDR'].'/';
 		isset(self::$func_overload) OR self::$func_overload = (extension_loaded('mbstring') && ini_get('mbstring.func_overload'));
 
 		$this->_log_path = ($config['log_path'] !== '') ? $config['log_path'] : APPPATH.'logs/';
 		$this->_file_ext = (isset($config['log_file_extension']) && $config['log_file_extension'] !== '')
 			? ltrim($config['log_file_extension'], '.') : 'php';
 
-		file_exists($this->_log_path) OR mkdir($this->_log_path, 0755, TRUE);
+		//file_exists($this->_log_path) OR mkdir($this->_log_path, 0755, TRUE);
 
 		if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path))
 		{

@@ -117,6 +117,40 @@ function TableData(id, paging = false, length = false, scrollX = true) {
     return table;
 }
 
+function TableDatap(id, paging = false, length = false, scrollX = true, order) {
+
+    // $('a[data-toggle="tab"]').off('shown.bs.tab');
+
+    if ($.fn.DataTable.isDataTable('#' + id)) {
+        $('#' + id).DataTable().destroy();
+    }
+
+    var table = $("#" + id).DataTable({
+        'paging': paging,
+        "scrollY": "450px",
+        "lengthChange": length,
+        "scrollX": scrollX,
+        "scrollCollapse": true,
+//        "order": [[0, "desc"]],
+        "ordering": false,
+        "buttons": [{
+                extend: 'excelHtml5',
+                filename: 'resumenPaquetes'+order
+            }],
+        "fnDrawCallback": function(oSettings) {
+            $(".overlay_ajax").hide();
+        }
+    });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        table.columns.adjust();
+    });
+
+    table.buttons().container().appendTo($('.col-sm-6:eq(0)', table.table().container()));
+
+    return table;
+}
+
 function TableData2(id, paging = false, length = false, scrollX = true, order) {
 
     // $('a[data-toggle="tab"]').off('shown.bs.tab');

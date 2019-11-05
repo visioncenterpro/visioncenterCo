@@ -346,6 +346,16 @@ class C_Pdf extends Controller {
         return array("tbody" => $tbody, "sum" => $sum, "item" => $item, "consolidate" => $array);
     }
 
+    function UpdateIDSheet(){
+    	$data = $this->M_Order->UpdateIDSheet();
+    	echo json_encode($data);
+    }
+
+    function UpdateIDSheet_waste(){
+    	$data = $this->M_Order->UpdateIDSheet_waste();
+    	echo json_encode($data);
+    }
+
     function ConsolidateSheet($order) {
         $data['order'] = $order;
         $data['HeaderRecord'] = $this->M_Acknow->ListHeaderAck(str_replace('_', '-', $order));
@@ -370,8 +380,8 @@ class C_Pdf extends Controller {
 //            echo '<br><br>';
             $row = $this->M_Order->LoadSheet($value->MATNAME);
             if(is_object($row)){
-                
-                $mts = $value->MT2;
+            	//print_r($row);
+                $mts = $value->MT2;	
                 $wst = $mts * $row->waste;
                 $mts_sheet = $wst/$row->area;
                 

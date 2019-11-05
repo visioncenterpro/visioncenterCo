@@ -31,6 +31,7 @@ class M_Sheets extends VS_Model {
     function get_calibers(){
         $result = $this->db->select("*")
                 ->from("pro_sheet_caliber")
+                ->order_by("caliber","ASC")
                 ->get();
         return $result->result();
     }
