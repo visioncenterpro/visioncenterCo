@@ -106,6 +106,38 @@ class M_Dispatch extends VS_Model {
         $result = $this->db->query($query);
         return $result->result();
     }
+
+    function goBack_Package(){
+        $this->db->trans_begin();
+
+        for ($i=0; $i < $this->cnt; $i++) {
+            $data = array(
+                "id_status" => "20",
+                "observation"   => $this->observation
+            );
+            $this->db->where("`order`", $this->order);
+            $this->db->where("id_order_package", $this->id_order_package);
+            $rs = $this->db->update("dis_request_sd_subdetail_package", $data);
+        }
+
+        $query = ("SELECT * FROM access_order_package WHERE id_order_package = $this->id_order_package");
+        $result = $this->db->query($query);
+        $data = $result->row();
+
+        $data = array(
+            "quantity_dispatch" => ($data->quantity_dispatch - $this->cnt)
+        );
+        $this->db->where("id_order_package", $this->id_order_package);
+        $rs2 = $this->db->update("access_order_package", $data);
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            return "OK";
+        }
+    }
     
     function get_weight($id_order_package_supplies,$order){
         $query = ("SELECT A.id_order_package_supplies,P.name,P.code,AO.quantity_packaged,P.weight_per_supplies FROM "

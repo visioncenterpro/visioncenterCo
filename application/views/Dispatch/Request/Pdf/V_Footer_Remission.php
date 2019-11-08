@@ -33,7 +33,7 @@
         <tr>
             <td style="border: none;">FIRMA AUTORIZACIÓN</td>
             <td style="border: none;">JEFE DESPACHOS</td>
-            <td style="border: none;">RICIBIÓ<br>CLIENTE (Firma y Sello)</td>            
+            <td style="border: none;">RECIBIÓ<br>CLIENTE (Firma y Sello)</td>            
         </tr>
     </tbody>
 </table>

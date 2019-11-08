@@ -294,16 +294,17 @@
 
     function save_goBack(){
         var cnt = $("#cnt").val();
-        var description = $("#description").val();
+        var observation = $("#observation").val();
         var id_order_package = $("#id_order_package").val();
         var number_pack = $("#number_pack_back").val();
+        var order = $("#order_gp").val();
         $.ajax({
             url:  "<?= base_url() ?>Dispatch/C_Dispatch/goBack_Package",
             type: 'POST',
-            data: {cnt:cnt,description:description,id_order_package:id_order_package,number_pack:number_pack},
+            data: {order:order,cnt:cnt,observation:observation,id_order_package:id_order_package,number_pack:number_pack},
             success: function(data){
                 dato = JSON.parse(data);
-                
+                console.log(dato);
             }
         });
     }
