@@ -23,17 +23,30 @@ class M_Dispatch extends VS_Model {
     }
     
     function CreateRequestSD(){
-        $data = array("`id_status`"=>1);
-        $rs = $this->db->insert("dis_request_sd",$data);
-        
-        if ($rs) {
-            $array["id"] = $this->db->insert_id();
-            $array["res"] = "OK";
-        } else {
-            $array = array("res" => $this->db->last_query());
+        $result = $this->db->select("*")
+                ->from("view_package_available_for_dispatchsd")
+                ->get();
+        $data = $result->result();
+
+        $result2 = $this->db->select("*")
+                ->from("view_package_available_supplies_for_dispatch")
+                ->get();
+        $data2 = $result->result();
+        if($result->num_rows() == 0 && $result2->num_rows() == 0){
+            $array = array("res" => "0");
+        }else{
+            $data = array("`id_status`"=>1);
+            $rs = $this->db->insert("dis_request_sd",$data);
+            
+            if ($rs) {
+                $array["id"] = $this->db->insert_id();
+                $array["res"] = "OK";
+            } else {
+                $array = array("res" => $this->db->last_query());
+            }
         }
+
         return $array;
-        
     }
     
     function OrderAvailableSD(){

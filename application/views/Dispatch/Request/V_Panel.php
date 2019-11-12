@@ -62,7 +62,11 @@
                     if (data.res == "OK") {
                         window.location.href = "<?= base_url() ?>Dispatch/C_Dispatch/InfoRequestDispatchSD/" + data.id;
                     } else {
-                        swal({title: 'Error Toma un screem y envialo a sistemas!', text: data.res, type: 'error'});
+                        if(data.res == "0"){
+                            swal({title: 'Atención!', text: 'No hay entregas de produccion generadas', type: 'error'});
+                        }else{
+                            swal({title: 'Error Toma un screem y envialo a sistemas!', text: data.res, type: 'error'});
+                        }
                     }
                 }, 'json').fail(function (error) {
                     swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});

@@ -49,6 +49,7 @@ class C_Dispatch extends Controller {
     }
     
     function InfoRequestDispatchSD($id){
+        //$count_arr=array();
         $array['menus'] = $this->M_Main->ListMenu();
 
         $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
@@ -66,7 +67,8 @@ class C_Dispatch extends Controller {
         
         
         $row = $this->M_Dispatch->OrderAvailableSD();
-        
+        $count_arr['supplies'] = array();
+        $count_arr['modulate'][] = array();
         $tab_pane = "";
         foreach ($row as $v):
             $suppliesP = $this->M_Dispatch->get_supplies_p($v->order);
@@ -109,7 +111,9 @@ class C_Dispatch extends Controller {
             }
             $count_arr['supplies'][] = $qd;
             $count_arr['modulate'][] = $count;
-            $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
+            $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',
+            array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, 
+            "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
         endforeach;
         
         $data['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS, "validation" => $count_arr),true);
