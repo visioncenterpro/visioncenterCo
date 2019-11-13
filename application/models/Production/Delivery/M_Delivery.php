@@ -1407,6 +1407,51 @@ class M_Delivery extends VS_Model {
         return $array;
     }
 
+    function AddPackToDelivery2($array = false) {
+
+        if ($array) {
+            $this->id_order_package = $array['id_order_package'];
+            $this->delivery = $array['delivery'];
+            $this->quantity = $array['quantity'];
+        }
+
+        $this->db->trans_begin();
+
+        $reg = $this->db->select("quantity_packets,delivered_quantity ,(quantity_packets - delivered_quantity) as balance")
+                        ->from("access_order_package p")
+                        ->where("id_order_package", $this->id_order_package)
+                        ->get()->row();
+        
+        $array["res"] = "OK";
+        if ($reg->balance > 0) {
+
+            //$array["id"] = $this->db->insert_id();
+            $array["id"] = "";
+
+            $new_delivered_quantity = $reg->delivered_quantity + $this->quantity;
+
+            $data = array("delivered_quantity" => $new_delivered_quantity);
+            $this->db->where("id_order_package", $this->id_order_package);
+            $rs = $this->db->update("access_order_package", $data);
+
+
+            $array["res"] = "OK";
+            $array["delivered_quantity"] = $new_delivered_quantity;
+            $array["balance"] = $reg->balance - $this->quantity;
+
+        } else {
+            $array = array("res" => "El paquete no tiene saldo disponible, por favor actualice el navegador", "id" => "");
+        }
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+        } else {
+            $this->db->trans_commit();
+        }
+
+        return $array;
+    }
+
     function UpdateDetailDelivery($array = false) {
 
         if ($array) {
@@ -2280,13 +2325,7 @@ class M_Delivery extends VS_Model {
                 ->where("order",$this->order)
                 ->get();
         $reg = $res_pack->row();
-        echo $reg->delivered_quantity ."-". $this->quantity;
-        $data = array(
-            "delivered_quantity"=> $reg->delivered_quantity - $this->quantity
-        );
-        $this->db->where("id_order_package",$this->id_order_package);
-        $this->db->update("access_order_package",$data);
-            
+        
         $res = $this->db->select("d.*")
                 ->from("pro_delivery_package_detail d")
                 ->join("pro_delivery_package e","d.id_delivery_package = e.id_delivery_package")
@@ -2308,22 +2347,29 @@ class M_Delivery extends VS_Model {
                     ->where("order",$this->order)
                     ->get();
             
-            $reg = $res_pack->row();
+            $reg2 = $res_pack->row();
+            //echo $reg2->delivered_quantity ." - ". $this->quantity;
             $data = array(
-                "delivered_quantity"=> $reg->delivered_quantity - $this->quantity
+                "delivered_quantity"=> ($reg2->delivered_quantity - $this->quantity)
             );
             $this->db->where("id_order_package",$this->id_order_package);
             $this->db->update("access_order_package",$data);
+
+            $array["delivered_quantity"] = ($reg2->delivered_quantity - $this->quantity);
             
         }else{
             $this->db->delete("pro_delivery_package_detail");
             
             $data = array(
-                "delivered_quantity"=> 0
+                "delivered_quantity" => 0
             );
             $this->db->where("id_order_package",$this->id_order_package);
             $this->db->update("access_order_package",$data);
+
+            $array["delivered_quantity"] = 0;
         }
-        return $new_quantity;
+
+        $array["res"] = "OK";
+        return $array;
     }
 }

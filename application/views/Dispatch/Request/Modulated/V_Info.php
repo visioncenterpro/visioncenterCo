@@ -490,6 +490,8 @@
                     confirmButtonText: 'Aceptar!'
                 }).then((result) => {
                     if (result) {
+                        var arr_modulate = document.querySelectorAll("#quantity_h");
+                        
                         var id_vehicle = $("#vehicle").val();
                         $.post("<?= base_url() ?>Dispatch/C_Dispatch/CreateRequisition", {request:<?= $request->id_request_sd ?>,id_vehicle:id_vehicle,weight:$("#weight").val(),weightI:$("#weightI").val(),weight_supplies:$("#weight_supplies").val()}, function (data) {
                             if (data.res == "OK") {

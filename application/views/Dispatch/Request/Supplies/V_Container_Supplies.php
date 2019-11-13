@@ -14,7 +14,10 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($content as $t) : ?>
+            <?php
+            $count_supplies = 0;
+            foreach ($content as $t) :
+                $count_supplies++; ?>
                 <tr id="str-cont-<?= $t->id_order_package ?>">
                     <td style="text-align:center;width:15px"><button type="button" class="btn btn-primary" onclick="modal_detail('<?= isset($t->id_order_package_supplies)? $t->id_order_package_supplies : $t->id_order_package;  ?>','<?= $t->order?>')"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button></td>
                     <td style="text-align:center"><?= $t->order ?></td>
@@ -27,6 +30,7 @@
                     </td>
                 </tr>
             <?php endforeach; ?>
+            <input type="hidden" id="packs_supplies" value="<?= $count_supplies ?>">
         </tbody>
     </table>
 </div>

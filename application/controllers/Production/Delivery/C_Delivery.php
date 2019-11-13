@@ -1885,7 +1885,6 @@ class C_Delivery extends Controller {
         if (!empty($this->input->post('request'))) {
             //$this->M_Delivery->ReversePackDispatch();
         }
-        $new_quantity = $this->M_Delivery->ReversePackDelivery();
         $tables = "";
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
@@ -1893,7 +1892,8 @@ class C_Delivery extends Controller {
         } else {
             $this->db->trans_commit();
             $res = "OK";
-            $data['rs'] = $this->M_Delivery->AddPackToDelivery();
+            //$data['rs'] = $this->M_Delivery->AddPackToDelivery2();
+            $data['rs'] = $this->M_Delivery->ReversePackDelivery();
             $d['furniture'] = $this->M_Delivery->Listfurniture($this->input->post('order'));
             $d['list'] = $this->M_Delivery->ListPackDetail($this->input->post('order'));
             $d['detail'] = $this->M_Delivery->ListeliberyDetail($this->input->post('delivery'));
@@ -1917,7 +1917,7 @@ class C_Delivery extends Controller {
 
             $array = array();
             $array['id_order_package'] = $t->id_order_package;
-
+            //echo $t->id_delivery_package_detail;
             if (empty($t->id_delivery_package_detail)) { //IS NEW
                 $array['delivery'] = $this->input->post("delivery");
                 $array['quantity'] = $t->balance;
