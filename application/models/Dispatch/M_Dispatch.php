@@ -125,7 +125,8 @@ class M_Dispatch extends VS_Model {
 
         for ($i=0; $i < $this->cnt; $i++) {
             $data = array(
-                "id_status" => "20",
+                "id_request_sd" => '0',
+                "id_status"     => "17", // o 20 preguntar
                 "observation"   => $this->observation
             );
             $this->db->where("`order`", $this->order);
@@ -142,6 +143,13 @@ class M_Dispatch extends VS_Model {
         );
         $this->db->where("id_order_package", $this->id_order_package);
         $rs2 = $this->db->update("access_order_package", $data);
+
+
+        $data = array(
+            "quantity_packages" => $quantity_packages
+        );
+        $this->db->where("id_request_sd",$this->id_request_sd);
+        $rs3 = $this->db->update("dis_request_sd", $data);
 
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();
@@ -194,14 +202,13 @@ class M_Dispatch extends VS_Model {
     function InfoRequestSD($id){
         $result = $this->db->select("s.id_request_sd,s.driver,s.license_plate,s.dispatch_date,ifnull(sum(d.quantity_packets),0) as num_packets,ifnull(sum(if(d.`type` = 'Modulado',d.weight,0)),0)as total_weight_modulate,ifnull(sum(if(d.`type` = 'Insumos',d.weight,0)),0)as total_weight_supplies,s.id_status as status, "
                 . " s.id_weight_vehicle, v.max_weight")
-                ->from("dis_request_sd s")
+                ->from("dis_request_sd s") 
                 ->join("dis_request_sd_detail d","s.id_request_sd = d.id_request_sd","left")
                 ->join("dis_weight_vehicle v","v.id_weight_vehicle = s.id_weight_vehicle","left")
                 ->where("s.id_request_sd",$id)
                 ->get();
         //echo $this->db->last_query();
         return $result->row();
-
     }
     
     function get_vehicle($id_vehicle){
@@ -754,12 +761,15 @@ class M_Dispatch extends VS_Model {
             
             $reqs[] = $this->remission;
             
-            $array = array("id_weight_vehicle"=>$this->id_vehicle);
+            $array = array(
+                "quantity_packages" => $this->quantity_packages,
+                "id_weight_vehicle" => $this->id_vehicle
+            );
             $this->db->where("id_request_sd",$this->request);
             $this->db->update("dis_request_sd",$array);
             
             $array = array("id_remission"=>$this->remission);
-            $this->db->where("id_request_sd",$this->request);
+            $this->db->where("id_request_sd",$this->request); 
             $this->db->where("`order`",$o->order);
             $this->db->update("dis_request_sd_detail",$array);
         

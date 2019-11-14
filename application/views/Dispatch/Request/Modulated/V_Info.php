@@ -298,10 +298,19 @@
         var id_order_package = $("#id_order_package").val();
         var number_pack = $("#number_pack_back").val();
         var order = $("#order_gp").val();
+
+        var arr_modulate = document.querySelectorAll("#quantity_h");
+        var total_modulate = 0;
+        arr_modulate.forEach(function(element){
+            total_modulate = parseInt(total_modulate) + parseInt(element.value);
+        });
+        var pack_supplies = $("#packs_supplies").val();
+        var quantity_packages = (parseInt(pack_supplies) + parseInt(total_modulate)) - parseInt(cnt);
+
         $.ajax({
             url:  "<?= base_url() ?>Dispatch/C_Dispatch/goBack_Package",
             type: 'POST',
-            data: {order:order,cnt:cnt,observation:observation,id_order_package:id_order_package,number_pack:number_pack},
+            data: {order:order,cnt:cnt,observation:observation,id_order_package:id_order_package,number_pack:number_pack,quantity_packages:quantity_packages,id_request_sd:<?=$request->id_request_sd?>},
             success: function(data){
                 dato = JSON.parse(data);
                 console.log(dato);
@@ -491,21 +500,29 @@
                 }).then((result) => {
                     if (result) {
                         var arr_modulate = document.querySelectorAll("#quantity_h");
-                        
+                        var total_modulate = 0;
+                        arr_modulate.forEach(function(element){
+                            total_modulate = parseInt(total_modulate) + parseInt(element.value);
+                        });
+                        var pack_supplies = $("#packs_supplies").val();
+                        var quantity_packages = parseInt(pack_supplies) + parseInt(total_modulate);
+                        console.log(quantity_packages);
                         var id_vehicle = $("#vehicle").val();
-                        $.post("<?= base_url() ?>Dispatch/C_Dispatch/CreateRequisition", {request:<?= $request->id_request_sd ?>,id_vehicle:id_vehicle,weight:$("#weight").val(),weightI:$("#weightI").val(),weight_supplies:$("#weight_supplies").val()}, function (data) {
-                            if (data.res == "OK") {
-                                swal({title: '', text: "", type: 'success'});
-                                Lock();
-                                $.each(data.reqs,function(e,i){
-                                    window.open("<?= base_url() ?>Dispatch/C_Dispatch/PdfRequisition/"+i+"/<?= $request->id_request_sd ?>", '_blank');
-                                });
-                            } else {
-                                swal({title: 'Error!', text: data, type: 'error'});
-                            }
+
+                        $.post("<?= base_url() ?>Dispatch/C_Dispatch/CreateRequisition", {request:<?= $request->id_request_sd ?>,id_vehicle:id_vehicle,weight:$("#weight").val(),weightI:$("#weightI").val(),weight_supplies:$("#weight_supplies").val(),quantity_packages:quantity_packages}, function (data) {
+                                if (data.res == "OK") {
+                                    swal({title: '', text: '', type: 'success'});
+                                    Lock();
+                                    $.each(data.reqs,function(e,i){
+                                        window.open("<?= base_url() ?>Dispatch/C_Dispatch/PdfRequisition/"+i+"/<?= $request->id_request_sd ?>", '_blank');
+                                    });
+                                } else {
+                                    swal({title: 'Error!', text: data, type: 'error'});
+                                }
                         }, 'json').fail(function (error) {
                             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
                         });
+                        
                     }
                 }).catch(swal.noop)
             }
