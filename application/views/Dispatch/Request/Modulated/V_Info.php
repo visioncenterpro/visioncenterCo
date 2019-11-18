@@ -9,6 +9,8 @@
                 </div>
                     <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="CreateRequisition()"><i class="fa fa-check "></i> Generar Remisión</button>
                     <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="UpdateRequest2()"><i class="fa fa-save"></i> Guardar Cambios</button>
+                    <button type="button" class="btn btn-default pull-right" onclick="cargue_report()"><i class="fa fa-print"></i> Reporte Cargue</button>
+                    <button type="button" class="btn btn-default pull-right" onclick="request_dispatch()"><i class="fa fa-print"></i> Solcitud Despacho</button>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -278,6 +280,20 @@
             });
         }
     });
+
+    function cargue_report(){
+        var a = document.createElement('a');
+        a.href = '<?= base_url() ?>Dispatch/C_Dispatch/cargue_report/<?=$request->id_request_sd?>';
+        a.setAttribute('target', '_blank');
+        a.click();
+    }
+
+    function request_dispatch(){
+        var a = document.createElement('a');
+        a.href = '<?= base_url() ?>Dispatch/C_Dispatch/PdfRequest/<?=$request->id_request_sd?>';
+        a.setAttribute('target', '_blank');
+        a.click();
+    }
 
     function modal_goBack(type,id_order_package){
         $.ajax({

@@ -136,20 +136,39 @@ class M_Dispatch extends VS_Model {
 
         $query = ("SELECT * FROM access_order_package WHERE id_order_package = $this->id_order_package");
         $result = $this->db->query($query);
-        $data = $result->row();
+        $data_result = $result->row();
 
         $data = array(
-            "quantity_dispatch" => ($data->quantity_dispatch - $this->cnt)
+            "delivered_quantity" => ($data_result->quantity_dispatch - $this->cnt),
+            "quantity_dispatch" => ($data_result->quantity_dispatch - $this->cnt)
         );
         $this->db->where("id_order_package", $this->id_order_package);
         $rs2 = $this->db->update("access_order_package", $data);
 
 
         $data = array(
-            "quantity_packages" => $quantity_packages
+            "quantity_packages" => $this->quantity_packages
         );
         $this->db->where("id_request_sd",$this->id_request_sd);
         $rs3 = $this->db->update("dis_request_sd", $data);
+
+        $data = array(
+            "quantity_packets" => ($data_result->quantity_dispatch - $this->cnt)
+        );
+        $this->db->where("id_request_sd",$this->id_request_sd);
+        $this->db->where("id_order_package",$this->id_order_package);
+        $rs4 = $this->db->update("dis_request_sd_detail", $data);
+
+        $res = $this->db->select("d.*,a.number_pack,p.id_delivery_package_detail")
+                ->from("dis_request_sd_detail d")
+                ->join("pro_delivery_package_detail p","d.id_order_package = p.id_order_package")
+                ->join("access_order_package a","d.id_order_package = a.id_order_package")
+                ->where("d.id_request_sd",$this->id_request_sd)
+                ->where("d.type","Modulado")
+                ->get();
+        $row = $res->row();
+
+        //print_r($row);
 
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();
@@ -158,6 +177,34 @@ class M_Dispatch extends VS_Model {
             $this->db->trans_commit();
             return "OK";
         }
+    }
+
+    function LoadHeaderPack($id_request_sd) {
+        $result = $this->db->select("*")
+                ->from("access_order_package")
+                ->join("access_order", "access_order_package.`order` = access_order.`order`")
+                ->join("access_forniture", "access_forniture.id_forniture = access_order_package.id_forniture and access_forniture.type_forniture = access_order.line")
+                ->join("dis_request_sd_detail","dis_request_sd_detail.id_order_package = access_order_package.id_order_package")
+                ->join("dis_request_sd", "dis_request_sd.id_request_sd = dis_request_sd_detail.id_request_sd")
+                ->where("dis_request_sd_detail.id_request_sd", $id_request_sd)
+                ->where("dis_request_sd_detail.type","Modulado")
+                ->order_by("access_order_package.id_order_package")
+                ->get();
+        //echo $this->db->last_query();
+        return $result->result();
+    }
+
+    function MaxPack($id_request_sd, $forniture, $type) {
+        $result = $this->db->select("max(p.number_pack) as `end`,t.description")
+                ->from("access_order_package p")
+                ->join("access_type_package t", "p.type_package = t.id_type_package", "left")
+                ->join("dis_request_sd_detail d","d.id_order_package = p.id_order_package")
+                ->where("d.id_request_sd", $id_request_sd)
+                ->where("p.id_forniture", $forniture)
+                ->where("p.type_package", $type)
+                ->get();
+        //echo $this->db->last_query();
+        return $result->row();
     }
     
     function get_weight($id_order_package_supplies,$order){
@@ -202,7 +249,7 @@ class M_Dispatch extends VS_Model {
     function InfoRequestSD($id){
         $result = $this->db->select("s.id_request_sd,s.driver,s.license_plate,s.dispatch_date,ifnull(sum(d.quantity_packets),0) as num_packets,ifnull(sum(if(d.`type` = 'Modulado',d.weight,0)),0)as total_weight_modulate,ifnull(sum(if(d.`type` = 'Insumos',d.weight,0)),0)as total_weight_supplies,s.id_status as status, "
                 . " s.id_weight_vehicle, v.max_weight")
-                ->from("dis_request_sd s") 
+                ->from("dis_request_sd s")
                 ->join("dis_request_sd_detail d","s.id_request_sd = d.id_request_sd","left")
                 ->join("dis_weight_vehicle v","v.id_weight_vehicle = s.id_weight_vehicle","left")
                 ->where("s.id_request_sd",$id)
@@ -223,6 +270,18 @@ class M_Dispatch extends VS_Model {
     function LoadContainerSD($id,$type){
         $result = $this->db->select("*")
                 ->from("dis_request_sd_detail d")
+                ->where("d.id_request_sd",$id)
+                ->where("d.type",$type)
+                ->order_by("id_request_detail","asc")
+                ->get();
+        //echo $this->db->last_query();
+        return $result->result();
+    }
+
+    function LoadContainerSDESP($id,$type){
+        $result = $this->db->select("d.*, p.id_delivery_package_detail")
+                ->from("dis_request_sd_detail d")
+                ->join("pro_delivery_package_detail p", " d.id_order_package = p.id_order_package")
                 ->where("d.id_request_sd",$id)
                 ->where("d.type",$type)
                 ->order_by("id_request_detail","asc")

@@ -59,7 +59,7 @@ class C_Dispatch extends Controller {
         $data['request'] = $this->M_Dispatch->InfoRequestSD($id);
         $data['vehicles'] = $this->M_Dispatch->get_vehicles();
         
-        $content = $this->M_Dispatch->LoadContainerSD($id,'Modulado');
+        $content = $this->M_Dispatch->LoadContainerSDESP($id,'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
         
         $contentS = $this->M_Dispatch->LoadContainerSD2($id,'Insumos');
@@ -124,6 +124,47 @@ class C_Dispatch extends Controller {
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS,ICHECK_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
         $this->load->view('Template/V_Footer', $Footer);
+    }
+
+    function cargue_report($id_request_sd){
+        $resulPack = $this->M_Dispatch->LoadHeaderPack($id_request_sd);
+        //print_r($resulPack);
+        $total_tags = 1;
+        $this->load->view("Dispatch/Pack/Pdf/header_packs_limit");
+        foreach ($resulPack as $r):
+            $up = true;
+            //echo $r->id_order_package;
+            $ticket = 1;
+            $data = array(
+                "ItemQr" => $r->id_order_package,
+                "client" => $r->client,
+                "driver" => $r->driver,
+                "license_plate" => $r->license_plate,
+                "id_request_sd" => $id_request_sd,
+                "type" => $r->type,
+                "quantity_packets" => $r->quantity_packets,
+                "forniture" => $r->description,
+                "start" => $r->number_pack,
+                "pack" => $this->M_Dispatch->MaxPack($id_request_sd, $r->id_forniture, $r->type_package),
+                "color" => ''//$this->M_Dispatch->Colorforniture($order, $r->id_forniture)
+            );
+            $data['new'] = true;
+            $data['quantity_packets'] = $r->quantity_packets;
+  
+
+            $data["ticket"] = $ticket++;
+            $data["count"] = $total_tags;
+            $this->load->view("Dispatch/Pack/Pdf/content_packs_report", $data);
+
+        
+            $total_tags++;
+            //}// end for
+
+            if ($up) {
+                // $total_tags++;
+            }
+        endforeach;
+        $this->load->view("Dispatch/Pack/Pdf/V_Footer_Detail_Pack2");
     }
     
     function get_data_goBack(){

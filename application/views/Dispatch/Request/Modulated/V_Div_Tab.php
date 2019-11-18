@@ -51,7 +51,7 @@
                                 <td id="name_<?= $t->id_order_package ?>"><?= $t->description ?></td>
                                 <td style="text-align:center"><?= $t->number_pack . " " . $t->code ?></td>
                                 <td style="text-align:center"><?= $t->quantity_packets ?></td>
-                                <td style="text-align:center" id="quantity_<?= $t->id_order_package ?>"><?= $t->total_delivery ?></td>
+                                <td style="text-align:center" id="quantity_<?= $t->id_order_package ?>"><?= $t->total_dispatch ?></td>
                                 <td style="text-align:center" id="dispatch_<?= $t->id_order_package ?>"><?= $t->total_dispatch ?></td>
                                 <td class="<?= ($t->balance_dispatch > 0) ? 'bg-danger' : 'bg-success' ?>" style="text-align:center" id="balance_<?= $t->id_order_package ?>" ><?= $t->balance_dispatch ?></td>
                                 <td style="text-align:center">
