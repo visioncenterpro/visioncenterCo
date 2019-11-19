@@ -29,14 +29,14 @@ class M_Ws extends CI_Model
             $this->db->update("sys_users",array("last_entry"=>date("Y-m-d H:i:s")));
             
             $newdata = array(
-                'IdUser' =>$reg->id_users,
-                'NameUser' => $reg->name,
-                'IdRol' => $reg->rol,
-                'Rol' => $reg->description,
-                'Email' => $reg->email,
-				'Password' => $pswd,
+                'id_user' =>strtolower($reg->id_users),
+                'name_user' =>strtolower($reg->name),
+                'id_rol' =>strtolower($reg->rol),
+                'rol' =>strtolower($reg->description),
+                'email' =>strtolower($reg->email),
+				
             );
-            
+            //'Password' => $pswd,
             
             $this->session->set_userdata($newdata);
 			
@@ -45,10 +45,10 @@ class M_Ws extends CI_Model
         } else {
 			//Jaym Valid password
 			$newdata = array(
-                'res' =>'ERROR',
-				'Password' => $pswd,
+                'res' =>'error'//
             );
 			//$newdata['res'] = "ERROR";
+			//,'Password' => $pswd,
         }
 		return $newdata;
 		

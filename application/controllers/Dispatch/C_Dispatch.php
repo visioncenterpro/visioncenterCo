@@ -126,10 +126,11 @@ class C_Dispatch extends Controller {
         $this->load->view('Template/V_Footer', $Footer);
     }
 
-    function cargue_report($id_request_sd){
+    function report_supervisory($id_request_sd){
         $resulPack = $this->M_Dispatch->LoadHeaderPack($id_request_sd);
         //print_r($resulPack);
         $total_tags = 1;
+        $count_pb = 1;
         $this->load->view("Dispatch/Pack/Pdf/header_packs_limit");
         foreach ($resulPack as $r):
             $up = true;
@@ -154,6 +155,7 @@ class C_Dispatch extends Controller {
 
             $data["ticket"] = $ticket++;
             $data["count"] = $total_tags;
+            $data['count_pb'] = $count_pb;
             $this->load->view("Dispatch/Pack/Pdf/content_packs_report", $data);
 
         
@@ -163,8 +165,9 @@ class C_Dispatch extends Controller {
             if ($up) {
                 // $total_tags++;
             }
+            $count_pb = $count_pb + $r->quantity_packets;
         endforeach;
-        $this->load->view("Dispatch/Pack/Pdf/V_Footer_Detail_Pack2");
+        $this->load->view("Dispatch/Pack/Pdf/V_Footer_Detail_Pack3");
     }
     
     function get_data_goBack(){

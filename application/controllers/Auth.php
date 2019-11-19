@@ -22,16 +22,16 @@ class Auth extends REST_Controller
 		
 		if($data['res'] == 'OK'){
 			$tokenData = array();
-			$tokenData['id'] = $data['IdUser'];//DATO PARA ARMAR UN TOKEN
+			$tokenData['id'] = $data['id_user'];//DATO PARA ARMAR UN TOKEN
 			$output['token'] = AUTHORIZATION::generateToken($tokenData);
-			$output['responseData'] = $data;
+			$output['responsedata'] = $data;
 			$output['res'] = $data['res'];
 			$this->set_response($output, REST_Controller::HTTP_OK);
 		}else{
 			
-			$this->set_response(array('res'=>$message,'password'=>$data['Password']), REST_Controller::HTTP_UNAUTHORIZED);
+			$this->set_response(array('res'=>$message), REST_Controller::HTTP_UNAUTHORIZED);
 		}
-        
+       //,'password'=>$data['Password'] 
     }
 
     public function orders_post()

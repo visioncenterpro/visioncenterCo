@@ -5,6 +5,7 @@
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="<?=base_url()?>dist/jquery/jquery.js"></script>
         <script type="text/javascript" src="<?=base_url()?>dist/JsBarcode/dist/jquery.qrcode.min.js"></script>
+        <script type="text/javascript" src="<?=base_url()?>dist/js/qrcode.min.js"></script>
         <style>
             body {
               height: 21cm;

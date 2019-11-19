@@ -2,15 +2,16 @@
     <section class="content">
         <div class="box">
             <div class="box-header with-border">
-                <div class="box-title col-md-6">
+                <div class="box-title col-md-2">
                     <div class="user-block">
                         <span class="username" style="margin-left: 0px;"><a href="#">Solicitud De Despachos No <?= $request->id_request_sd ?></a> </span>
                     </div>
                 </div>
-                    <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="CreateRequisition()"><i class="fa fa-check "></i> Generar Remisión</button>
-                    <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="UpdateRequest2()"><i class="fa fa-save"></i> Guardar Cambios</button>
-                    <button type="button" class="btn btn-default pull-right" onclick="cargue_report()"><i class="fa fa-print"></i> Reporte Cargue</button>
-                    <button type="button" class="btn btn-default pull-right" onclick="request_dispatch()"><i class="fa fa-print"></i> Solcitud Despacho</button>
+                <button type="button" class="btn btn-default pull-right" onclick="window.location='<?=base_url().'Dispatch/C_Dispatch'?>'"><i class="fa fa-backward"></i> Volver</button>
+                <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="CreateRequisition()"><i class="fa fa-check "></i> Generar Remisión</button>
+                <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="UpdateRequest2()"><i class="fa fa-save"></i> Guardar Cambios</button>
+                <button type="button" class="btn btn-default pull-right" onclick="report_supervisory()"><i class="fa fa-print"></i> Control de cargue supervisor</button>
+                <button type="button" class="btn btn-default pull-right" onclick="request_dispatch()"><i class="fa fa-print"></i> Solcitud Despacho</button>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -281,9 +282,9 @@
         }
     });
 
-    function cargue_report(){
+    function report_supervisory(){
         var a = document.createElement('a');
-        a.href = '<?= base_url() ?>Dispatch/C_Dispatch/cargue_report/<?=$request->id_request_sd?>';
+        a.href = '<?= base_url() ?>Dispatch/C_Dispatch/report_supervisory/<?=$request->id_request_sd?>';
         a.setAttribute('target', '_blank');
         a.click();
     }
