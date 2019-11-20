@@ -61,7 +61,7 @@ class C_Dispatch extends Controller {
         
         $content = $this->M_Dispatch->LoadContainerSDESP($id,'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
-        
+
         $contentS = $this->M_Dispatch->LoadContainerSD2($id,'Insumos');
         $containerS = $this->load->view('Dispatch/Request/Supplies/V_Container_Supplies',array("content"=>$contentS),true);
         
@@ -94,7 +94,7 @@ class C_Dispatch extends Controller {
                 $count = $count + $value->balance_dispatch;
             }
             $weight_p = array();
-            $qd = 2; // estado sin cargar insumos para vista
+            $qd = 2; // estado sin cargar insumos para vista no quitar!
             foreach ($packs_available_supplies as $value) {
                 $get_weight = $this->M_Dispatch->get_weight($value->id_order_package_supplies,$v->order);
                 $weightc = 0;
@@ -171,7 +171,10 @@ class C_Dispatch extends Controller {
     }
     
     function get_data_goBack(){
-        $data = array('type' => $this->input->post('type'));
+        $data = array(
+            'type' => $this->input->post('type'),
+            'id_delivery_detail' => $this->input->post('id_delivery_package_detail')
+        );
         if($this->input->post('type') == 'M'){
             $data['data'] = $this->M_Dispatch->get_data_goBack();
             $data['content'] = $this->load->view('Dispatch/Request/Modulated/content_goBack',$data,true);

@@ -21,11 +21,12 @@
                     <td style="text-align:center"><?= $t->pack ?></td>
                     <td style="text-align:center" id="cont-quantity-<?= $t->id_order_package ?>"><?= $t->quantity_packets ?>
                         <input type="hidden" id="quantity_h" value="<?= $t->quantity_packets ?>">
+                        <input type="hidden" id="id_detailF" value="<?= $t->id_delivery_package_detail ?>">
                     </td>
                     <td style="text-align:center" id="cont-weight-<?= $t->id_order_package ?>"><?= round($t->weight, 6) ?></td>
                     <td style="text-align:center;width:15px" >
                     	<button type="button" class="btn btn-danger btn-xs btn-tabla" onclick="Delete(<?= $t->id_request_detail ?>,<?= $t->id_order_package ?>,'Modulado',<?= $t->order ?>)" title="Quitar Paquete del contenedor"><i class="fa fa-trash"></i></button>
-                    	<button type="button" class="btn btn-default btn-xs btn-tabla" onclick="modal_goBack('M','<?= $t->id_order_package ?>')" title="Revertir Paquete de la entrega"><i class="fa fa-backward"></i></button>
+                    	<button type="button" class="btn btn-default btn-xs btn-tabla" onclick="modal_goBack('M','<?= $t->id_order_package ?>','<?= $t->id_delivery_package_detail ?>')" title="Revertir Paquete de la entrega"><i class="fa fa-backward"></i></button>
                     </td>
                 </tr>
             <?php endforeach; ?>

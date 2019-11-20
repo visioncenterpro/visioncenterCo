@@ -296,11 +296,11 @@
         a.click();
     }
 
-    function modal_goBack(type,id_order_package){
+    function modal_goBack(type,id_order_package,id_delivery_package_detail){
         $.ajax({
             url:  "<?= base_url() ?>Dispatch/C_Dispatch/get_data_goBack",
             type: 'POST',
-            data: {type:type,id_order_package:id_order_package},
+            data: {type:type,id_order_package:id_order_package,id_delivery_package_detail:id_delivery_package_detail},
             success: function(data){
                 dato = JSON.parse(data);
                 $("#content-goBack").html(dato.content);
@@ -315,6 +315,7 @@
         var id_order_package = $("#id_order_package").val();
         var number_pack = $("#number_pack_back").val();
         var order = $("#order_gp").val();
+        var id_delivery_detail = $("#id_delivery_detailFF").val();
 
         var arr_modulate = document.querySelectorAll("#quantity_h");
         var total_modulate = 0;
@@ -327,7 +328,7 @@
         $.ajax({
             url:  "<?= base_url() ?>Dispatch/C_Dispatch/goBack_Package",
             type: 'POST',
-            data: {order:order,cnt:cnt,observation:observation,id_order_package:id_order_package,number_pack:number_pack,quantity_packages:quantity_packages,id_request_sd:<?=$request->id_request_sd?>},
+            data: {order:order,cnt:cnt,observation:observation,id_order_package:id_order_package,number_pack:number_pack,quantity_packages:quantity_packages,id_request_sd:<?=$request->id_request_sd?>,id_delivery_detail:id_delivery_detail},
             success: function(data){
                 dato = JSON.parse(data);
                 console.log(dato);

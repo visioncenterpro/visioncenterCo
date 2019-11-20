@@ -159,14 +159,15 @@ class M_Dispatch extends VS_Model {
         $this->db->where("id_order_package",$this->id_order_package);
         $rs4 = $this->db->update("dis_request_sd_detail", $data);
 
-        $res = $this->db->select("d.*,a.number_pack,p.id_delivery_package_detail")
-                ->from("dis_request_sd_detail d")
-                ->join("pro_delivery_package_detail p","d.id_order_package = p.id_order_package")
-                ->join("access_order_package a","d.id_order_package = a.id_order_package")
-                ->where("d.id_request_sd",$this->id_request_sd)
-                ->where("d.type","Modulado")
-                ->get();
-        $row = $res->row();
+
+        $query2 = ("SELECT * FROM pro_delivery_package_detail WHERE id_delivery_package_detail = $this->id_delivery_detail");
+        $row2 = $this->db->query($query2);
+        $data_result2 = $data2->row();
+        $data = array(
+            "quantity" => ($data_result2->quantity - $this->cnt)
+        );
+        $this->db->where("id_delivery_package_detail",$this->id_delivery_detail);
+        $rs5 = $this->db->update("pro_delivery_package_detail", $data);
 
         //print_r($row);
 

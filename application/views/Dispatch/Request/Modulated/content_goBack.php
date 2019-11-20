@@ -18,7 +18,8 @@
                     <input type="number" id="cnt" min="1" max="<?= $d->quantity_packets ?>" value="<?= $d->quantity_packets ?>">
                     <input type="hidden" id="id_order_package" value="<?= $d->id_order_package ?>">
                     <input type="hidden" id="number_pack_back" value="<?= $d->number_pack ?>"> 
-                    <input type="hidden" id="order_gp" value="<?= $d->order ?>"> 
+                    <input type="hidden" id="order_gp" value="<?= $d->order ?>">
+                    <input type="hidden" id="id_delivery_detailFF" value="<?=$id_delivery_detail?>">
                 </td>
                 <!--<td style="text-align:center">
                     <input type="number" id="cnt" min="1" max="<?= $d->quantity_packets ?>" value="<?= $d->quantity_packets ?>">

@@ -16,7 +16,7 @@ class Auth extends REST_Controller
     public function login_post()
     {
 		//$pswd=md5($this->input->post("psw"));
-		$message="Unauthorised";//+$pswd;
+		$message="unauthorised";//+$pswd;
 		
 		$data = $this->M_Ws->Validar_User();
 		
@@ -24,7 +24,7 @@ class Auth extends REST_Controller
 			$tokenData = array();
 			$tokenData['id'] = $data['id_user'];//DATO PARA ARMAR UN TOKEN
 			$output['token'] = AUTHORIZATION::generateToken($tokenData);
-			$output['responsedata'] = $data;
+			$output['response_data'] = $data;
 			$output['res'] = $data['res'];
 			$this->set_response($output, REST_Controller::HTTP_OK);
 		}else{
@@ -49,7 +49,7 @@ class Auth extends REST_Controller
             }
         }
 
-        $this->set_response(array('res'=>"Unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
+        $this->set_response(array('res'=>"unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
     }
 
     public function frequestscustomers_post()
@@ -111,7 +111,7 @@ class Auth extends REST_Controller
                                                 'orders'=>$arr_order); 
                         
                         $arr_request[] =  array('id_request_sd'=>$object->id_request_sd,
-                                                                 'Customers'=>$arr_customer);
+                                                                 'customers'=>$arr_customer);
 
                     $client=$object->client;  
                     }
@@ -120,7 +120,7 @@ class Auth extends REST_Controller
                 else
                 {
                     //$arr_request->id_request_sd = $object->id_request_sd;
-                   // $arr_request->Customers=$arr_customer;
+                   // $arr_request->customers=$arr_customer;
                 }
 
                 $arr_data=$arr_request;
@@ -140,7 +140,7 @@ class Auth extends REST_Controller
             }
         }
 
-        $this->set_response(array('res'=>"Unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
+        $this->set_response(array('res'=>"unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
     }
 
 
@@ -173,8 +173,8 @@ class Auth extends REST_Controller
                 $response ->trasactions = $arr_transation;
    
                 $arr_db           = $this->M_Ws->GetRequest();
-                $arr_msg_db       = $this->M_Ws->Getws_message_movil();
-
+                $arr_msg_db       = $this->M_Ws->getws_message_movil();
+               
                 if (count($arr_msg_db )>0){
                     $arr_error->client_message                  = $arr_msg_db->client_message;
                     $arr_error->client_message_type             = $arr_msg_db->client_message_type; 
@@ -192,28 +192,28 @@ class Auth extends REST_Controller
                 
                
                 
-                $arr_error->database_msg                    =(count($arr_db )>0) ? 'DataFound' : 'DataNotFound';
+                $arr_error->database_msg                    =(count($arr_db )>0) ? 'DataFound' : 'DataNotFound ' ;
                 
                 foreach ($arr_db as $key => $value) {
                     $get_data_detail = $this->M_Ws->get_data_detail($value->id_request_sd);
-                    $value->Document = array();
+                    $value->document = array();
                     foreach ($get_data_detail as $key => $value2) {
 
-                        $value->Document[] = $value2->order." - ".$value2->client;
+                        $value->document[] = $value2->order." - ".$value2->client;
                     }
                     
                 }
                 $response->data                             = $arr_db ;
                 //$response->data['Document']                 = 'order - client';
                                       
-                 $response->Warning =  $arr_error;
+                 $response->warning =  $arr_error;
                 
                $this->set_response($response, REST_Controller::HTTP_OK);
                 return;
             }
         }
 
-        $this->set_response(array('res'=>"Unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
+        $this->set_response(array('res'=>"unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
     }
 	
     public function frequestsdetails_post()
@@ -256,7 +256,7 @@ class Auth extends REST_Controller
                 $response->data                             = $arr_db ;
                 
                                       
-                 $response->Warning =  $arr_error;
+                 $response->warning =  $arr_error;
                
                
                 
@@ -266,7 +266,7 @@ class Auth extends REST_Controller
             }
         }
 
-        $this->set_response(array('res'=>"Unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
+        $this->set_response(array('res'=>"unauthorised"), REST_Controller::HTTP_UNAUTHORIZED);
     }
    
     public function ftotalrequests_post()
@@ -294,19 +294,19 @@ class Auth extends REST_Controller
                 $response ->trasactions = $arr_transation;
                 $arr_db           = $this->M_Ws->SumTotalRequest();
 
-                $arr_data = array('Packets' =>array('Status'   =>$arr_db->status_packets,
-                                                    'Quantity' => array('Total'=>$arr_db->totalqty_packets,
-                                                                        'Load'=>$arr_db->qty_packetsLoad,
-                                                                        'Pending'=>$arr_db->pendingqtypack),
-                                                    'Weight' => array('Total'=>$arr_db->totalweight,
-                                                    'Load'=>$arr_db->weight_packetsLoad,
-                                                    'Pending'=>$arr_db->pendingweigthload)                    
+                $arr_data = array('packets' =>array('status'   =>$arr_db->status_packets,
+                                                    'quantity' => array('total'=>$arr_db->totalqty_packets,
+                                                                        'load'=>$arr_db->qty_packetsLoad,
+                                                                        'pending'=>$arr_db->pendingqtypack),
+                                                    'weight' => array('total'=>$arr_db->totalweight,
+                                                    'load'=>$arr_db->weight_packetsLoad,
+                                                    'pending'=>$arr_db->pendingweigthload)                    
                                                                         
                                                     )
                                     );
                 $arr_msg_db       = $this->M_Ws->getws_message_movil();
 
-                if (count($arr_msg_db )>0){
+                if (count($arr_msg_db )==1){
                     $arr_error->client_message                  = $arr_msg_db->client_message;
                     $arr_error->client_message_type             = $arr_msg_db->client_message_type; 
                     $arr_error->client_status_message           = ($arr_msg_db->client_message_view==1) ? true : false;
@@ -330,7 +330,7 @@ class Auth extends REST_Controller
                 $response->data                             =  $arr_data;
                 
                                       
-                 $response->Warning =  $arr_error;
+                 $response->warning =  $arr_error;
 
 
               $this->set_response($response, REST_Controller::HTTP_OK);

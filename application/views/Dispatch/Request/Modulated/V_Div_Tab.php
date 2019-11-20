@@ -61,6 +61,7 @@
                                     <input type="hidden" value="<?=$t->id_order_package?>" id="id_order_package-<?=$order?>-<?=$t->id_forniture?>">
                                     <input type="hidden" value="<?=$t->number_pack.' ' .$t->code?>" id="pack-<?=$order?>-<?=$t->id_forniture?>">
                                     <input type="hidden" value="<?=$t->description?>" id="name-<?=$order?>-<?=$t->id_forniture?>">
+                                    <input type="hidden" value="<?=$t->id_delivery_package_detail?>" id="id_detail-<?=$order?>-<?=$t->id_forniture?>">
                                 </td>
                             </tr>
                         <?php endforeach; ?>

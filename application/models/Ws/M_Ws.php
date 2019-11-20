@@ -10,7 +10,7 @@ class M_Ws extends CI_Model
     }
 	
 	function Validar_User() {
-      //$pswd=$this->input->post("psw");
+      
 	  $pswd=md5($this->input->post("psw"));
 	  
         $result = $this->db->select("*")
@@ -29,11 +29,11 @@ class M_Ws extends CI_Model
             $this->db->update("sys_users",array("last_entry"=>date("Y-m-d H:i:s")));
             
             $newdata = array(
-                'id_user' =>strtolower($reg->id_users),
-                'name_user' =>strtolower($reg->name),
-                'id_rol' =>strtolower($reg->rol),
-                'rol' =>strtolower($reg->description),
-                'email' =>strtolower($reg->email),
+                'id_user' =>$reg->id_users,
+                'name_user' =>$reg->name,
+                'id_rol' =>$reg->rol,
+                'rol' =>$reg->description,
+                'email' =>$reg->email,
 				
             );
             //'Password' => $pswd,
@@ -42,7 +42,8 @@ class M_Ws extends CI_Model
 			
 			$newdata['res'] = 'OK';
             
-        } else {
+		}
+		else {
 			//Jaym Valid password
 			$newdata = array(
                 'res' =>'error'//
@@ -71,20 +72,7 @@ class M_Ws extends CI_Model
 		
 	}
 
-	function Getsys_messages_restapi(){
-		if(!empty($this->input->post('idrequest')))
-		// && (!empty($this->input->post('idmethod')))
-		{
-			$this->db->where('a.id_request_sd',$this->input->post('idrequest'));
-			$this->db->where('a.id_method',$this->input->post('idmethod'));
-
-			$result = $this->db->select('*')
-								->from('sys_messages_restapi  a ')
-								->get();
-		}
-		
-			return $result->result();
-	}
+	
 
 	function GetRequestCustomer(){
 		/*
@@ -121,7 +109,8 @@ class M_Ws extends CI_Model
 		$this->db->where_in('a.id_status',$this->input->post('idstatus'));
 
 		$result = $this->db->select(" a.id_request_sd,a.date,a.license_plate,a.dispatch_date,
-									  a.quantity_packages,b.description as vehicle_type,b.max_weight,`b`.`max_weight` AS Document,a.id_status,c.description as description_status ")
+									  a.quantity_packages,b.description as vehicle_type,b.max_weight,
+									  `b`.`max_weight` AS document,a.id_status,c.description as description_status ")
 		->from('dis_request_sd a')
 		->JOIN('sys_status c','a.id_status = c.id_status') 
 		->JOIN('dis_weight_vehicle b', 'a.id_weight_vehicle = b.id_weight_vehicle')
@@ -134,7 +123,8 @@ class M_Ws extends CI_Model
 	}
 
 	function get_data_detail($id_request_sd){
-		$query = ("SELECT * FROM dis_remission D WHERE D.id_request_sd = $id_request_sd GROUP BY D.`order` , D.`client`");
+		$query = ("SELECT * FROM dis_remission D 
+						WHERE D.id_request_sd = $id_request_sd GROUP BY D.`order` , D.`client`");
         $result = $this->db->query($query);
 		return $result->result();
 	}
@@ -145,13 +135,19 @@ class M_Ws extends CI_Model
 	 * 
 	 */
 	function getws_message_movil(){
+		
 		if(!empty($this->input->post('idrequest')))
-				$this->db->where('a.id_request_sd',$this->input->post('idrequest'));
+		{
+			$this->db->where('a.id_request_sd',$this->input->post('idrequest'));
 
+		}		
+		else {
+			$this->db->where('a.id_request_sd','*');
+		}
 		
 
 		$result = $this->db->select(" a.id_request_sd,a.client_message,a.client_message_type,
-		a.last_read_bar_qr,a.client_message_view ")
+										a.last_read_bar_qr,a.client_message_view ")
 				->from('ws_message_movil a')
 				
 				->ORDER_BY('a.id_request_sd','asc')
