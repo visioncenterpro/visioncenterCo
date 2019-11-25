@@ -190,6 +190,16 @@ class C_Dispatch extends Controller {
         echo json_encode($data);
     }
 
+    function request_cargo($id_request_sd){
+        $data['head'] = $this->M_Dispatch->InfoRequestSD($id_request_sd);
+        $this->load->view("Dispatch/Request/Pdf/V_Head_Cargo",$data);
+        
+        //$contentS = $this->M_Dispatch->LoadContainerSD($id_request_sd,'Insumo');
+        $this->load->view('Dispatch/Request/pdf/V_Container_Cargo');
+        
+        //$this->load->view('Dispatch/Request/pdf/V_Table_Total',$data);
+    }
+
     // Created by Ivan Contreras 27/03/2019
     function get_vehicle(){
         $id_vehicle = $this->input->post('id_vehicle');

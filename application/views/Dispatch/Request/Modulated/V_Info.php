@@ -11,6 +11,7 @@
                 <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="CreateRequisition()"><i class="fa fa-check "></i> Generar Remisión</button>
                 <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="UpdateRequest2()"><i class="fa fa-save"></i> Guardar Cambios</button>
                 <button type="button" class="btn btn-default pull-right" onclick="report_supervisory()"><i class="fa fa-print"></i> Control de cargue supervisor</button>
+                <button type="button" class="btn btn-default pull-right" onclick="request_cargo()"><i class="fa fa-print"></i> Reporte control de cargue</button>
                 <button type="button" class="btn btn-default pull-right" onclick="request_dispatch()"><i class="fa fa-print"></i> Solcitud Despacho</button>
             </div>
             <div class="box-body">
@@ -292,6 +293,13 @@
     function request_dispatch(){
         var a = document.createElement('a');
         a.href = '<?= base_url() ?>Dispatch/C_Dispatch/PdfRequest/<?=$request->id_request_sd?>';
+        a.setAttribute('target', '_blank');
+        a.click();
+    }
+
+    function request_cargo(){
+        var a = document.createElement('a');
+        a.href = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo/<?=$request->id_request_sd?>';
         a.setAttribute('target', '_blank');
         a.click();
     }

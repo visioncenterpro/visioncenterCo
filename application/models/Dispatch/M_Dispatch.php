@@ -162,7 +162,7 @@ class M_Dispatch extends VS_Model {
 
         $query2 = ("SELECT * FROM pro_delivery_package_detail WHERE id_delivery_package_detail = $this->id_delivery_detail");
         $row2 = $this->db->query($query2);
-        $data_result2 = $data2->row();
+        $data_result2 = $row2->row();
         $data = array(
             "quantity" => ($data_result2->quantity - $this->cnt)
         );
