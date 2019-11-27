@@ -154,7 +154,7 @@ class Auth extends REST_Controller
             if ($decodedToken != false) {
                 $message                =''; 
                 $trasaction_err         ='OK';  
-                $statusmessage          =true;
+                $statusmessage          = true;
 
                
 
@@ -179,13 +179,13 @@ class Auth extends REST_Controller
                     $arr_error->client_message                  = $arr_msg_db->client_message;
                     $arr_error->client_message_type             = $arr_msg_db->client_message_type; 
                     $arr_error->client_status_message           = ($arr_msg_db->client_message_view==1) ? true : false;
-                    $arr_error->client_last_read_barcode        = $arr_msg_db->last_read_bar_qr;
+                    $arr_error->client_last_read_barcode        = ($arr_msg_db->last_read_bar_qr==null) ? 'Empty':$arr_msg_db->last_read_bar_qr;
                 }
                 else{
                     $arr_error->client_message                  = '';
-                    $arr_error->client_status_message           = '';
-                    $arr_error->client_message_type             = '';
-                    $arr_error->client_last_read_barcode        = '';
+                    $arr_error->client_status_message           = false;
+                    $arr_error->client_message_type             = 'Default';
+                    $arr_error->client_last_read_barcode        = 'Empty';
                 }
             //    print_r( $arr_msg_db);
                 $msg_error = (count($arr_db )>0) ? 'DataFound' : 'DataNotFound';
@@ -246,7 +246,7 @@ class Auth extends REST_Controller
    
                 $arr_db           = $this->M_Ws->GetRequestDetails();
 
-                $msg_error = (count($arr_db )>0) ? 'DataFind' : 'DataNotFind';
+                $msg_error = (count($arr_db )>0) ? 'DataFound' : 'DataNotFound';
                 $arr_error->client_message                  = $message;
                 $arr_error->client_status_message           = false;
                 $arr_error->client_last_read_barcode        ='Last_Packet_Read';
@@ -294,13 +294,13 @@ class Auth extends REST_Controller
                 $response ->trasactions = $arr_transation;
                 $arr_db           = $this->M_Ws->SumTotalRequest();
 
-                $arr_data = array('packets' =>array('status'   =>$arr_db->status_packets,
-                                                    'quantity' => array('total'=>$arr_db->totalqty_packets,
-                                                                        'load'=>$arr_db->qty_packetsLoad,
-                                                                        'pending'=>$arr_db->pendingqtypack),
-                                                    'weight' => array('total'=>$arr_db->totalweight,
-                                                    'load'=>$arr_db->weight_packetsLoad,
-                                                    'pending'=>$arr_db->pendingweigthload)                    
+                $arr_data = array('packets' =>array('status'   =>($arr_db->status_packets>0) ? $arr_db->status_packets:0,
+                                                    'quantity' => array('total'=>($arr_db->totalqty_packets>0)? $arr_db->totalqty_packets:0,
+                                                                        'load'=>($arr_db->qty_packetsLoad>0)?$arr_db->qty_packetsLoad:0,
+                                                                        'pending'=>($arr_db->pendingqtypack>0)?$arr_db->pendingqtypack:0),
+                                                    'weight' => array('total'=>($arr_db->totalweight>0)?$arr_db->totalweight:0,
+                                                    'load'=>($arr_db->weight_packetsLoad>0)?$arr_db->weight_packetsLoad:0,
+                                                    'pending'=>($arr_db->pendingweigthload>0)?$arr_db->pendingweigthload:0)                    
                                                                         
                                                     )
                                     );
@@ -310,24 +310,24 @@ class Auth extends REST_Controller
                     $arr_error->client_message                  = $arr_msg_db->client_message;
                     $arr_error->client_message_type             = $arr_msg_db->client_message_type; 
                     $arr_error->client_status_message           = ($arr_msg_db->client_message_view==1) ? true : false;
-                    $arr_error->client_last_read_barcode        = $arr_msg_db->last_read_bar_qr;
+                    $arr_error->client_last_read_barcode        = ($arr_msg_db->last_read_bar_qr==null) ? 'Empty':$arr_msg_db->last_read_bar_qr;
                 }
                 else{
                     $arr_error->client_message                  = '';
-                    $arr_error->client_status_message           = '';
-                    $arr_error->client_message_type             = '';
-                    $arr_error->client_last_read_barcode        = '';
+                    $arr_error->client_status_message           = false;
+                    $arr_error->client_message_type             = 'Default';
+                    $arr_error->client_last_read_barcode        = 'Empty';
                 }
             
                 $msg_error = (count($arr_db )>0) ? 'DataFound' : 'DataNotFound';
                 
                 
                 
-                $arr_error->database_msg                    =(count($arr_db )>0) ? 'DataFound' : 'DataNotFound';
+                $arr_error->database_msg                    = ($arr_db->status_packets>0) ? 'DataFound' : 'DataNotFound';
 
 
                 
-                $response->data                             =  $arr_data;
+                 $response->data                             =  $arr_data;
                 
                                       
                  $response->warning =  $arr_error;

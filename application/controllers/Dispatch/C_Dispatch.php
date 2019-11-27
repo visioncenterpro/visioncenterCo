@@ -94,7 +94,7 @@ class C_Dispatch extends Controller {
                 $count = $count + $value->balance_dispatch;
             }
             $weight_p = array();
-            $qd = 2; // estado sin cargar insumos para vista no quitar!
+            $qd = 2; // estado sin cargar insumos para vista, no quitar!
             foreach ($packs_available_supplies as $value) {
                 $get_weight = $this->M_Dispatch->get_weight($value->id_order_package_supplies,$v->order);
                 $weightc = 0;
@@ -192,10 +192,10 @@ class C_Dispatch extends Controller {
 
     function request_cargo($id_request_sd){
         $data['head'] = $this->M_Dispatch->InfoRequestSD($id_request_sd);
+        $data['content'] = $this->M_Dispatch->LoadContainerSD1($id_request_sd);
         $this->load->view("Dispatch/Request/Pdf/V_Head_Cargo",$data);
         
-        //$contentS = $this->M_Dispatch->LoadContainerSD($id_request_sd,'Insumo');
-        $this->load->view('Dispatch/Request/pdf/V_Container_Cargo');
+        $this->load->view('Dispatch/Request/pdf/V_Container_Cargo', array('content' => ''));
         
         //$this->load->view('Dispatch/Request/pdf/V_Table_Total',$data);
     }

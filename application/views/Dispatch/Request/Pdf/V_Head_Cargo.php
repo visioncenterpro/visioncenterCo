@@ -33,6 +33,7 @@
     }
 </style>
 
+<?php foreach ($content as $key => $value) { ?>
 <table  cellpadding="3" width="100%" style="font-size: 7pt; page-break-inside:avoid;">
     <tr>
         <td width="4%"><img src="<?= URL_IMAGE.$this->session->company ?>" width="140px" height="60px" /></td>
@@ -44,20 +45,21 @@
         <td style="text-align: center; font-weight: bold;">CONSECUTIVO ##</td>
     </tr>
     <tr>
-        <td colspan="8">PLACA:</td>
+        <td colspan="8">PLACA:  <?= $value->license_plate; ?></td>
     </tr>
     <tr>
-        <td colspan="5">CONDUCTOR:</td>
+        <td colspan="5">CONDUCTOR: <?= $value->driver; ?></td>
         <td>CEL:</td>
     </tr>
     <tr>
         <td colspan="8">DESTINO:</td>
     </tr>
     <tr>
-        <td colspan="8">TIPO VEHICULO:</td>
+        <td colspan="8">TIPO VEHICULO: <?= $value->description ?></td>
     </tr>
     <tr>
         <td colspan="4">HORA INICIO:</td>
         <td colspan="4">HORA FIN:</td>
     </tr>
 </table>
+<?php } ?>

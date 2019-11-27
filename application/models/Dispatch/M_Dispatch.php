@@ -144,7 +144,7 @@ class M_Dispatch extends VS_Model {
         );
         $this->db->where("id_order_package", $this->id_order_package);
         $rs2 = $this->db->update("access_order_package", $data);
-
+        //
 
         $data = array(
             "quantity_packages" => $this->quantity_packages
@@ -266,6 +266,16 @@ class M_Dispatch extends VS_Model {
                 ->get();
         
         return $result->row();
+    }
+
+    function LoadContainerSD1($id_request_sd){
+        $result = $this->db->select("*")
+                ->from("dis_request_sd d")
+                ->join("dis_weight_vehicle v", "d.id_weight_vehicle = v.id_weight_vehicle")
+                ->where("d.id_request_sd",$id_request_sd)
+                ->get();
+        //echo $this->db->last_query();
+        return $result->result();
     }
     
     function LoadContainerSD($id,$type){

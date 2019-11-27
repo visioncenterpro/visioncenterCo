@@ -108,7 +108,7 @@ class M_Ws extends CI_Model
 		if(!empty($this->input->post('idstatus')))
 		$this->db->where_in('a.id_status',$this->input->post('idstatus'));
 
-		$result = $this->db->select(" a.id_request_sd,a.date,a.license_plate,a.dispatch_date,
+		$result = $this->db->select(" a.id_request_sd,a.date as date_created,a.license_plate,a.dispatch_date,
 									  a.quantity_packages,b.description as vehicle_type,b.max_weight,
 									  `b`.`max_weight` AS document,a.id_status,c.description as description_status ")
 		->from('dis_request_sd a')
