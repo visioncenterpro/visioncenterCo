@@ -29,6 +29,7 @@ class C_Order extends Controller {
     }
 
     public function ListItems($name, $id) {
+        $name = rawurldecode($name);
         $array['menus'] = $this->M_Main->ListMenu();
 
         $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);

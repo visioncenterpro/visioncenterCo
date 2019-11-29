@@ -117,6 +117,60 @@ class C_Pdf extends Controller {
         endif;
     }
 
+    function CutList($order){
+        $d['title'] = "LISTADO DE CORTE";
+        $d['order'] = $order;
+        $d['HeaderRecord'] = $this->M_Acknow->ListHeaderAck(str_replace('_', '-', $order));
+        $d['Header'] = $this->M_Order->ListOrderImosAll($order);
+        $d['items'] = $this->M_Order->ListOrderItemImosAll($order);
+         foreach ($d['items'] as $key => $i) :
+             $nameid = (!empty($i->INFO1) ? $i->INFO1 : (!empty($i->INFO2) ? $i->INFO2 : (!empty($i->INFO3) ? $i->INFO3 : $i->CPID)));
+             $nameid = ($nameid == 'PN') ? $i->CPID . $i->DEPTH : $nameid;
+
+        //     $d['article'] = $nameid;
+        //     $d['position'] = $i->POSSTR;
+        //     $d['med'] = $i->HEIGHT . "x" . $i->WIDTH. "x" . $i->DEPTH;
+        //     $d['id'] = $i->ID;
+        //     $d['cpid'] = $i->CPID;
+             $d['tbody'] = $this->CreateBodyPiecesRE($i->ID, $order, $nameid, $i->POSSTR);
+        //     $d['AdAditional'] = $this->M_Order->ListPiecesAddALL($i->ID, $order);
+
+        //     $this->load->view("Imos/Order/Pdf/V_Pieces_Aditional", $d);
+
+         endforeach;
+        
+        $d['ad'] = $this->M_Order->ListOrderPiecesAditionals($order);
+        $this->load->view("Imos/Order/Pdf/V_PiecesCut", $d);
+        if ($d['ad']['count'] > 0) {
+            $item = 1;
+            $sum = 0;
+            $ad['sum'] = '0';
+            $ad['html'] = "";
+            
+            foreach ($ad['result'] as $r) :
+                
+                $descAX = $this->M_Order->ChargedCodeAXiron($r->code);
+                $desc = strtoupper((!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $r->description);
+                
+                $ad['html'] .= '<tr>
+                    <td style="text-align: center">' . $item++ . '</td>
+                    <td style="text-align: center">' . $r->code . '</td>
+                    <td>' . $desc . '</td>
+                    <td style="text-align: center">' . $r->qty . '</td>
+                    <td style="text-align: center">' . $r->height . '</td>
+                    <td style="text-align: center">' . $r->width . '</td>
+                    <td style="text-align: center">' . $r->depth . '</td>
+                </tr>';
+
+                $ad['sum'] += $r->qty;
+
+            endforeach;
+            $this->load->view("Imos/Order/Pdf/V_Pieces_Order", $ad);
+        }
+
+        $this->load->view("Imos/Order/Pdf/V_Footer");
+    }
+
     function PiecesAll($order) {
 
         $d['title'] = "LISTADO DE PIEZAS DEL PEDIDO POR MUEBLE";
@@ -286,6 +340,7 @@ class C_Pdf extends Controller {
             } else {
                 $code1 = "";
             }
+
             if (!empty($codes[1]['CNC_NAME'])) {
                 $code2 = str_replace("_", "-", $codes[1]['CNC_NAME']);
             } else {
@@ -301,7 +356,7 @@ class C_Pdf extends Controller {
                 <td style="">' . $t->NAME . '</td>
                 <td style="">' . $t->RENDERPMAT . '</td>
                 <td style="text-align: center">' . $t->MATNAME . '</td>
-                <td >' . $canto . '</td>
+                <td>' . $canto . '</td>
                 <td style="text-align: center">' . $t->FLENG . '</td>
                 <td style="text-align: center">' . $t->FWIDTH . '</td>
                 <td style="text-align: center">' . $t->FTHK . '</td>
