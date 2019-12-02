@@ -73,6 +73,7 @@ class VS_Model extends CI_Model {
                 ->where("Referencia",$referencia)
                 ->where("ITEMGROUPID not in ('87','RTA','MILESTONE_MU','Piezas','98','cafq','rep','DOTA','DOTV')")
                 ->get();
+        //echo $this->ax->last_query();
         return $result->row();
     }
     

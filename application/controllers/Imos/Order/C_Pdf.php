@@ -123,21 +123,21 @@ class C_Pdf extends Controller {
         $d['HeaderRecord'] = $this->M_Acknow->ListHeaderAck(str_replace('_', '-', $order));
         $d['Header'] = $this->M_Order->ListOrderImosAll($order);
         $d['items'] = $this->M_Order->ListOrderItemImosAll($order);
-         foreach ($d['items'] as $key => $i) :
-             $nameid = (!empty($i->INFO1) ? $i->INFO1 : (!empty($i->INFO2) ? $i->INFO2 : (!empty($i->INFO3) ? $i->INFO3 : $i->CPID)));
-             $nameid = ($nameid == 'PN') ? $i->CPID . $i->DEPTH : $nameid;
+        foreach ($d['items'] as $key => $i) :
+            $nameid = (!empty($i->INFO1) ? $i->INFO1 : (!empty($i->INFO2) ? $i->INFO2 : (!empty($i->INFO3) ? $i->INFO3 : $i->CPID)));
+            $nameid = ($nameid == 'PN') ? $i->CPID . $i->DEPTH : $nameid;
 
         //     $d['article'] = $nameid;
         //     $d['position'] = $i->POSSTR;
         //     $d['med'] = $i->HEIGHT . "x" . $i->WIDTH. "x" . $i->DEPTH;
         //     $d['id'] = $i->ID;
         //     $d['cpid'] = $i->CPID;
-             $d['tbody'] = $this->CreateBodyPiecesRE($i->ID, $order, $nameid, $i->POSSTR);
+            $d['tbody'][] = $this->CreateBodyPiecesRECut($i->ID, $order, $nameid, $i->POSSTR);
         //     $d['AdAditional'] = $this->M_Order->ListPiecesAddALL($i->ID, $order);
 
-        //     $this->load->view("Imos/Order/Pdf/V_Pieces_Aditional", $d);
+        //     $this->load->view("Imos/Order/Pdf/V_Pieces_Aditional", $d); 
 
-         endforeach;
+        endforeach;
         
         $d['ad'] = $this->M_Order->ListOrderPiecesAditionals($order);
         $this->load->view("Imos/Order/Pdf/V_PiecesCut", $d);
@@ -145,7 +145,7 @@ class C_Pdf extends Controller {
             $item = 1;
             $sum = 0;
             $ad['sum'] = '0';
-            $ad['html'] = "";
+            $ad['html'] = ""; // bloque html
             
             foreach ($ad['result'] as $r) :
                 
@@ -353,6 +353,69 @@ class C_Pdf extends Controller {
                 <td style="text-align: center">'.$nameid.'</td>
                 <td style="text-align: center">'.$pos.'.'.$code1.'</td>
                 <td style="text-align: center">' . $reference . '</td>
+                <td style="">' . $t->NAME . '</td>
+                <td style="">' . $t->RENDERPMAT . '</td>
+                <td style="text-align: center">' . $t->MATNAME . '</td>
+                <td>' . $canto . '</td>
+                <td style="text-align: center">' . $t->FLENG . '</td>
+                <td style="text-align: center">' . $t->FWIDTH . '</td>
+                <td style="text-align: center">' . $t->FTHK . '</td>
+                <td style="text-align: center">' . round($t->WEIGHT, 2) . '</td>
+                <td style="text-align: center">' . round($t->AREA, 2) . '</td>
+                <td>'. $t->TEXT1 . '</td>
+            </tr>';
+            
+        endforeach;
+        return $tbody;
+    }
+
+    function CreateBodyPiecesRECut($id, $order, $nameid, $pos){
+        $PiecesRecord = $this->M_Order->ListPiecesALL($id, $order);
+
+        $tbody = "";
+       
+        foreach ($PiecesRecord as $t):
+            //print_r($t);
+            $arrayCantos = explode(";", $t->cantos);
+            $arrayGeneral = array(" 1 : N/A ", " 2 : N/A ", " 3 : N/A ", " 4 : N/A ");
+            $array_val = array("-",";");
+            for ($i=1; $i <= count($arrayCantos); $i++) { 
+                //$array_val[] = $i;
+            }
+            if (!empty($t->cantos)) {
+                foreach ($arrayCantos as $a):
+                    //echo str_replace($array_val, "", $t->cantos);
+                    $detail = $this->M_Order->ChargedCodeAXiron(str_replace($array_val, "", substr($a,1)));
+                    print_r($detail);
+                    $arrayCanto = explode("-", $a);
+                    $arrayGeneral[$arrayCanto[0] - 1] = " " . $arrayCanto[0] . " : " . $arrayCanto[1] . " ";
+                endforeach;
+            }
+            $canto = "$arrayGeneral[0]<br />$arrayGeneral[1]<br />$arrayGeneral[2]<br />$arrayGeneral[3]";
+            $img = SERVER_IMOS . "/$order/BITMAPS/$t->ID.png";
+            $_POST['idbgpl'] = $t->ID;
+            $_POST['order'] = $order;
+            $codes = $this->M_Order->ChargedBarcode();
+
+            if (!empty($codes[0]['CNC_NAME'])) {
+                $code1 = str_replace("_", "-", $codes[0]['CNC_NAME']);
+            } else {
+                $code1 = "";
+            }
+
+            if (!empty($codes[1]['CNC_NAME'])) {
+                $code2 = str_replace("_", "-", $codes[1]['CNC_NAME']);
+            } else {
+                $code2 = "";
+            }
+
+            $reference = empty($t->IDPIEZA) ? "" : $t->IDPIEZA . '-' . $t->FLENG . 'X' . $t->FWIDTH;
+            $tbody .= '<tr>
+                <td style="text-align: center">'.str_replace("_", "-", $order).'</td>
+                <td style="text-align: center">'.$nameid.'</td>
+                <td style="text-align: center">'.$pos.'.'.$code1.'</td>
+                <td style="text-align: center">' . $reference . '</td>
+                <td style="text-align: center"></td>
                 <td style="">' . $t->NAME . '</td>
                 <td style="">' . $t->RENDERPMAT . '</td>
                 <td style="text-align: center">' . $t->MATNAME . '</td>

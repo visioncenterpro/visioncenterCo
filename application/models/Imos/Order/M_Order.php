@@ -81,7 +81,7 @@ class M_Order extends VS_Model {
                 ->where("HIGHARTIDGPRS", $id)
                 ->order_by("NCNO")
                 ->get();
-        
+        //echo $this->ix->last_query();
         return $result->result();
     }
 
@@ -181,7 +181,19 @@ class M_Order extends VS_Model {
                 ->where("RENDERP <> 'NO_RENDER'")
                 ->where("PRFNAME <> 'No Edge Application'")
                 ->get();
+        //echo $this->ix->last_query();
+        return $result->result();
+    }
 
+    function ListConsCantoxName($order,$PRFNAME) {
+        $result = $this->ix->select("PRFNAME,PRFID,RENDERP,(CONTLEN/1000) AS CONTLEN")
+                ->from("IDBPRF")
+                ->where("ORDERID", $order)
+                ->where("PRFNAME", $PRFNAME)
+                ->where("RENDERP <> 'NO_RENDER'")
+                ->where("PRFNAME <> 'No Edge Application'")
+                ->get();
+        //echo $this->ix->last_query();
         return $result->result();
     }
 
@@ -201,7 +213,7 @@ class M_Order extends VS_Model {
         $result = $this->ix->query("select ISNULL(CAMNCNOINFO.CNC_NAME,IDBGPL.BARCODE) AS CNC_NAME from IDBGPL
         LEFT JOIN CAMPARTINFO ON IDBGPL.ORDERID = CAMPARTINFO.ORDERID AND CAMPARTINFO.NCNO = IDBGPL.NCNO COLLATE Latin1_General_CS_AS  AND IDBGPL.ID = ".$this->input->post("idbgpl")."
         LEFT JOIN CAMNCNOINFO ON CAMNCNOINFO.PARTINFOID = CAMPARTINFO.PARTINFOID where IDBGPL.ORDERID = '" . $this->input->post("order") . "' AND IDBGPL.ID = ".$this->input->post("idbgpl"));
-
+        //echo $this->ix->last_query();
         return $result->result_array();
     }
 

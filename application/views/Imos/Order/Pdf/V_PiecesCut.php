@@ -125,21 +125,9 @@
         <!-- <th style="text-align: center">COMENTARIO</th> -->
     </tr>
     <?php 
-    //print_r($tbody);
-        foreach ($items as $r) : ?>
-
-            <tr>
-                <td style="text-align: center"> <?= $item++ ?></td>
-                <td style="text-align: center"> <?= $r->code ?></td>
-                <td><?= $desc ?></td>
-                <td style="text-align: center"><?= $r->qty ?></td>
-                <td style="text-align: center"><?= $r->height ?></td>
-                <td style="text-align: center"><?= $r->width ?></td>
-                <td style="text-align: center"><?= $r->depth ?></td>
-            </tr>
-
-    <?php
-            $ad['sum'] += $r->qty;
-        endforeach;
+        for ($i=0; $i < count($tbody); $i++) { 
+            echo $tbody[$i];   
+        }
     ?>
+
 </table>
