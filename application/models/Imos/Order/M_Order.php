@@ -139,7 +139,7 @@ class M_Order extends VS_Model {
     			echo count($result->result());
     			if (count($result->result()) > 0) {
 					$data_r = $result->row();
-					print_r($data_r);
+					//print_r($data_r);
 					$data = array(
 						'id_pro_sheet_area' => $data_r->id_pro_shet_area
 					);

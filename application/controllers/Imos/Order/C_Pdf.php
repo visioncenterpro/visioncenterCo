@@ -379,54 +379,58 @@ class C_Pdf extends Controller {
             $arrayCantos = explode(";", $t->cantos);
             $arrayGeneral = array(" 1 : N/A ", " 2 : N/A ", " 3 : N/A ", " 4 : N/A ");
             $array_val = array("-",";");
-            for ($i=1; $i <= count($arrayCantos); $i++) { 
+            for ($i=1; $i <= count($arrayCantos); $i++) {
                 //$array_val[] = $i;
             }
             if (!empty($t->cantos)) {
                 foreach ($arrayCantos as $a):
                     //echo str_replace($array_val, "", $t->cantos);
                     $detail = $this->M_Order->ChargedCodeAXiron(str_replace($array_val, "", substr($a,1)));
-                    print_r($detail);
+                    
                     $arrayCanto = explode("-", $a);
                     $arrayGeneral[$arrayCanto[0] - 1] = " " . $arrayCanto[0] . " : " . $arrayCanto[1] . " ";
+                    $canto = "$arrayGeneral[0]<br />$arrayGeneral[1]<br />$arrayGeneral[2]<br />$arrayGeneral[3]";
+                    $img = SERVER_IMOS . "/$order/BITMAPS/$t->ID.png";
+                    $_POST['idbgpl'] = $t->ID;
+                    $_POST['order'] = $order;
+                    $codes = $this->M_Order->ChargedBarcode();
+
+                    if (!empty($codes[0]['CNC_NAME'])) {
+                        $code1 = str_replace("_", "-", $codes[0]['CNC_NAME']);
+                    } else {
+                        $code1 = "";
+                    }
+
+                    if (!empty($codes[1]['CNC_NAME'])) {
+                        $code2 = str_replace("_", "-", $codes[1]['CNC_NAME']);
+                    } else {
+                        $code2 = "";
+                    }
+
+                    //print_r($detail);
+                    $reference = empty($t->IDPIEZA) ? "" : $t->IDPIEZA . '-' . $t->FLENG . 'X' . $t->FWIDTH;
+                    $tbody .= '<tr>
+                        <td style="text-align: center">'.str_replace("_", "-", $order).'</td>
+                        <td style="text-align: center">'.$nameid.'</td>
+                        <td style="text-align: center">'.$pos.'.'.$code1.'</td>
+                        <td style="text-align: center">' . $t->NAMEIMOS . '</td>
+                        <td style="text-align: center"></td>
+                        <td style="">' . $t->NAME . '</td>
+                        <td style="">' . $t->RENDERPMAT . '</td>
+                        <td style="text-align: center">' . $t->MATNAME . '</td>
+                        <td>' . $arrayCanto[1] . '</td>
+                        <td style="text-align: center">' . $t->FLENG . '</td>
+                        <td style="text-align: center">' . $t->FWIDTH . '</td>
+                        <td style="text-align: center">' . $t->FTHK . '</td>
+                        <td style="text-align: center">' . round($t->WEIGHT, 2) . '</td>
+                        <td style="text-align: center">' . round($t->AREA, 2) . '</td>
+                        <td>'. $detail->ITEMNAME .'</td>
+                    </tr>';
                 endforeach;
             }
-            $canto = "$arrayGeneral[0]<br />$arrayGeneral[1]<br />$arrayGeneral[2]<br />$arrayGeneral[3]";
-            $img = SERVER_IMOS . "/$order/BITMAPS/$t->ID.png";
-            $_POST['idbgpl'] = $t->ID;
-            $_POST['order'] = $order;
-            $codes = $this->M_Order->ChargedBarcode();
+            $tbody .= '<tr><td></td></tr>';
+            //print_r($arrayCantos);
 
-            if (!empty($codes[0]['CNC_NAME'])) {
-                $code1 = str_replace("_", "-", $codes[0]['CNC_NAME']);
-            } else {
-                $code1 = "";
-            }
-
-            if (!empty($codes[1]['CNC_NAME'])) {
-                $code2 = str_replace("_", "-", $codes[1]['CNC_NAME']);
-            } else {
-                $code2 = "";
-            }
-
-            $reference = empty($t->IDPIEZA) ? "" : $t->IDPIEZA . '-' . $t->FLENG . 'X' . $t->FWIDTH;
-            $tbody .= '<tr>
-                <td style="text-align: center">'.str_replace("_", "-", $order).'</td>
-                <td style="text-align: center">'.$nameid.'</td>
-                <td style="text-align: center">'.$pos.'.'.$code1.'</td>
-                <td style="text-align: center">' . $reference . '</td>
-                <td style="text-align: center"></td>
-                <td style="">' . $t->NAME . '</td>
-                <td style="">' . $t->RENDERPMAT . '</td>
-                <td style="text-align: center">' . $t->MATNAME . '</td>
-                <td>' . $canto . '</td>
-                <td style="text-align: center">' . $t->FLENG . '</td>
-                <td style="text-align: center">' . $t->FWIDTH . '</td>
-                <td style="text-align: center">' . $t->FTHK . '</td>
-                <td style="text-align: center">' . round($t->WEIGHT, 2) . '</td>
-                <td style="text-align: center">' . round($t->AREA, 2) . '</td>
-                <td>'. $t->TEXT1 . '</td>
-            </tr>';
             
         endforeach;
         return $tbody;

@@ -136,6 +136,8 @@ class C_Import extends Controller {
                         
                         if ($cell->type_field == 9) {
                             $timestamp = PHPExcel_Shared_Date::ExcelToPHP($code);
+                            //$timestamp = PHPExcel_Style_NumberFormat::toFormattedString($code,PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);
+                            //print_r($timestamp);
                             $info[$cell->field] = date("Y-m-d", $timestamp);
                         } else {
                             $info[$cell->field] = trim($code);
@@ -159,6 +161,7 @@ class C_Import extends Controller {
                         $detail = array();
                         foreach ($ResultCellDet as $cell) {
                             if ($cell->type_field == 9) {
+                                //$timestamp = PHPExcel_Style_NumberFormat::toFormattedString($sheet1->getCell($cell->row . $star)->getValue(),PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);
                                 $timestamp = PHPExcel_Shared_Date::ExcelToPHP($sheet1->getCell($cell->row . $star)->getValue());
                                 $detail[$cell->field] = date("Y-m-d", $timestamp);
                             } else {
@@ -177,7 +180,7 @@ class C_Import extends Controller {
                                         }
                                     }
                                     
-//                                    if ($code == "#N/A") { 
+//                                    if ($code == "#N/A") {
 //                                        $error .= $cell->row . $star . ",";
 //                                        $detail[$cell->field] = "#N/A";
 //                                    }
