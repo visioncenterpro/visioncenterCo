@@ -1,6 +1,8 @@
 <?php
 
 defined('BASEPATH') OR exit('No direct script access allowed');
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class C_Import extends Controller {
 
@@ -84,7 +86,7 @@ class C_Import extends Controller {
     }
 
     function Readfile($process = 4) {
-        require_once(dirname(__FILE__) . '/../../../includes/phpexcel/Classes/PHPExcel.php');
+        require __DIR__ . "vendor/autoload.php";
 
         $folder = $this->input->post('folder');
         $dir = $this->input->post('dir');
@@ -122,28 +124,30 @@ class C_Import extends Controller {
                     $ResultCellDet = $this->M_Import->ConfigCellDet($process);
                     
                     $info = array();
-                    foreach ($ResultCell as $cell) {
+                    foreach ($ResultCell as $cell) { // foreach
                         
                         $code = trim($sheet1->getCell($cell->row)->getValue());
                         //print_r(trim($sheet1->getCell($cell->row)->getValue())." - ".$cell->row." / ");
-                        if (strstr($code, '=') == true) { //validar si es formulado
+                        if (strstr($code, '=') == true) { //validar si es formulado 
                             $code = trim($sheet1->getCell($cell->row)->getOldCalculatedValue());
                             if ($code == "#N/A") {
                                 //$error .= $cell->row .",";
-                                //$detail[$cell->field] = "#N/A";
+                                //$detail[$cell->field] = "#N/A"; 
                             }
                         }
-                        
+                        $spreadsheet = new Spreadsheet();
+                        $sheet = $spreadsheet->getActiveSheet();
+                        $sheet->setCellValue('A1', 'Hello World !');
                         if ($cell->type_field == 9) {
                             $timestamp = PHPExcel_Shared_Date::ExcelToPHP($code);
-                            //$timestamp = PHPExcel_Style_NumberFormat::toFormattedString($code,PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);
-                            //print_r($timestamp);
+                            // $timestamp = PHPExcel_Style_NumberFormat::toFormattedString($code,PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);
+                            // print_r($timestamp); campo de fecha
                             $info[$cell->field] = date("Y-m-d", $timestamp);
                         } else {
                             $info[$cell->field] = trim($code);
                         }
                     }
-                    //exit;
+                    //exit; 
                     $array_exception = array(
                         array('type' => '#N/A', 'description' => 'valor no disponible en la formula o función'),
                         array('type' => '#¡NULO!', 'description' => 'rango en la funcion, incorrecto'),
@@ -161,13 +165,13 @@ class C_Import extends Controller {
                         $detail = array();
                         foreach ($ResultCellDet as $cell) {
                             if ($cell->type_field == 9) {
-                                //$timestamp = PHPExcel_Style_NumberFormat::toFormattedString($sheet1->getCell($cell->row . $star)->getValue(),PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);
+                                //$timestamp = PHPExcel_Style_NumberFormat::toFormattedString($sheet1->getCell($cell->row . $star)->getValue(),PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);  
                                 $timestamp = PHPExcel_Shared_Date::ExcelToPHP($sheet1->getCell($cell->row . $star)->getValue());
                                 $detail[$cell->field] = date("Y-m-d", $timestamp);
                             } else {
                                 
                                 $code = trim($sheet1->getCell($cell->row . $star)->getValue());
-                                $detail[$cell->field] = $code;
+                                $detail[$cell->field] = $code; 
                                 if (strstr($code, '=') == true) { //validar si es formulado
                                     $code = trim($sheet1->getCell($cell->row . $star)->getOldCalculatedValue());
                                     $detail[$cell->field] = $code;

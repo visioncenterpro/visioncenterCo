@@ -140,7 +140,7 @@ class M_Dispatch extends VS_Model {
 
         $data = array(
             "delivered_quantity" => ($data_result->quantity_dispatch - $this->cnt),
-            "quantity_dispatch" => ($data_result->quantity_dispatch - $this->cnt)
+            "quantity_dispatch"  => ($data_result->quantity_dispatch - $this->cnt)
         );
         $this->db->where("id_order_package", $this->id_order_package);
         $rs2 = $this->db->update("access_order_package", $data);
@@ -248,7 +248,7 @@ class M_Dispatch extends VS_Model {
     }
     
     function InfoRequestSD($id){
-        $result = $this->db->select("s.id_request_sd,s.driver,s.license_plate,s.dispatch_date,ifnull(sum(d.quantity_packets),0) as num_packets,ifnull(sum(if(d.`type` = 'Modulado',d.weight,0)),0)as total_weight_modulate,ifnull(sum(if(d.`type` = 'Insumos',d.weight,0)),0)as total_weight_supplies,s.id_status as status, "
+        $result = $this->db->select("s.id_request_sd,s.driver,s.license_plate,s.dispatch_date,s.start_time,s.end_time,s.dispatch_date,ifnull(sum(d.quantity_packets),0) as num_packets,ifnull(sum(if(d.`type` = 'Modulado',d.weight,0)),0)as total_weight_modulate,ifnull(sum(if(d.`type` = 'Insumos',d.weight,0)),0)as total_weight_supplies,s.id_status as status, "
                 . " s.id_weight_vehicle, v.max_weight")
                 ->from("dis_request_sd s")
                 ->join("dis_request_sd_detail d","s.id_request_sd = d.id_request_sd","left")
@@ -272,6 +272,7 @@ class M_Dispatch extends VS_Model {
         $result = $this->db->select("*")
                 ->from("dis_request_sd d")
                 ->join("dis_weight_vehicle v", "d.id_weight_vehicle = v.id_weight_vehicle")
+                ->join("dis_remission r", "d.id_request_sd = r.id_request_sd")
                 ->where("d.id_request_sd",$id_request_sd)
                 ->get();
         //echo $this->db->last_query();

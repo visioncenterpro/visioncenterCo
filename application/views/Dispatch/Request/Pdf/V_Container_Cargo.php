@@ -8,30 +8,32 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>MUEBLES Y REPISAS</td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>COMPLEMENTOS</td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>OTROS</td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>TOTAL PIEZAS</td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+        <?php foreach ($content as $key => $value) { ?>
+            <tr>
+                <td>MUEBLES Y REPISAS</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>COMPLEMENTOS</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>OTROS</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TOTAL PIEZAS</td>
+                <td style="text-align: center;"><?= $value->quantity_packages?></td>
+                <td></td>
+                <td></td>
+            </tr>
+        <?php    } ?>
     </tbody>
 </table>
 <table cellpadding="3" width="100%" style="font-size: 6pt;margin-top: 22px; page-break-inside:avoid;">
@@ -44,30 +46,32 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td style="padding: 1%;"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td style="padding: 1%;"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td style="padding: 1%;"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td style="padding: 1%;"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+        <?php foreach ($content as $key => $value) { ?>
+            <tr>
+                <td style="padding: 1%; text-align: center;"> <?= $value->client?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="padding: 1%;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="padding: 1%;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="padding: 1%;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        <?php    } ?>
     </tbody>
 </table>
 

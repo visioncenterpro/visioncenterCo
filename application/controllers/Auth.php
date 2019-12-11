@@ -70,6 +70,7 @@ class Auth extends REST_Controller
    
                 $arr_db           = $this->M_Ws->GetRequest();
                 $arr_msg_db       = $this->M_Ws->getws_message_movil();
+                //print_r($arr_db);
                
                 if (count($arr_msg_db )>0){
                     $arr_error->client_message                  = $arr_msg_db->client_message;
@@ -90,16 +91,39 @@ class Auth extends REST_Controller
                 
                 $arr_error->database_msg                    =(count($arr_db )>0) ? 'DataFound' : 'DataNotFound ' ;
                 
+                //print_r($arr_db); 
                 foreach ($arr_db as $key => $value) {
-                    $get_data_detail = $this->M_Ws->get_data_detail($value->id_request_sd);
-                    $value->document = array();
-                    foreach ($get_data_detail as $key => $value2) {
+                    //echo $key; 
+                    $val = number_format($value->id_request_sd);
+                    $date = new DateTime($value->date_created);
 
-                        $value->document[] = $value2->order." - ".$value2->client;
+                    $response->data[$key]['id_request_sd'] = intval($val);
+                    $response->data[$key]['date_created'] = $date->format('Y-m-d H:i:s'); 
+                    $response->data[$key]['license_plate'] = $value->license_plate;
+                    $response->data[$key]['dispatch_date'] = $value->dispatch_date; 
+                    $response->data[$key]['quantity_packages'] = intval($value->quantity_packages);
+                    $response->data[$key]['vehicle_type'] = $value->vehicle_type;
+                    $response->data[$key]['max_weight'] = intval($value->max_weight);
+
+                    $get_data_detail = $this->M_Ws->get_data_detail($value->id_request_sd);
+                    //$value->document = array();
+                    foreach ($get_data_detail as $key2 => $value2) {
+                        $response->data[$key]['document'][$key2] = $value2->order." - ".$value2->client;
                     }
-                    
+                    $response->data[$key]['id_status'] = intval($value->id_status);
+                    $response->data[$key]['description_status'] = $value->description_status;
                 }
-                $response->data                             = $arr_db ;
+
+                // foreach ($arr_db as $key => $value) {
+                //     $get_data_detail = $this->M_Ws->get_data_detail($value->id_request_sd);
+                //     $value->document = array();
+                //     foreach ($get_data_detail as $key => $value2) {
+
+                //         $value->document[] = $value2->order." - ".$value2->client;
+                //     }
+                    
+                // }
+                // $response->data                             = $arr_db ;
                 //$response->data['Document']                 = 'order - client';
                                       
                  $response->warning =  $arr_error;
@@ -139,16 +163,16 @@ class Auth extends REST_Controller
                 $response ->trasactions = $arr_transation;
                 $arr_db           = $this->M_Ws->SumTotalRequest();
 
-                $arr_data = array('packets' =>array('status'   =>($arr_db->status_packets>0) ? $arr_db->status_packets:0,
-                                                    'quantity' => array('total'=>($arr_db->totalqty_packets>0)? $arr_db->totalqty_packets:0,
-                                                                        'load'=>($arr_db->qty_packetsLoad>0)?$arr_db->qty_packetsLoad:0,
-                                                                        'pending'=>($arr_db->pendingqtypack>0)?$arr_db->pendingqtypack:0),
-                                                    'weight' => array('total'=>($arr_db->totalweight>0)?$arr_db->totalweight:0,
-                                                    'load'=>($arr_db->weight_packetsLoad>0)?$arr_db->weight_packetsLoad:0,
-                                                    'pending'=>($arr_db->pendingweigthload>0)?$arr_db->pendingweigthload:0)                    
-                                                                        
-                                                    )
-                                    );
+                $arr_data = array('packets' =>array(
+                    'status'   =>($arr_db->status_packets>0) ? intval($arr_db->status_packets):0,
+                    'quantity' => array('total'=>($arr_db->totalqty_packets>0)? intval($arr_db->totalqty_packets):0,
+                    'load'=>($arr_db->qty_packetsLoad>0)?intval($arr_db->qty_packetsLoad):0,
+                    'pending'=>($arr_db->pendingqtypack>0)?intval($arr_db->pendingqtypack):0),
+                    'weight' => array('total'=>($arr_db->totalweight>0)?intval($arr_db->totalweight):0,
+                    'load'=>($arr_db->weight_packetsLoad>0)?intval($arr_db->weight_packetsLoad):0,
+                    'pending'=>($arr_db->pendingweigthload>0)?intval($arr_db->pendingweigthload):0)
+                ));
+                
                 $arr_msg_db       = $this->M_Ws->getws_message_movil();
 
                 if (count($arr_msg_db )==1){

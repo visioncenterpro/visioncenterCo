@@ -195,7 +195,7 @@ class C_Dispatch extends Controller {
         $data['content'] = $this->M_Dispatch->LoadContainerSD1($id_request_sd);
         $this->load->view("Dispatch/Request/Pdf/V_Head_Cargo",$data);
         
-        $this->load->view('Dispatch/Request/pdf/V_Container_Cargo', array('content' => ''));
+        $this->load->view('Dispatch/Request/pdf/V_Container_Cargo', $data);
         
         //$this->load->view('Dispatch/Request/pdf/V_Table_Total',$data);
     }

@@ -96,7 +96,7 @@ class M_Ws extends CI_Model
 							->ORDER_BY(' a.NAME ','asc')
 							->ORDER_BY(' a.pack','asc')
 							->get();
-
+							//echo $this->db->last_query();
 		return $result->result();
 
 	}
