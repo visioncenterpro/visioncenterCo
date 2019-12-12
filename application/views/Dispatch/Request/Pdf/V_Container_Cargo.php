@@ -23,7 +23,7 @@
             </tr>
             <tr>
                 <td>OTROS</td>
-                <td></td>
+                <td style="text-align: center;"><?= $value->quantity_packages?> Paquetes</td>
                 <td></td>
                 <td></td>
             </tr>
@@ -33,7 +33,7 @@
                 <td></td>
                 <td></td>
             </tr>
-        <?php    } ?>
+        <?php  } ?>
     </tbody>
 </table>
 <table cellpadding="3" width="100%" style="font-size: 6pt;margin-top: 22px; page-break-inside:avoid;">
@@ -45,17 +45,11 @@
             <th style="text-align:center; width: 50px;"> ##### </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody> <!--  -->
         <?php foreach ($content as $key => $value) { ?>
             <tr>
                 <td style="padding: 1%; text-align: center;"> <?= $value->client?></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="padding: 1%;"></td>
-                <td></td>
+                <td style="text-align: center;"> CNT-<?= $value->id_request_sd?></td>
                 <td></td>
                 <td></td>
             </tr>
@@ -71,7 +65,13 @@
                 <td></td>
                 <td></td>
             </tr>
-        <?php    } ?>
+            <tr>
+                <td style="padding: 1%;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        <?php } ?>
     </tbody>
 </table>
 

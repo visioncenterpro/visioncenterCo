@@ -33,7 +33,7 @@
     }
 </style>
 
-<?php foreach ($content as $key => $value) { 
+<?php foreach ($content as $key => $value) {
     $date = new DateTime($value->start_time);
     $dateEnd = new DateTime($value->end_time);
 ?>
@@ -61,8 +61,8 @@
         <td colspan="8">TIPO VEHICULO: <?= $value->description ?></td>
     </tr>
     <tr>
-        <td colspan="4">HORA INICIO: <?= $date->format('H:i:s')?></td>
-        <td colspan="4">HORA FIN: <?= $dateEnd->format('H:i:s')?></td>
+        <td colspan="4">HORA INICIO: <?= $date->format('Y-m-d H:i:s')?></td>
+        <td colspan="4">HORA FIN: <?= $dateEnd->format('Y-m-d H:i:s')?></td>
     </tr>
 </table>
 <?php } ?>

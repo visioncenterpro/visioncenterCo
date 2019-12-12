@@ -728,6 +728,12 @@ class M_Dispatch extends VS_Model {
         }
     }
 
+    function get_data_remission_all(){
+        $query = ("SELECT * FROM dis_remission");
+        $result = $this->db->query($query);
+        return $result->result(); 
+    }
+
     function get_data_remission_ini($id_request){
         $query = ("SELECT * FROM dis_remission R WHERE R.id_request_sd = $id_request");
         $result = $this->db->query($query);

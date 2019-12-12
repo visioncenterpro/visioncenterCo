@@ -190,13 +190,31 @@ class C_Dispatch extends Controller {
         echo json_encode($data);
     }
 
+    function request_cargo_form(){ // formulario de control de cargue
+        $array['menus'] = $this->M_Main->ListMenu();
+
+        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
+        $this->load->view('Template/V_Header', $Header);
+
+        $data['remissions'] = $this->M_Dispatch->get_data_remission();
+        $data['table'] = $this->load->view('Dispatch/Request/V_Table_Request_Cargo',$data,true);
+        
+        $this->load->view('Dispatch/Request/V_Panel_request_cargo',$data);
+
+        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
+        $Footer["btn_datatable"] = BTN_DATATABLE_JS;
+        $this->load->view('Template/V_Footer', $Footer);
+    }
+
     function request_cargo($id_request_sd){
         $data['head'] = $this->M_Dispatch->InfoRequestSD($id_request_sd);
         $data['content'] = $this->M_Dispatch->LoadContainerSD1($id_request_sd);
+
         $this->load->view("Dispatch/Request/Pdf/V_Head_Cargo",$data);
-        
         $this->load->view('Dispatch/Request/pdf/V_Container_Cargo', $data);
-        
+
         //$this->load->view('Dispatch/Request/pdf/V_Table_Total',$data);
     }
 
