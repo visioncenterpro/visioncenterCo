@@ -197,7 +197,7 @@ class C_Dispatch extends Controller {
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
         $this->load->view('Template/V_Header', $Header);
 
-        $data['remissions'] = $this->M_Dispatch->get_data_remission();
+        $data['remissions'] = $this->M_Dispatch->get_data_remission_all();
         $data['table'] = $this->load->view('Dispatch/Request/V_Table_Request_Cargo',$data,true);
         
         $this->load->view('Dispatch/Request/V_Panel_request_cargo',$data);
@@ -212,7 +212,7 @@ class C_Dispatch extends Controller {
         $data['head'] = $this->M_Dispatch->InfoRequestSD($id_request_sd);
         $data['content'] = $this->M_Dispatch->LoadContainerSD1($id_request_sd);
 
-        $this->load->view("Dispatch/Request/Pdf/V_Head_Cargo",$data);
+        $this->load->view('Dispatch/Request/Pdf/V_Head_Cargo',$data);
         $this->load->view('Dispatch/Request/pdf/V_Container_Cargo', $data);
 
         //$this->load->view('Dispatch/Request/pdf/V_Table_Total',$data);

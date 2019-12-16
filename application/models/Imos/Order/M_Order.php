@@ -72,7 +72,7 @@ class M_Order extends VS_Model {
         return ($result)?"OK":"Error : ".$this->ix->last_query();
         
     }
-
+ 
     function ListPiecesALL($id, $order) {
         $result = $this->ix->select("ProductivoImosIX.dbo.Cants(ORDERID,ID) as cantos,IDGRPS,ID,ORDERIDGPRS,ORDERID,TYPGRPS,JAYM_IMOSTYP.IDPIEZA,JAYM_IMOSTYP.NAMEIMOS,JAYM_IMOSTYP.NAME,FWIDTH,FLENG,AREA,WEIGHT,BARCODE,RENDERPMAT,MATNAME,FTHK,JaymIdbGRPS_GPLI_INFO.TEXT1,JaymIdbGRPS_GPLI_INFO.TEXT2")
                 ->from("JaymIdbGRPS_GPLI_INFO")
@@ -136,7 +136,7 @@ class M_Order extends VS_Model {
     			->from("pro_sheet_area")
     			->where("format",$value->format)
     			->get();
-    			echo count($result->result());
+    			//echo count($result->result());
     			if (count($result->result()) > 0) {
 					$data_r = $result->row();
 					//print_r($data_r);
