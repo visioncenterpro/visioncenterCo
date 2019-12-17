@@ -728,10 +728,31 @@ class M_Dispatch extends VS_Model {
         }
     }
 
+    function get_data_trunk($id_request_sd){
+        $this->db->trans_begin();
+
+        $query = ("SELECT * FROM dis_request_sd D INNER JOIN dis_weight_vehicle V ON D.id_weight_vehicle = V.id_weight_vehicle WHERE D.id_request_sd = $id_request_sd");
+        $result = $this->db->query($query);
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return $array['error'] = "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            return $result->result();
+        }
+    }
+
     function get_data_remission_all(){
         $query = ("SELECT * FROM dis_remission");
         $result = $this->db->query($query);
         return $result->result(); 
+    }
+
+    function get_data_request(){
+        $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_sd R ON D.id_request_sd = R.id_request_sd INNER JOIN dis_weight_vehicle V ON R.id_weight_vehicle = V.id_weight_vehicle GROUP BY D.id_request_sd");
+        $result = $this->db->query($query);
+        return $result->result();
     }
 
     function get_data_remission_ini($id_request){

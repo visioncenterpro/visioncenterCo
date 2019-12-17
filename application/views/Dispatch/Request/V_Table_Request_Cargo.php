@@ -10,7 +10,7 @@
     <tbody>
         <?php  foreach ($remissions as $r) : ?>
             <tr>
-                <td style="text-align:center"><input type="checkbox" id="<?=$r->id_remission?>"></td>
+                <td style="text-align:center"><input type="checkbox" id="remissions" value="<?= $r->id_request_sd ?>"></td>
                 <td style="text-align:center"><?=$r->id_remission?></td>
                 <td style="text-align:center"><?=$r->client?></td>
                 <td style="text-align:center"><?=$r->project?></td>
