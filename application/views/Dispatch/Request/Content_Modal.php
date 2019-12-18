@@ -24,3 +24,7 @@
 	<label>Hora Fín</label>
 	<input type="text" class="form-control" id="end_time" placeholder="Hora Fín" disabled="disabled">
 </div>
+<div class="form-group">
+	<label>Observaciones</label>
+	<textarea class="form-control"></textarea>
+</div>

@@ -14,7 +14,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">SOLICITUD DESPACHO <?=$id_request_sd?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CONDUCTOR:&nbsp; <?=$driver?>&nbsp;&nbsp;&nbsp;&nbsp;PLACA&deg; :&nbsp;<?=$license_plate?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <td colspan="2">SOLICITUD DESPACHO <?=$id_request_sd?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CONDUCTOR:&nbsp; <?=$driver?><br/>PLACA&deg; :&nbsp;<?=$license_plate?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         ETIQUETA N&deg; :&nbsp; <?=$ticket?> &nbsp;(<?=$count?>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </td>
                 </tr>

@@ -755,6 +755,13 @@ class M_Dispatch extends VS_Model {
         return $result->result();
     }
 
+    function get_data_requestXid($id_request_sd){
+        $id_request_sd = implode(',', $id_request_sd);
+        $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_sd R ON D.id_request_sd = R.id_request_sd INNER JOIN dis_weight_vehicle V ON R.id_weight_vehicle = V.id_weight_vehicle WHERE R.id_request_sd IN($id_request_sd) GROUP BY D.id_request_sd");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
     function get_data_remission_ini($id_request){
         $query = ("SELECT * FROM dis_remission R WHERE R.id_request_sd = $id_request");
         $result = $this->db->query($query);

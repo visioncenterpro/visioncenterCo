@@ -6,7 +6,7 @@ class C_Dispatch extends Controller {
 
     public function __construct() {
         parent::__construct();
-        if($this->router->fetch_method() != "report_supervisory"){
+        if($this->router->fetch_method() != "report_supervisory" || $this->router->fetch_method() != "request_cargo"){
             $this->ValidateSession();
         }
         $this->load->model("Dispatch/M_Dispatch");
@@ -199,25 +199,31 @@ class C_Dispatch extends Controller {
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
         $this->load->view('Template/V_Header', $Header);
 
-        $data['remissions'] = $this->M_Dispatch->get_data_remission_all();
-        $data['data_request'] = $this->M_Dispatch->get_data_request();
-        $data['table'] = $this->load->view('Dispatch/Request/V_Table_Request_Cargo',$data,true);
-        $data['content_modal'] = $this->load->view('Dispatch/Request/Content_Modal',$data,true);
+        $data['remissions']     = $this->M_Dispatch->get_data_remission_all();
+        $data['data_request']   = $this->M_Dispatch->get_data_request();
+        $data['table']          = $this->load->view('Dispatch/Request/V_Table_Request_Cargo',$data,true);
+        $data['content_modal']  = $this->load->view('Dispatch/Request/Content_Modal',$data,true);
         
         $this->load->view('Dispatch/Request/V_Panel_request_cargo',$data);
 
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
-        $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
+        $Footer['array_js']     = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
         $this->load->view('Template/V_Footer', $Footer);
     }
 
-    function data_truck(){
-        $data = array();
+    function modal_add_data(){
         $array_id = $this->input->post('array_id');
-        for ($i=0; $i < count($array_id); $i++) {
-            $data[] = $this->M_Dispatch->get_data_trunk($array_id[$i]);
-        }
+        $data['data_request']   = $this->M_Dispatch->get_data_requestXid($array_id);
+        $data['content_modal']  = $this->load->view('Dispatch/Request/Content_Modal',$data,true);
+        echo json_encode($data);
+    }
+
+    function data_truck(){
+        $array_id = $this->input->post('id_request_sd');
+        //for ($i=0; $i < count($array_id); $i++) {
+            $data = $this->M_Dispatch->get_data_trunk($array_id);
+        //}
         echo json_encode($data);
     }
 
