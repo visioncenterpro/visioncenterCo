@@ -1,7 +1,7 @@
 <table id="table_request" class="table table-bordered table-striped table-condensed ">
     <thead>
         <tr>
-            <th style="text-align:center"><input type="checkbox" id="all"></th>
+            <th style="text-align:center"><input type="checkbox" id="all" onclick="allF()"></th>
             <th style="text-align:center">REMISION</th>
             <th style="text-align:center">CLIENTE</th>
             <th style="text-align:center">PROYECTO</th>

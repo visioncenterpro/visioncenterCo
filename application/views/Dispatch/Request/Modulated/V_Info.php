@@ -325,7 +325,7 @@
         var order = $("#order_gp").val();
         var id_delivery_detail = $("#id_delivery_detailFF").val();
 
-        var arr_modulate = document.querySelectorAll("#quantity_h");
+        var arr_modulate = document.querySelectorAll("#quantity_h"); //remissions
         var total_modulate = 0;
         arr_modulate.forEach(function(element){
             total_modulate = parseInt(total_modulate) + parseInt(element.value);

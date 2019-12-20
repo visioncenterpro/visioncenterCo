@@ -1,20 +1,23 @@
+<?php
+print_r($data_request);
+?>
+<div class="form-group">
+	<label>Placa</label>
+	<!-- <input type="text" class="form-control" id="license_plate" placeholder="Placa" disabled="disabled"> -->
+	<select class="form-control" id="license_plate" onchange="type_truck()">
+		<?php foreach ($data_request as $key => $value) { ?>
+			<option value="<?= $value->id_request_sd?>"><?= $value->license_plate?></option>
+		<?php } ?>
+	</select>
+	<input type="text" class="form-control" id="add_license">
+</div>
 <div class="form-group">
 	<label>Conductor</label>
-	<select class="form-control" id="driver" onchange="type_truck()">
-		<?php foreach ($data_request as $key => $value) {
-			//if ($value->driver != "Pendiente") { ?>
-				<option value="<?= $value->id_request_sd?>"><?= $value->driver?></option>
-		<?php //} 
-			 } ?>
-	</select>
+	<input type="text" class="form-control" id="driver">
 </div>
 <div class="form-group">
 	<label>Tipo Camión</label>
 	<input type="text" class="form-control" id="type_truck" placeholder="Tipo de Camión" disabled="disabled">
-</div>
-<div class="form-group">
-	<label>Placa</label>
-	<input type="text" class="form-control" id="license_plate" placeholder="Placa" disabled="disabled">
 </div>
 <div class="form-group">
 	<label>Hora Inicio</label>
@@ -26,5 +29,5 @@
 </div>
 <div class="form-group">
 	<label>Observaciones</label>
-	<textarea class="form-control"></textarea>
+	<textarea class="form-control" id="observation"></textarea>
 </div>

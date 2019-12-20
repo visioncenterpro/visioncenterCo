@@ -33,7 +33,7 @@
     }
 </style>
 
-<table  cellpadding="3" width="100%" style="font-size: 7pt; page-break-inside:avoid;">
+<table cellpadding="3" width="100%" style="font-size: 7pt; page-break-inside:avoid;">
     <tr>
         <td rowspan="3" width="4%"><img src="<?= URL_IMAGE.$this->session->company ?>" width="140px" height="60px" /></td>
         <td colspan="3" style="text-align: center;"><h3>REMISION DE DESPACHO</h3></td>

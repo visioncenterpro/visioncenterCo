@@ -8,32 +8,37 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($content as $key => $value) { ?>
-            <tr>
-                <td>MUEBLES Y REPISAS</td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>COMPLEMENTOS</td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>OTROS</td>
-                <td style="text-align: center;"><?= $value->quantity_packages?> Paquetes</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>TOTAL PIEZAS</td>
-                <td style="text-align: center;"><?= $value->quantity_packages?></td>
-                <td></td>
-                <td></td>
-            </tr>
-        <?php  } ?>
+        <?php
+        $quantity_packages = 0;
+        for ($i=0; $i < count($content); $i++) {
+            foreach ($content[$i] as $key => $value) {
+                $quantity_packages = $quantity_packages + $value->quantity_packages; 
+            } 
+        } ?>
+        <tr>
+            <td>MUEBLES Y REPISAS</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>COMPLEMENTOS</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>OTROS</td>
+            <td style="text-align: center;"><?= $quantity_packages?> Paquetes</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>TOTAL PIEZAS</td>
+            <td style="text-align: center;"><?= $quantity_packages?></td>
+            <td></td>
+            <td></td>
+        </tr>
     </tbody>
 </table>
 <table cellpadding="3" width="100%" style="font-size: 6pt;margin-top: 22px; page-break-inside:avoid;">
@@ -46,32 +51,18 @@
         </tr>
     </thead>
     <tbody> <!--  -->
-        <?php foreach ($content as $key => $value) { ?>
+        <?php 
+        for ($e=0; $e < count($content); $e++) { 
+        foreach ($content[$e] as $key => $value) { ?>
             <tr>
                 <td style="padding: 1%; text-align: center;"> <?= $value->client?></td>
                 <td style="text-align: center;"> CNT-<?= $value->id_request_sd?></td>
                 <td></td>
                 <td></td>
             </tr>
-            <tr>
-                <td style="padding: 1%;"></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="padding: 1%;"></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="padding: 1%;"></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        <?php } ?>
+            
+        <?php }
+        } ?>
     </tbody>
 </table>
 
@@ -85,13 +76,7 @@
             <td colspan="2" style="text-align: center; font-weight: bold;">OBSERVACIONES</td>
         </tr>
         <tr>
-            <td colspan="2" style="padding: 1%;"></td>
-        </tr>
-        <tr>
-            <td colspan="2" style="padding: 1%;"></td>
-        </tr>
-        <tr>
-            <td colspan="2" style="padding: 1%;"></td>
+            <td colspan="2" style="padding: 1%; font-size: 11px; text-align: center;"><?= $data_cargue->observation ?></td>
         </tr>
         <tr>
             <td colspan="2" style="padding: 1%; text-align: center; font-size: 12px;">Nota: Este documento hace constancia del recibido a satisfacción de la mercancia despachada en cuanto a cantidades relacionadas en facturas y remisiones, embalaje y forma adecuada del cargue.</td>

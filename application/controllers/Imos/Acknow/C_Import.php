@@ -86,7 +86,7 @@ class C_Import extends Controller {
     }
 
     function Readfile($process = 4) {
-        require __DIR__ . "vendor/autoload.php";
+        require __DIR__ . "\vendor\autoload.php";
 
         $folder = $this->input->post('folder');
         $dir = $this->input->post('dir');
@@ -140,7 +140,7 @@ class C_Import extends Controller {
                         $sheet->setCellValue('A1', 'Hello World !');
                         if ($cell->type_field == 9) {
                             $timestamp = PHPExcel_Shared_Date::ExcelToPHP($code);
-                            // $timestamp = PHPExcel_Style_NumberFormat::toFormattedString($code,PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);
+                            // $timestamp = PHPExcel_Style_NumberFormat::toFormattedString($code,PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY); 
                             // print_r($timestamp); campo de fecha
                             $info[$cell->field] = date("Y-m-d", $timestamp);
                         } else {

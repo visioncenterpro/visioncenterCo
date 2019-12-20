@@ -203,13 +203,21 @@ class C_Dispatch extends Controller {
         $data['data_request']   = $this->M_Dispatch->get_data_request();
         $data['table']          = $this->load->view('Dispatch/Request/V_Table_Request_Cargo',$data,true);
         $data['content_modal']  = $this->load->view('Dispatch/Request/Content_Modal',$data,true);
-        
         $this->load->view('Dispatch/Request/V_Panel_request_cargo',$data);
 
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js']     = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
         $this->load->view('Template/V_Footer', $Footer);
+    }
+
+    function create_request_cargo(){
+        $data['id'] = $this->M_Dispatch->create_request_cargo();
+        $array_id = $this->input->post('array_id');
+        for ($i=0; $i < count($array_id); $i++) { 
+            $data['detail'] = $this->M_Dispatch->create_request_cargo_detail($array_id[$i],$data['id']);
+        }
+        echo json_encode($data);
     }
 
     function modal_add_data(){
@@ -227,10 +235,15 @@ class C_Dispatch extends Controller {
         echo json_encode($data);
     }
 
-    function request_cargo($id_request_sd){
+    function request_cargo($id_request_cargo){
+        $get_request_cargo = $this->M_Dispatch->get_request_cargo($id_request_cargo);
+        $get_request_cargo_detail = $this->M_Dispatch->get_request_cargo_detail($id_request_cargo);
         $data = array();
-        $data['content'] = $this->M_Dispatch->LoadContainerSD1($id_request_sd);
-        $data['head'] = $this->M_Dispatch->InfoRequestSD($id_request_sd);
+        foreach ($get_request_cargo_detail as $key => $value) {
+            $data['content'][] = $this->M_Dispatch->LoadContainerSD1($value->id_request_sd);
+        }
+        $data['data_cargue'] = $get_request_cargo;
+        $data['head'] = $this->M_Dispatch->LoadContainerSD1($get_request_cargo->id_data_header);
 
         $this->load->view('Dispatch/Request/Pdf/V_Head_Cargo',$data);
         $this->load->view('Dispatch/Request/pdf/V_Container_Cargo', $data);

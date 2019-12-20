@@ -93,7 +93,7 @@ class Auth extends REST_Controller
                 
                 //print_r($arr_db); 
                 foreach ($arr_db as $key => $value) {
-                    //echo $key; 
+                    //echo $key;
                     $val = number_format($value->id_request_sd);
                     $date = new DateTime($value->date_created);
 
@@ -172,7 +172,7 @@ class Auth extends REST_Controller
                     'load'=>($arr_db->weight_packetsLoad>0)?floatval($arr_db->weight_packetsLoad):0,
                     'pending'=>($arr_db->pendingweigthload>0)?floatval($arr_db->pendingweigthload):0)
                 ));
-                
+
                 $arr_msg_db       = $this->M_Ws->getws_message_movil();
 
                 if (count($arr_msg_db )==1){

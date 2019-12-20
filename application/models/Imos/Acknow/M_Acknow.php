@@ -132,7 +132,7 @@ class M_Acknow extends VS_Model {
 
             if ($nameItem == 'PN') {
                 //$this->db->where("concat(code,code1,code_esp)", $nameItem);
-            } else { 
+            } else {
                 $this->db->where("CONCAT(code,code1,if(code_esp = '','','_'),code_esp) = '$nameItem' ");
                 $data = array("highart" => $t->ID, "type" => "M");
                 $this->db->where("id_import_salestable", $id_import);

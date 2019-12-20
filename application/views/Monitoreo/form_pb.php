@@ -385,7 +385,7 @@
         });
     });
 
-    var json_array_arr = {   
+    var json_array_arr = {
         "id_project_construccion": '',
         "id_stage_construction": '',
         "id_stage_project_construction": '',

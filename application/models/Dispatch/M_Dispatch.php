@@ -743,10 +743,62 @@ class M_Dispatch extends VS_Model {
         }
     }
 
-    function get_data_remission_all(){
-        $query = ("SELECT * FROM dis_remission");
+    function get_data_remission_all(){ // cambiar a 18
+        $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_sd R ON D.id_request_sd = R.id_request_sd WHERE R.id_status = 17");
         $result = $this->db->query($query);
         return $result->result(); 
+    }
+
+    function create_request_cargo(){
+        $this->db->trans_begin();
+
+        $data = array(
+            "id_data_header"    => $this->id_data_header,
+            "observation"       => $this->observation
+        );
+
+        $this->db->insert("dis_request_cargue",$data);
+        $id = $this->db->insert_id();
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return $array['error'] = "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            return $id;
+        }
+    }
+
+    function create_request_cargo_detail($id_request_sd,$id_request_cargo){
+        $this->db->trans_begin();
+
+        $data = array(
+            "id_request_sd"     => $id_request_sd,
+            "id_request_cargue" => $id_request_cargo
+        );
+
+        $this->db->insert("dis_request_cargue_detail",$data);
+        $id = $this->db->insert_id();
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return $array['error'] = "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            return $id;
+        }
+    }
+
+    function get_request_cargo($id_request_cargo){
+        $query = ("SELECT * FROM dis_request_cargue WHERE id_request_cargue = $id_request_cargo");
+        $result = $this->db->query($query);
+        return $result->row();
+    }
+
+    function get_request_cargo_detail($id_request_cargo){
+        $query = ("SELECT * FROM dis_request_cargue_detail WHERE id_request_cargue = $id_request_cargo");
+        $result = $this->db->query($query);
+        return $result->result();
     }
 
     function get_data_request(){

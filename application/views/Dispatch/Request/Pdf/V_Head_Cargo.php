@@ -33,11 +33,11 @@
     }
 </style>
 
-<?php foreach ($content as $key => $value) {
+<?php foreach ($head as $key => $value) {
     $date = new DateTime($value->start_time);
     $dateEnd = new DateTime($value->end_time);
 ?>
-<table  cellpadding="3" width="100%" style="font-size: 7pt; page-break-inside:avoid;">
+<table cellpadding="3" width="100%" style="font-size: 7pt; page-break-inside:avoid;">
     <tr>
         <td width="4%"><img src="<?= URL_IMAGE.$this->session->company ?>" width="140px" height="60px" /></td>
         <td colspan="4" style="text-align: center;"><h3>CONTROL DE CARGUE</h3></td>
