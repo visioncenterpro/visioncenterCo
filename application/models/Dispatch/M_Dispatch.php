@@ -268,12 +268,33 @@ class M_Dispatch extends VS_Model {
         return $result->row();
     }
 
+    function LoadDataHeaderCargo($id_request_sd){
+        $result = $this->db->select("*")
+                ->from("dis_request_sd D")
+                ->join("dis_weight_vehicle V", "D.id_weight_vehicle = V.id_weight_vehicle")
+                ->where("id_request_sd",$id_request_sd)
+                ->get();
+        //echo $this->db->last_query();
+        return $result->result();
+    }
+
     function LoadContainerSD1($id_request_sd){
         $result = $this->db->select("*")
                 ->from("dis_request_sd d")
                 ->join("dis_weight_vehicle v", "d.id_weight_vehicle = v.id_weight_vehicle")
                 ->join("dis_remission r", "d.id_request_sd = r.id_request_sd")
                 ->where("d.id_request_sd",$id_request_sd)
+                ->get();
+        //echo $this->db->last_query();
+        return $result->result();
+    }
+
+    function LoadContainerXremission($id_remission){
+        $result = $this->db->select("*")
+                ->from("dis_request_sd d")
+                ->join("dis_weight_vehicle v", "d.id_weight_vehicle = v.id_weight_vehicle")
+                ->join("dis_remission r", "d.id_request_sd = r.id_request_sd")
+                ->where("r.id_remission",$id_remission)
                 ->get();
         //echo $this->db->last_query();
         return $result->result();
@@ -746,14 +767,24 @@ class M_Dispatch extends VS_Model {
     function get_data_remission_all(){ // cambiar a 18
         $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_sd R ON D.id_request_sd = R.id_request_sd WHERE R.id_status = 17");
         $result = $this->db->query($query);
-        return $result->result(); 
+        return $result->result();
     }
 
     function create_request_cargo(){
         $this->db->trans_begin();
 
+        if ($this->text == "") {
+            $this->text = "Pendiente";
+        }
         $data = array(
-            "id_data_header"    => $this->id_data_header,
+            "license_plate" => $this->text
+        );
+
+        $this->db->where("id_request_sd", $this->id_data_header);
+        $this->db->update("dis_request_sd",$data);
+
+        $data = array(
+            "id_data_header"    => $this->id_data_header, //id_request_sd
             "observation"       => $this->observation
         );
 
@@ -769,12 +800,13 @@ class M_Dispatch extends VS_Model {
         }
     }
 
-    function create_request_cargo_detail($id_request_sd,$id_request_cargo){
+    function create_request_cargo_detail($id_remission,$id_request_cargo,$id_request_sd){
         $this->db->trans_begin();
 
         $data = array(
-            "id_request_sd"     => $id_request_sd,
-            "id_request_cargue" => $id_request_cargo
+            "id_request_cargue" => $id_request_cargo,
+            "id_remission"      => $id_remission,
+            "id_request_sd"     => $id_request_sd
         );
 
         $this->db->insert("dis_request_cargue_detail",$data);

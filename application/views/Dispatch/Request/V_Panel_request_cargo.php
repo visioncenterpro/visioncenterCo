@@ -39,7 +39,6 @@
 <script>
     $(document).ready(function(){
         $("#table_request").DataTable();
-        $("#add_license").hide();
     });
 
     function allF(){
@@ -55,21 +54,31 @@
 
     function modal_add(){
 
+        var array_sds = []
+        var request_sd = document.querySelectorAll("#requests_sd");
+        request_sd.forEach(function(element){
+            array_sds.push(element.value);
+        });
+
+        var cont = 0;
         var array_id = [];
+        var array_sds2 = [];
         var chk = document.querySelectorAll("#remissions");
         chk.forEach(function(element){
             if(element.checked == true){
                 array_id.push(element.value);
+                array_sds2.push(array_sds[cont]);
             }
+            cont++;
         });
 
         if (array_id.length == 0) {
             swal({title: 'Error', text: 'Escoga una solicitud', type: 'error'});
         }else{
-            $.post("<?= base_url() ?>Dispatch/C_Dispatch/modal_add_data", {array_id:array_id}, function (data) {
-               //console.log(data);
-               $("#modal-add-content").html(data.content_modal);
-               $("#modal-add").modal("show");
+            $.post("<?= base_url() ?>Dispatch/C_Dispatch/modal_add_data", {array_id:array_sds2}, function (data) {
+                    $("#modal-add-content").html(data.content_modal);
+                    $("#modal-add").modal("show");
+                    $("#add_license2").hide();
             }, 'json').fail(function (error) {
                 swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
             });
@@ -77,15 +86,18 @@
     }
 
     function type_truck(){
-        var id_request_sd = $("#driver").val();
-        var text = $( "#myselect option:selected" ).text();
+        var id_request_sd = $("#license_plate").val();
+        var text = $( "#license_plate option:selected" ).text();
         if(text == "Pendiente"){
-            $("#add_license").show();
+            $("#add_license2").show();
+        }else{
+            $("#add_license2").hide();
         }
         $.post("<?= base_url() ?>Dispatch/C_Dispatch/data_truck", {id_request_sd:id_request_sd}, function (data) {
             console.log(data);
+            $("#driver").val(data[0].driver);
             $("#type_truck").val(data[0].description);
-            $("#license_plate").val(data[0].license_plate);
+            //$("#license_plate").val(data[0].license_plate);
             $("#start_time").val(data[0].start_time);
             $("#end_time").val(data[0].end_time);
         }, 'json').fail(function (error) {
@@ -94,16 +106,34 @@
     }
 
     function report(){ // reporte control cargue
+        var array_sds = []
+        var request_sd = document.querySelectorAll("#requests_sd");
+        request_sd.forEach(function(element){
+            array_sds.push(element.value);
+        });
+
+        var cont = 0;
         var array_id = [];
+        var array_sds2 = [];
         var chk = document.querySelectorAll("#remissions");
         chk.forEach(function(element){
             if(element.checked == true){
                 array_id.push(element.value);
+                array_sds2.push(array_sds[cont]);
             }
+            cont++;
         });
+
         var observation = $("#observation").val();
-        var id_data_header = $("#driver").val();
-        $.post("<?= base_url() ?>Dispatch/C_Dispatch/create_request_cargo", {id_data_header:id_data_header,observation:observation,array_id:array_id}, function (data) {
+        var id_data_header = $("#license_plate").val();
+        var text = $( "#license_plate option:selected" ).text();
+        if(text == "Pendiente"){
+            text = $("#add_license2").val();
+        }else{
+            text = "";
+        }
+
+        $.post("<?= base_url() ?>Dispatch/C_Dispatch/create_request_cargo", {id_data_header:id_data_header,observation:observation,array_id:array_id,text:text,array_sds:array_sds2}, function (data) {
             console.log(data);
             var a = document.createElement('a');
             a.href = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo/'+data.id;

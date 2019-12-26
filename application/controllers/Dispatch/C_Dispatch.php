@@ -212,10 +212,12 @@ class C_Dispatch extends Controller {
     }
 
     function create_request_cargo(){
+
         $data['id'] = $this->M_Dispatch->create_request_cargo();
         $array_id = $this->input->post('array_id');
+        $array_sd = $this->input->post('array_sds');
         for ($i=0; $i < count($array_id); $i++) { 
-            $data['detail'] = $this->M_Dispatch->create_request_cargo_detail($array_id[$i],$data['id']);
+            $data['detail'] = $this->M_Dispatch->create_request_cargo_detail($array_id[$i],$data['id'],$array_sd[$i]);
         }
         echo json_encode($data);
     }
@@ -240,10 +242,10 @@ class C_Dispatch extends Controller {
         $get_request_cargo_detail = $this->M_Dispatch->get_request_cargo_detail($id_request_cargo);
         $data = array();
         foreach ($get_request_cargo_detail as $key => $value) {
-            $data['content'][] = $this->M_Dispatch->LoadContainerSD1($value->id_request_sd);
+            $data['content'][] = $this->M_Dispatch->LoadContainerXremission($value->id_remission);
         }
         $data['data_cargue'] = $get_request_cargo;
-        $data['head'] = $this->M_Dispatch->LoadContainerSD1($get_request_cargo->id_data_header);
+        $data['head'] = $this->M_Dispatch->LoadDataHeaderCargo($get_request_cargo->id_data_header);
 
         $this->load->view('Dispatch/Request/Pdf/V_Head_Cargo',$data);
         $this->load->view('Dispatch/Request/pdf/V_Container_Cargo', $data);

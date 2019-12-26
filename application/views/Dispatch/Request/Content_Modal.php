@@ -1,6 +1,3 @@
-<?php
-print_r($data_request);
-?>
 <div class="form-group">
 	<label>Placa</label>
 	<!-- <input type="text" class="form-control" id="license_plate" placeholder="Placa" disabled="disabled"> -->
@@ -9,11 +6,12 @@ print_r($data_request);
 			<option value="<?= $value->id_request_sd?>"><?= $value->license_plate?></option>
 		<?php } ?>
 	</select>
-	<input type="text" class="form-control" id="add_license">
+	<br/>
+	<input type="text" class="form-control" id="add_license2" placeholder="Agregar Placa">
 </div>
 <div class="form-group">
 	<label>Conductor</label>
-	<input type="text" class="form-control" id="driver">
+	<input type="text" class="form-control" id="driver" disabled="disabled">
 </div>
 <div class="form-group">
 	<label>Tipo Camión</label>
