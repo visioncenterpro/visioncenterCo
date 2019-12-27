@@ -765,7 +765,7 @@ class M_Dispatch extends VS_Model {
     }
 
     function get_data_remission_all(){ // cambiar a 18
-        $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_sd R ON D.id_request_sd = R.id_request_sd WHERE R.id_status = 17");
+        $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_sd R ON D.id_request_sd = R.id_request_sd WHERE R.id_status = 17 AND D.id_status = 1");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -811,6 +811,14 @@ class M_Dispatch extends VS_Model {
 
         $this->db->insert("dis_request_cargue_detail",$data);
         $id = $this->db->insert_id();
+
+
+        $data2 = array(
+            "id_status" => '2'
+        );
+
+        $this->db->where("id_remission", $id_remission);
+        $this->db->update("dis_remission",$data2);
 
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();

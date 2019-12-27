@@ -247,7 +247,7 @@ class C_Dispatch extends Controller {
         $data['data_cargue'] = $get_request_cargo;
         $data['head'] = $this->M_Dispatch->LoadDataHeaderCargo($get_request_cargo->id_data_header);
 
-        $this->load->view('Dispatch/Request/Pdf/V_Head_Cargo',$data);
+        $this->load->view('Dispatch/Request/Pdf/V_Head_Cargo', $data);
         $this->load->view('Dispatch/Request/pdf/V_Container_Cargo', $data);
 
         //$this->load->view('Dispatch/Request/pdf/V_Table_Total',$data);

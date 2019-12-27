@@ -2,7 +2,7 @@
     <section class="content">
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-truck "></i> Remisiones</h3>
+                <h3 class="box-title"><i class="fa fa-truck "></i> Remisiones de despachos</h3>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -54,7 +54,7 @@
 
     function modal_add(){
 
-        var array_sds = []
+        var array_sds = [];
         var request_sd = document.querySelectorAll("#requests_sd");
         request_sd.forEach(function(element){
             array_sds.push(element.value);
@@ -106,7 +106,7 @@
     }
 
     function report(){ // reporte control cargue
-        var array_sds = []
+        var array_sds = [];
         var request_sd = document.querySelectorAll("#requests_sd");
         request_sd.forEach(function(element){
             array_sds.push(element.value);
@@ -139,6 +139,8 @@
             a.href = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo/'+data.id;
             a.setAttribute('target', '_blank');
             a.click();
+            location.reload();
+            //swal({title: '', text: '', type: 'success'});
         }, 'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
