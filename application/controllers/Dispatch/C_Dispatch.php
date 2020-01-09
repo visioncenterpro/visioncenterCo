@@ -128,6 +128,11 @@ class C_Dispatch extends Controller {
         $this->load->view('Template/V_Footer', $Footer);
     }
 
+    function get_report_supervisory(){
+        $resulPack = $this->M_Dispatch->LoadHeaderPack($this->input->post('id_request_sd'));
+        echo json_encode($resulPack);
+    }
+
     function report_supervisory($id_request_sd){
         $resulPack = $this->M_Dispatch->LoadHeaderPack($id_request_sd);
         //print_r($resulPack);
@@ -216,7 +221,7 @@ class C_Dispatch extends Controller {
         $data['id'] = $this->M_Dispatch->create_request_cargo();
         $array_id = $this->input->post('array_id');
         $array_sd = $this->input->post('array_sds');
-        for ($i=0; $i < count($array_id); $i++) { 
+        for ($i=0; $i < count($array_id); $i++) {
             $data['detail'] = $this->M_Dispatch->create_request_cargo_detail($array_id[$i],$data['id'],$array_sd[$i]);
         }
         echo json_encode($data);
@@ -237,13 +242,34 @@ class C_Dispatch extends Controller {
         echo json_encode($data);
     }
 
+    function get_request_cargo(){
+        $data = $this->M_Dispatch->get_request_cargoXsd($this->input->post('id_request_sd'));
+        echo json_encode($data);
+    }
+
     function request_cargo($id_request_cargo){
         $get_request_cargo = $this->M_Dispatch->get_request_cargo($id_request_cargo);
         $get_request_cargo_detail = $this->M_Dispatch->get_request_cargo_detail($id_request_cargo);
         $data = array();
+        $client = array();
+        $client2 = array();
+        $data_vali = array();
         foreach ($get_request_cargo_detail as $key => $value) {
             $data['content'][] = $this->M_Dispatch->LoadContainerXremission($value->id_remission);
+            $vali = $this->M_Dispatch->LoadContainerXremission($value->id_remission);
+            foreach ($vali as $key => $value) {
+                if (!array_search($value->client, $client)) {
+                    $get_data = $this->M_Dispatch->dis_remissionXclient($value->client);
+                    foreach ($get_data as $key => $value2) {
+                        $data_vali[$value->client][] = $value2->id_request_sd;
+                    }
+                    $client2[] = $value->client;
+                }
+                $client[] = $value->client;
+            }
         }
+        $data['client'] = $client2;
+        $data['content2'] = $data_vali;
         $data['data_cargue'] = $get_request_cargo;
         $data['head'] = $this->M_Dispatch->LoadDataHeaderCargo($get_request_cargo->id_data_header);
 
@@ -299,10 +325,10 @@ class C_Dispatch extends Controller {
         $rs['total_weight_supplies'] = round($row->total_weight_supplies,4);
         $rs['num_packets'] = $row->num_packets;
 
-        $content = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Modulado');
+        $content = $this->M_Dispatch->LoadContainerSDESP($this->input->post("request"),'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
 
-        $contentS = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Insumos');
+        $contentS = $this->M_Dispatch->LoadContainerSD2($this->input->post("request"),'Insumos');
         $containerS = $this->load->view('Dispatch/Request/Supplies/V_Container_Supplies',array("content"=>$contentS),true);
 
         $row = $this->M_Dispatch->OrderAvailableSD();
@@ -364,10 +390,10 @@ class C_Dispatch extends Controller {
         $rs['total_weight_supplies'] = round($row->total_weight_supplies,4);
         $rs['num_packets'] = $row->num_packets;
 
-        $content = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Modulado');
+        $content = $this->M_Dispatch->LoadContainerSDESP($this->input->post("request"),'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
 
-        $contentS = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Insumos');
+        $contentS = $this->M_Dispatch->LoadContainerSD2($this->input->post("request"),'Insumos');
         $containerS = $this->load->view('Dispatch/Request/Supplies/V_Container_Supplies',array("content"=>$contentS),true);
 
         $row = $this->M_Dispatch->OrderAvailableSD();
@@ -430,7 +456,7 @@ class C_Dispatch extends Controller {
         $rs['total_weight_supplies'] = round($row->total_weight_supplies,4);
         $rs['num_packets'] = $row->num_packets;
 
-        $content = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Modulado');
+        $content = $this->M_Dispatch->LoadContainerSDESP($this->input->post("request"),'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
         
         $contentS = $this->M_Dispatch->LoadContainerSD2($this->input->post("request"),'Insumos');
@@ -489,7 +515,7 @@ class C_Dispatch extends Controller {
     }
     
     function DeleteAllPackRequestSD(){
-        $result = $this->M_Dispatch->LoadContainerSD($this->input->post('request'),$this->input->post('type'));
+        $result = $this->M_Dispatch->LoadContainerSDESP($this->input->post('request'),$this->input->post('type'));
         
         
         foreach ($result as $value) {
@@ -501,10 +527,10 @@ class C_Dispatch extends Controller {
         $rs['total_weight_supplies'] = round($row->total_weight_supplies,4);
         $rs['num_packets'] = $row->num_packets;
 
-        $content = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Modulado');
+        $content = $this->M_Dispatch->LoadContainerSDESP($this->input->post("request"),'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
 
-        $contentS = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Insumos');
+        $contentS = $this->M_Dispatch->LoadContainerSD2($this->input->post("request"),'Insumos');
         $containerS = $this->load->view('Dispatch/Request/Supplies/V_Container_Supplies',array("content"=>$contentS),true);
 
         $row = $this->M_Dispatch->OrderAvailableSD();
@@ -568,10 +594,10 @@ class C_Dispatch extends Controller {
         $rs['total_weight_supplies'] = round($row->total_weight_supplies,4);
         $rs['num_packets'] = $row->num_packets;
 
-        $content = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Modulado');
+        $content = $this->M_Dispatch->LoadContainerSDESP($this->input->post("request"),'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
 
-        $contentS = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Insumos');
+        $contentS = $this->M_Dispatch->LoadContainerSD2($this->input->post("request"),'Insumos');
         $containerS = $this->load->view('Dispatch/Request/Supplies/V_Container_Supplies',array("content"=>$contentS),true);
 
         $row = $this->M_Dispatch->OrderAvailableSD();
@@ -639,10 +665,10 @@ class C_Dispatch extends Controller {
         $rs['total_weight_supplies'] = round($row->total_weight_supplies,4);
         $rs['num_packets'] = $row->num_packets;
 
-        $content = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Modulado');
+        $content = $this->M_Dispatch->LoadContainerSDESP($this->input->post("request"),'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
 
-        $contentS = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Insumos');
+        $contentS = $this->M_Dispatch->LoadContainerSD2($this->input->post("request"),'Insumos');
         $containerS = $this->load->view('Dispatch/Request/Supplies/V_Container_Supplies',array("content"=>$contentS),true);
 
         $row = $this->M_Dispatch->OrderAvailableSD();
@@ -705,10 +731,10 @@ class C_Dispatch extends Controller {
             $rs['total_weight_supplies'] = round($row->total_weight_supplies,4);
             $rs['num_packets'] = $row->num_packets;
             
-            $content = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Modulado');
+            $content = $this->M_Dispatch->LoadContainerSDESP($this->input->post("request"),'Modulado');
             $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
 
-            $contentS = $this->M_Dispatch->LoadContainerSD($this->input->post("request"),'Insumos');
+            $contentS = $this->M_Dispatch->LoadContainerSD2($this->input->post("request"),'Insumos');
             $containerS = $this->load->view('Dispatch/Request/Supplies/V_Container_Supplies',array("content"=>$contentS),true);
             
             $row = $this->M_Dispatch->OrderAvailableSD();

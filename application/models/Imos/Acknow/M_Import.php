@@ -47,24 +47,37 @@ class M_Import extends CI_Model {
         
         $arrayDetail = json_decode($_POST['detail']);
         
+        $order;
         $data = array();
         foreach ($_POST as $clave => $valor):
             if ($clave != "detail") {
                 $data[$clave] = $valor;
             }
+            if ($clave == "order") {
+                $order = str_replace("-", "_", $valor);
+            }
         endforeach;
+
+        $this->ix = $this->load->database("ImosIX", TRUE);
+        $resultIX = $this->ix->select("*")
+                ->from("PROADMIN")
+                ->where("NAME", $order)
+                ->get();
+        $dataIX = $resultIX->row();
+
 
         $data['last_update'] = date("Y-m-d H:i:s");
         $data['modified_by'] = $this->session->IdUser;
+        $data['id_proadmin'] = $dataIX->ID;
 
         $this->db->insert("sys_import_salestable", $data);
-        
         $id = $this->db->insert_id();
         
         $item = 1;
         foreach ($arrayDetail as $tr) {
             $data = array(
                 "id_import_salestable"=>$id,
+                "proadmin"=>$dataIX->ID,
                 "item"=>$item,
                 "qty"=>$tr[2],
                 "code"=>$tr[3],
@@ -88,8 +101,10 @@ class M_Import extends CI_Model {
                 "type"=>"AO"
             );
             $this->db->insert("sys_import_salesline", $data);
+            $last_id = $this->db->insert_id();
             $item++;
         }
+
        
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();

@@ -52,16 +52,16 @@
     </thead>
     <tbody> <!--  -->
         <?php 
-        for ($e=0; $e < count($content); $e++) { 
-        foreach ($content[$e] as $key => $value) { ?>
-            <tr>
-                <td style="padding: 1%; text-align: center;"> <?= $value->client?></td>
-                <td style="text-align: center;"> CNT-<?= $value->id_request_sd?></td>
-                <td></td>
-                <td></td>
-            </tr>
-            
-        <?php }
+        for ($e=0; $e < count($client); $e++) {
+             ?>
+                <tr>
+                    <td style="padding: 1%; text-align: center;"> <?= $client[$e] ?></td>
+                    <td style="text-align: center;"> CNT-<?= implode(",", $content2[$client[$e]]) ?></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+            <?php 
         } ?>
     </tbody>
 </table>

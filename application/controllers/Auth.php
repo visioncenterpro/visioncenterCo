@@ -163,6 +163,12 @@ class Auth extends REST_Controller
                 $response ->trasactions = $arr_transation;
                 $arr_db           = $this->M_Ws->SumTotalRequest();
 
+                $arr_msg_db       = $this->M_Ws->getws_message_movil();
+                if (count($arr_msg_db )==1){
+                    $pqm = array('last_read_barcode' => ($arr_msg_db->last_read_bar_qr==null) ? 'Empty':$arr_msg_db->last_read_bar_qr);
+                }else{
+                    $pqm = array('last_read_barcode' =>'Empty');
+                }
                 $arr_data = array('packets' =>array(
                     'status'   =>($arr_db->status_packets>0) ? floatval($arr_db->status_packets):0,
                     'quantity' => array('total'=>($arr_db->totalqty_packets>0)? floatval($arr_db->totalqty_packets):0,
@@ -170,10 +176,10 @@ class Auth extends REST_Controller
                     'pending'=>($arr_db->pendingqtypack>0)?floatval($arr_db->pendingqtypack):0),
                     'weight' => array('total'=>($arr_db->totalweight>0)?floatval($arr_db->totalweight):0,
                     'load'=>($arr_db->weight_packetsLoad>0)?floatval($arr_db->weight_packetsLoad):0,
-                    'pending'=>($arr_db->pendingweigthload>0)?floatval($arr_db->pendingweigthload):0)
+                    'pending'=>($arr_db->pendingweigthload>0)?floatval($arr_db->pendingweigthload):0),
+                    'packets_messages' => $pqm,
                 ));
 
-                $arr_msg_db       = $this->M_Ws->getws_message_movil();
 
                 if (count($arr_msg_db )==1){
                     $arr_error->client_message                  = $arr_msg_db->client_message;

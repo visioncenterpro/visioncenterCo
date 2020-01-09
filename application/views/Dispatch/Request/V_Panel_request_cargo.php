@@ -2,7 +2,7 @@
     <section class="content">
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-truck "></i> Remisiones de despachos</h3>
+                <h3 class="box-title"><i class="fa fa-truck "></i> Control de cargue Despachos</h3>
             </div>
             <div class="box-body">
                 <div class="row">

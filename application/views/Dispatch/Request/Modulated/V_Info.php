@@ -11,7 +11,7 @@
                 <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="CreateRequisition()"><i class="fa fa-check "></i> Generar Remisión</button>
                 <button type="button" class="btn btn-default pull-right" id="btn-aprob" onclick="UpdateRequest2()"><i class="fa fa-save"></i> Guardar Cambios</button>
                 <button type="button" class="btn btn-default pull-right" onclick="report_supervisory()"><i class="fa fa-print"></i> Control de cargue supervisor</button>
-                <button type="button" class="btn btn-default pull-right" onclick="request_cargo()"><i class="fa fa-print"></i> Reporte control de cargue</button>
+                <button type="button" class="btn btn-default pull-right" onclick="request_cargo()"><i class="fa fa-print"></i> Control de cargue</button>
                 <button type="button" class="btn btn-default pull-right" onclick="request_dispatch()"><i class="fa fa-print"></i> Solcitud Despacho</button>
             </div>
             <div class="box-body">
@@ -284,10 +284,22 @@
     });
 
     function report_supervisory(){
-        var a = document.createElement('a');
-        a.href = '<?= base_url() ?>Dispatch/C_Dispatch/report_supervisory/<?=$request->id_request_sd?>';
-        a.setAttribute('target', '_blank');
-        a.click();
+        $.ajax({
+            url:  "<?= base_url() ?>Dispatch/C_Dispatch/get_report_supervisory",
+            type: 'POST',
+            data: {id_request_sd:<?=$request->id_request_sd?>},
+            success: function(data){
+                dato = JSON.parse(data);
+                if (dato.length > 0) {
+                    var a = document.createElement('a');
+                    a.href = '<?= base_url() ?>Dispatch/C_Dispatch/report_supervisory/<?=$request->id_request_sd?>';
+                    a.setAttribute('target', '_blank');
+                    a.click();
+                }else{
+                    swal({title: 'Atención', text: 'no hay datos para mostrar', type: 'error'});
+                }
+            }
+        });
     }
 
     function request_dispatch(){
@@ -298,10 +310,18 @@
     }
 
     function request_cargo(){
-        var a = document.createElement('a');
-        a.href = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo/<?=$request->id_request_sd?>';
-        a.setAttribute('target', '_blank');
-        a.click();
+        $.ajax({
+            url:  "<?= base_url() ?>Dispatch/C_Dispatch/get_request_cargo",
+            type: 'POST',
+            data: {id_request_sd:<?=$request->id_request_sd?>},
+            success: function(data){
+                dato = JSON.parse(data);
+                var a = document.createElement('a');
+                a.href = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo/'+dato.id_request_cargue;
+                a.setAttribute('target', '_blank');
+                a.click();
+            }
+        });
     }
 
     function modal_goBack(type,id_order_package,id_delivery_package_detail){

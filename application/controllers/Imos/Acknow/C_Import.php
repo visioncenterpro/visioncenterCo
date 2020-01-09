@@ -86,7 +86,10 @@ class C_Import extends Controller {
     }
 
     function Readfile($process = 4) {
-        require __DIR__ . "\vendor\autoload.php";
+
+        //require_once(dirname(__FILE__) . '/../../../vendor/autoload.php');
+
+        require_once(dirname(__FILE__) . '/../../../includes/phpexcel/Classes/PHPExcel.php');
 
         $folder = $this->input->post('folder');
         $dir = $this->input->post('dir');
@@ -97,16 +100,13 @@ class C_Import extends Controller {
         for ($i = 0; $i < count($array); $i++) {
             $posName = strpos($array[$i], "Acknowledgment");
             $posFormat = strpos($array[$i], "xlsx");
-            
+
             if ($posName !== false && $posFormat !== false) {
                 $file = $dir . $array[$i];
                 $error = "";
                 break;
             }
-            
         }
-        
-
  
         if ($error == "" && isset($file)) {
             if (file_exists(NETWORK_UNIT_ACK)) {
@@ -117,7 +117,7 @@ class C_Import extends Controller {
                     $objXLS = $Reader->load($file);
                     
                     $page = $objXLS->getSheetByName("FormatoACK");
-                    $sheet1 = empty($page)?$objXLS->getSheetByName("Formato ACK"):$page;
+                    $sheet1 = empty($page)?$objXLS->getSheetByName("Format o ACK"):$page;
 
                     $ResulParameters = $this->M_Import->ParametersFile($process);
                     $ResultCell = $this->M_Import->ConfigCell($process);
@@ -125,24 +125,22 @@ class C_Import extends Controller {
                     
                     $info = array();
                     foreach ($ResultCell as $cell) { // foreach
-                        
                         $code = trim($sheet1->getCell($cell->row)->getValue());
                         //print_r(trim($sheet1->getCell($cell->row)->getValue())." - ".$cell->row." / ");
-                        if (strstr($code, '=') == true) { //validar si es formulado 
+                        if (strstr($code, '=') == true) { //validar si es formulado
                             $code = trim($sheet1->getCell($cell->row)->getOldCalculatedValue());
                             if ($code == "#N/A") {
                                 //$error .= $cell->row .",";
-                                //$detail[$cell->field] = "#N/A"; 
+                                //$detail[$cell->field] = "#N/A";
                             }
                         }
-                        $spreadsheet = new Spreadsheet();
-                        $sheet = $spreadsheet->getActiveSheet();
-                        $sheet->setCellValue('A1', 'Hello World !');
+
                         if ($cell->type_field == 9) {
-                            $timestamp = PHPExcel_Shared_Date::ExcelToPHP($code);
-                            // $timestamp = PHPExcel_Style_NumberFormat::toFormattedString($code,PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY); 
-                            // print_r($timestamp); campo de fecha
-                            $info[$cell->field] = date("Y-m-d", $timestamp);
+
+                            //$timestamp = PHPExcel_Shared_Date::ExcelToPHP($code);
+                            $timestamp = PHPExcel_Style_NumberFormat::toFormattedString($code,PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);
+                            //print_r($timestamp); //campo de fecha
+                            $info[$cell->field] = date("Y-m-d", strtotime($timestamp));
                         } else {
                             $info[$cell->field] = trim($code);
                         }
@@ -165,9 +163,9 @@ class C_Import extends Controller {
                         $detail = array();
                         foreach ($ResultCellDet as $cell) {
                             if ($cell->type_field == 9) {
-                                //$timestamp = PHPExcel_Style_NumberFormat::toFormattedString($sheet1->getCell($cell->row . $star)->getValue(),PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);  
-                                $timestamp = PHPExcel_Shared_Date::ExcelToPHP($sheet1->getCell($cell->row . $star)->getValue());
-                                $detail[$cell->field] = date("Y-m-d", $timestamp);
+                                $timestamp = PHPExcel_Style_NumberFormat::toFormattedString($sheet1->getCell($cell->row . $star)->getValue(),PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY);
+                                //$timestamp = PHPExcel_Shared_Date::ExcelToPHP($sheet1->getCell($cell->row . $star)->getValue());
+                                $detail[$cell->field] = date("Y-m-d", strtotime($timestamp));
                             } else {
                                 
                                 $code = trim($sheet1->getCell($cell->row . $star)->getValue());
@@ -189,7 +187,6 @@ class C_Import extends Controller {
 //                                        $detail[$cell->field] = "#N/A";
 //                                    }
                                 }
-                                
                             }
                         }
                         $recordDetail['tbody'][] = $detail;

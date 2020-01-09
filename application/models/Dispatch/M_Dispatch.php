@@ -299,6 +299,12 @@ class M_Dispatch extends VS_Model {
         //echo $this->db->last_query();
         return $result->result();
     }
+
+    function dis_remissionXclient($client){
+        $query = ("SELECT * FROM dis_remission D WHERE D.`client` LIKE '%".$client."%'");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
     
     function LoadContainerSD($id,$type){
         $result = $this->db->select("*")
@@ -827,6 +833,12 @@ class M_Dispatch extends VS_Model {
             $this->db->trans_commit();
             return $id;
         }
+    }
+
+    function get_request_cargoXsd($id_request_sd){
+        $query = ("SELECT * FROM dis_request_cargue_detail WHERE id_request_sd = $id_request_sd GROUP BY id_request_cargue");
+        $result = $this->db->query($query);
+        return $result->row();
     }
 
     function get_request_cargo($id_request_cargo){
