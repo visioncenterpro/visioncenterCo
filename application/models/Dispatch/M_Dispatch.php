@@ -222,7 +222,6 @@ class M_Dispatch extends VS_Model {
                 ->from("pro_delivery_supplies p")
                 ->join("pro_delivery_supplies_detail pd", "p.id_delivery_supplies = pd.id_delivery_supplies")
                 ->join("access_order_package_supplies a", "pd.id_order_package_supplies = a.id_order_package_supplies")
-                
                 ->where("p.`order`",$order)
                 ->get();
         //echo $this->db->last_query();
