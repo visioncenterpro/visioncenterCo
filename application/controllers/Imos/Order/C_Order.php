@@ -72,7 +72,7 @@ class C_Order extends Controller {
 
         $data['typePiece'] = $this->M_Order->ListTypePiece();
         $data['PiecesRecord'] = $this->M_Order->ListPiecesALL($id, $order);
-        $data['PiecesAdd'] = $this->M_Order->ListPiecesAddALL($id,$order);
+        $data['PiecesAdd'] = $this->M_Order->ListPiecesAddALL($id, $order);
         $data['cantos'] = $this->M_Order->ChargedCantoAXAll();
         $data['sheet'] = $this->M_Order->ChargedSheedAXAll();
         $IronRecord = $this->M_Order->ListIronWorksALL($id, $order);
@@ -181,13 +181,38 @@ class C_Order extends Controller {
     }
     
     function AddAditional(){
-        $result = $this->M_Order->AddAditional();
-        echo json_encode(array("res" => ($result['id'] > 0)?"OK":$result, "id"=>$result['id'], "description"=>$result['description'], "und"=>$result['unity'] )); 
+        $val = $this->validate_LMAT($this->input->post('order'),$this->input->post('code'));
+        if ($val == '1') {
+            echo json_encode(array("res" => 'error'));
+        }else{
+            $result = $this->M_Order->AddAditional();
+            echo json_encode(array("res" => ($result['id'] > 0)?"OK":$result, "id"=>$result['id'], "description"=>$result['description'], "und"=>$result['unity'] ));
+        }
+    }
+
+    function validate_LMAT($order,$code){
+        //lamina
+        $push = array();
+        $count = 0;
+        $val = "";
+        $vali = 0;
+        $sheets = $this->M_Order->ListConsSheetXcode($order,$code);
+        if (count($sheets) == 0) {
+            $vali = 1;
+        }
+        
+        // canto
+        $cantos = $this->M_Order->ListConsCantoXcode($order,$code);
+        if (count($cantos) == 0) {
+            $vali = 1;
+        }
+
+        return $vali;
     }
     
     function DetailsPiece(){
         $result = $this->M_Order->DetailsPiece();
-        echo json_encode(array("res" => $result )); 
+        echo json_encode(array("res" => $result ));
     }
     
     function DetailsAditional(){

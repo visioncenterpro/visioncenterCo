@@ -319,7 +319,7 @@
                if(data == 0){
                    window.location = "<?= URL_PROJETC ?>Imos/Order/C_Pdf/ExportLMAT?name="+$("#order_p").val();   
                }else{
-                   swal({title: 'Atención', text: 'No se puede generar el reporte, hay datos incompletos', type: 'error'});
+                   swal({title: 'Atención', text: 'No se puede generar el reporte, no se encontraron datos en Imos por favor agregarlos', type: 'error'});
                }
                 
             }, 'json').fail(function (error) {

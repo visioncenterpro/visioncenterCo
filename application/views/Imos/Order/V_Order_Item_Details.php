@@ -550,7 +550,7 @@
                             $("#ad-" + obj.id + " > td")[3].id = "uni-ad-" + obj.id;
 
                         }else{
-                            swal({title: 'Error Toma un screem y envialo a sistemas!', text: obj.res, type: 'error'});
+                            swal({title: 'Atención', text: 'No se pueden guardar los datos, no se encontraron datos en Imos por favor agregarlos', type: 'error'});
                         }
                 },
                 cache: false,

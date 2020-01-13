@@ -112,7 +112,18 @@ class M_Order extends VS_Model {
                 ->where("MATNAME <> ''")
                 ->order_by("MATNAME")
                 ->get();
-        //echo $this->db->last_query();
+        //echo $this->ix->last_query();
+        return $result->result();
+    }
+
+    function ListConsSheetXcode($order,$code) {
+        $result = $this->ix->select("JaymIdbGRPS_GPLI_INFO.HIGHARTIDGPRS,JaymIdbGRPS_GPLI_INFO.ID,MATNAME,(FLENG/1000)*(FWIDTH/1000) AS MT2,AREA,WEIGHT,MATID,FLENG,FWIDTH")
+                ->from("JaymIdbGRPS_GPLI_INFO")
+                ->where("JaymIdbGRPS_GPLI_INFO.ORDERIDGPRS", $order)
+                ->where("MATNAME", $code)
+                ->order_by("MATNAME")
+                ->get();
+        //echo $this->ix->last_query();
         return $result->result();
     }
     
@@ -182,6 +193,26 @@ class M_Order extends VS_Model {
                 ->where("PRFNAME <> 'No Edge Application'")
                 ->get();
         //echo $this->ix->last_query();
+        return $result->result();
+    }
+
+    function ListConsCantoXcode($order,$code) {
+        $result = $this->ix->select("PRFNAME,PRFID,RENDERP,(CONTLEN/1000) AS CONTLEN")
+                ->from("IDBPRF")
+                ->where("ORDERID", $order)
+                ->where("RENDERP <> 'NO_RENDER'")
+                ->where("PRFNAME <> 'No Edge Application'")
+                ->where("PRFNAME", $code)
+                ->get();
+        //echo $this->ix->last_query();
+        return $result->result();
+    }
+
+    function ListAditional($order){
+        $result = $this->db->select("*")
+                ->from("imos_salesline")
+                ->where("`order`", $order)
+                ->get();
         return $result->result();
     }
 
