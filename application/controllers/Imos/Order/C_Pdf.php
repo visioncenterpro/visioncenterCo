@@ -1277,6 +1277,7 @@ class C_Pdf extends Controller {
                     $pdf->MultiCell(20, 5, 'UNIDAD', 1, 'C', 1, 1, '', '', true, 0, false, true, 5, 'M');
                     $pdf->SetFont('helvetica', '', 8);
                 }
+
                 foreach ($AdIronRecord as $i) :
 
                     $descAX = $this->M_Order->ChargedCodeAXiron($i->code);
@@ -1335,8 +1336,6 @@ class C_Pdf extends Controller {
             $pdf->MultiCell(20, 5, round($sum, 2), 1, 'C', 0, 0, '', '', true, 0, false, true, 5, 'M', true);
             $pdf->MultiCell(20, 5, '', 1, 'C', 0, 1, '', '', true, 0, false, true, 5, 'M');
         endforeach;
-
-
 
         $pdf->SetTitle("Consolidado De Herrajes");
         $pdf->Output($order . '.pdf', 'I');
@@ -1534,9 +1533,10 @@ class C_Pdf extends Controller {
             $data[$key]['position'] = $t->POSSTR;
             $data[$key]['med'] = $t->HEIGHT . "x" . $t->WIDTH. "x" . $t->DEPTH;
             
-            //$d = $this->CreateBodyIronWorks($t->ID, $order, $d['consolidate']);
+            $d = $this->CreateBodyIronWorks($t->ID, $order, $d['consolidate']);
         endforeach;
-        
+        $array = $d['consolidate'];
+
         //lamina
         $push = array();
         $code = array();
@@ -1545,8 +1545,14 @@ class C_Pdf extends Controller {
         $sheets = $this->M_Order->ListConsSheet($order);
         foreach ($sheets as $key => $value) {
             $row = $this->M_Order->LoadSheet($value->MATNAME);
+            //print_r($row);
             if(is_object($row)){
-                
+                if ($row->waste == "") {
+                    $row->waste = 1;
+                }
+                if ($row->area == "") {
+                    $row->area = 1;
+                }
                 $mts = $value->MT2;
                 $wst = $mts * $row->waste;
                 $mts_sheet = $wst/$row->area;
@@ -1602,7 +1608,7 @@ class C_Pdf extends Controller {
         // TITLE
         $this->excel->getActiveSheet()->setCellValue('A1', 'H');
         //$this->excel->getActiveSheet()->setCellValue('B1', str_replace("_","-",$order));
-        $this->excel->getActiveSheet()->setCellValue('B1', 'IMOS_'.$order);
+        $this->excel->getActiveSheet()->setCellValue('B1', $order);
         $this->excel->getActiveSheet()->setCellValue('C1', 'ZCON308');
         $this->excel->getActiveSheet()->setCellValue('D1', '13-jun-17');
         $this->excel->getActiveSheet()->setCellValue('E1', '13-jun-17');
@@ -1623,15 +1629,16 @@ class C_Pdf extends Controller {
         // DATA
         $count_data = 2;
         $count_item = 0;
-        foreach ($ironwork as $key => $value) {
+        
+        foreach ($array as $key => $k) {
             $count_item++;
             $this->excel->getActiveSheet()->setCellValue('A'.$count_data, 'L');
             //$this->excel->getActiveSheet()->setCellValue('B'.$count_data, str_replace("_","-",$order));
-            $this->excel->getActiveSheet()->setCellValue('B'.$count_data, 'IMOS_'.$order);
+            $this->excel->getActiveSheet()->setCellValue('B'.$count_data, $order);
             $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
             $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
-            $this->excel->getActiveSheet()->setCellValue('M'.($count_data+1), $value->CONID);
-            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), $value->PURCHCNT);
+            $this->excel->getActiveSheet()->setCellValue('M'.($count_data+1), $key);
+            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), $k['qty']);
             $this->excel->getActiveSheet()->setCellValue('S'.($count_data+1), '0');
             
             $res = 12 - strlen($order);
@@ -1656,11 +1663,10 @@ class C_Pdf extends Controller {
             $count_data++;
         }
         
-        
         for ($i = 0; $i < count($push); $i++){
             $count_item++;
             $this->excel->getActiveSheet()->setCellValue('A'.$count_data, 'L');
-            $this->excel->getActiveSheet()->setCellValue('B'.$count_data, 'IMOS_'.$order);
+            $this->excel->getActiveSheet()->setCellValue('B'.$count_data, $order);
             //$this->excel->getActiveSheet()->setCellValue('B'.$count_data, str_replace("_","-",$order));
             $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
             $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
@@ -1682,7 +1688,7 @@ class C_Pdf extends Controller {
         for ($e = 0; $e < count($array_c); $e++){
             $count_item++;
             $this->excel->getActiveSheet()->setCellValue('A'.$count_data, 'L');
-            $this->excel->getActiveSheet()->setCellValue('B'.$count_data, 'IMOS_'.$order);
+            $this->excel->getActiveSheet()->setCellValue('B'.$count_data, $order);
             //$this->excel->getActiveSheet()->setCellValue('B'.$count_data, str_replace("_","-",$order));
             $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
             $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
@@ -1698,27 +1704,6 @@ class C_Pdf extends Controller {
             $this->excel->getActiveSheet()->setCellValue('T'.($count_data+1), "LM".$zero.$order."_14660");
             //$this->excel->getActiveSheet()->setCellValue('T'.($count_data+1), "LM".$zero.str_replace("_","-",$order)."_14660");
             
-            $count_data++;
-        }
-
-        // Adicionales 
-        $aditional = $this->M_Order->ListAditional($order);
-        foreach ($aditional as $key => $value) {
-            $count_item++;
-            $this->excel->getActiveSheet()->setCellValue('A'.$count_data, 'L');
-            $this->excel->getActiveSheet()->setCellValue('B'.$count_data, 'IMOS_'.$order);
-            $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
-            $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
-            $this->excel->getActiveSheet()->setCellValue('M'.($count_data+1), $value->code);
-            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), number_format((float)$value->qty , 4, '.', ''));
-            $this->excel->getActiveSheet()->setCellValue('S'.($count_data+1), '0');
-            
-            $res = 12 - strlen($order);
-            $zero = "";
-            for($r = 0; $r < $res; $r++){
-                $zero  .= "0";
-            }
-            $this->excel->getActiveSheet()->setCellValue('T'.($count_data+1), "LM".$zero.$order."_14660");
             $count_data++;
         }
         
@@ -1747,12 +1732,46 @@ class C_Pdf extends Controller {
         
     }
 
-    public function IniOrders(){
+    //*******************************************//
+
+    function get_ini_order(){
         $ini_array = parse_ini_file($_SERVER['DOCUMENT_ROOT']."VisionCenter/dist/ini/sample.ini");
-        print_r(count($ini_array));
-        for ($i=1; $i <= count($ini_array); $i++) { 
-            echo $i;
+
+        $vali = 0;
+        $order = $ini_array[$this->input->post('ct')];
+        //echo $order;
+        $items = $this->M_Order->ListOrderItemImosAll($order);
+        if (count($items) == 0) {
+            $vali = 1;
         }
+        //print_r($items);
+        
+        //lamina
+        $sheets = $this->M_Order->ListConsSheet($order);
+        if (count($sheets) == 0) {
+            $vali = 1;
+        }
+        
+        // canto
+        $cantos = $this->M_Order->ListConsCanto($order);
+        if (count($cantos) == 0) {
+            $vali = 1;
+        }
+        echo json_encode($array = array('res' => $ini_array[$this->input->post('ct')], 'vali' => $vali));
+    }
+
+    function IniOrders(){
+        $array['menus'] = $this->M_Main->ListMenu();
+
+        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
+        $this->load->view('Template/V_Header', $Header);
+
+        $ini_array = parse_ini_file($_SERVER['DOCUMENT_ROOT']."VisionCenter/dist/ini/sample.ini");
+        $data['count'] = count($ini_array);
+        $this->load->view('Imos/Order/IniOrders', $data);
+
+        $this->load->view('Template/V_Footer');
     }
 
 }
