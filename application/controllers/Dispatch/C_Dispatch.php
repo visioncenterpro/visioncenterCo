@@ -42,7 +42,7 @@ class C_Dispatch extends Controller {
     function get_data_remission(){
         $get_data = $this->M_Dispatch->get_data_remission();
         if(count($get_data) > 0){
-            echo json_encode($get_data);    
+            echo json_encode($get_data);
         }else{
             $get_data = $this->M_Dispatch->get_data_remission2();
             echo json_encode($get_data);
@@ -135,7 +135,6 @@ class C_Dispatch extends Controller {
 
     function report_supervisory($id_request_sd){
         $resulPack = $this->M_Dispatch->LoadHeaderPack($id_request_sd);
-        //print_r($resulPack);
         $total_tags = 1;
         $count_pb = 1;
         $this->load->view("Dispatch/Pack/Pdf/header_packs_limit");
@@ -154,7 +153,7 @@ class C_Dispatch extends Controller {
                 "forniture" => $r->description,
                 "start" => $r->number_pack,
                 "pack" => $this->M_Dispatch->MaxPack($id_request_sd, $r->id_forniture, $r->type_package),
-                "color" => ''//$this->M_Dispatch->Colorforniture($order, $r->id_forniture)
+                "color" => '' //$this->M_Dispatch->Colorforniture($order, $r->id_forniture)
             );
             $data['new'] = true;
             $data['quantity_packets'] = $r->quantity_packets;

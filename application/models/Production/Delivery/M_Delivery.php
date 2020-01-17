@@ -85,12 +85,12 @@ class M_Delivery extends VS_Model {
     
     function get_data_add(){
         $query = ("SELECT OP.*, P.name, P.code, A.`order`, A.weight_per_package, OS.quantity, P.weight_per_supplies FROM access_order_package_supplies_detail OP "
-                . "INNER JOIN access_order_package_supplies A ON OP.access_order_package_supplies = A.id_order_package_supplies "
-                . "INNER JOIN pro_supplies P ON OP.id_supplies = P.id_supplies INNER JOIN access_order_supplies OS "
-                . "ON OP.id_order_supplies = OS.id_order_supplies WHERE A.`order` = $this->order AND A.number_pack != $this->number_pack "
+                . " INNER JOIN access_order_package_supplies A ON OP.access_order_package_supplies = A.id_order_package_supplies "
+                . " INNER JOIN pro_supplies P ON OP.id_supplies = P.id_supplies INNER JOIN access_order_supplies OS "
+                . " ON OP.id_order_supplies = OS.id_order_supplies WHERE A.`order` = $this->order AND A.number_pack != $this->number_pack "
                 . " AND OS.exclude = 0 ORDER BY OP.id_order_supplies ASC");
         $result = $this->db->query($query);
-        //echo $this->db->last_query();
+        //echo $this->db->last_query(); 
         return $result->result();
     }
     
@@ -130,7 +130,6 @@ class M_Delivery extends VS_Model {
         $query = ("SELECT * FROM access_order_package_supplies_detail WHERE id_order_supplies = $id_order_supplies "
                 . " ORDER BY id_order_supplies ASC");
         $result = $this->db->query($query);
-        //echo $this->db->last_query();
         return $result->result();
     }
     
@@ -306,6 +305,7 @@ class M_Delivery extends VS_Model {
         $this->data_dis_table($this->order);
         return $rs;
     }
+
     function update_header2(){
         $query = ("SELECT * FROM access_order_package_supplies WHERE `order` = $this->order AND number_pack = $this->number_pack");
         $result = $this->db->query($query);
@@ -708,7 +708,7 @@ class M_Delivery extends VS_Model {
                 . " INNER JOIN access_order AC ON AO.`order` = AC.`order` "
                 . " WHERE AO.`order` = $order AND AO.id_order_package_supplies = $id_order_package_supplies");
         $result = $this->bd->query($query);
-        //echo $this->db->last_query();
+        //echo $this->db->last_query(); 
         if(count($result->result()) > 0){
             foreach ($result->result() as $value) {
                 $query_tags = ("");

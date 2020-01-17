@@ -339,7 +339,7 @@
 
     function save_goBack(){
         var cnt = $("#cnt").val();
-        var observation = $("#observation").val();
+        var observation = $("#observation").val();3
         var id_order_package = $("#id_order_package").val();
         var number_pack = $("#number_pack_back").val();
         var order = $("#order_gp").val();
@@ -359,6 +359,7 @@
             data: {order:order,cnt:cnt,observation:observation,id_order_package:id_order_package,number_pack:number_pack,quantity_packages:quantity_packages,id_request_sd:<?=$request->id_request_sd?>,id_delivery_detail:id_delivery_detail},
             success: function(data){
                 dato = JSON.parse(data);
+                location.reload();
                 console.log(dato);
             }
         });
@@ -552,7 +553,7 @@
                         });
                         var pack_supplies = $("#packs_supplies").val();
                         var quantity_packages = parseInt(pack_supplies) + parseInt(total_modulate);
-                        console.log(quantity_packages);
+                        //console.log(quantity_packages);
                         var id_vehicle = $("#vehicle").val();
 
                         $.post("<?= base_url() ?>Dispatch/C_Dispatch/CreateRequisition", {request:<?= $request->id_request_sd ?>,id_vehicle:id_vehicle,weight:$("#weight").val(),weightI:$("#weightI").val(),weight_supplies:$("#weight_supplies").val(),quantity_packages:quantity_packages}, function (data) {
@@ -565,7 +566,7 @@
                                 } else {
                                     swal({title: 'Error!', text: data, type: 'error'});
                                 }
-                        }, 'json').fail(function (error) {
+                       CreateRequisition }, 'json').fail(function (error) {
                             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
                         });
                         
@@ -739,7 +740,16 @@
         var driver = $("#driver").val();
         var value = $("#license_plate").val();
         var vehicle = $("#vehicle").val();
-        $.post("<?= base_url() ?>Dispatch/C_Dispatch/UpdateRequestSD2", {request:<?= $request->id_request_sd ?>, driver:driver, value:value, vehicle:vehicle}, function (data) {
+
+        var arr_modulate = document.querySelectorAll("#quantity_h");
+        var total_modulate = 0;
+        arr_modulate.forEach(function(element){
+            total_modulate = parseInt(total_modulate) + parseInt(element.value);
+        });
+        var pack_supplies = $("#packs_supplies").val();
+        var quantity_packages = parseInt(pack_supplies) + parseInt(total_modulate);
+
+        $.post("<?= base_url() ?>Dispatch/C_Dispatch/UpdateRequestSD2", {request:<?= $request->id_request_sd ?>, driver:driver, value:value, vehicle:vehicle,quantity_packages:quantity_packages}, function (data) {
             swal({title: 'Exito', text: 'Cambios Guardados', type: 'success'});
         }, 'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});

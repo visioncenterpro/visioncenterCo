@@ -232,6 +232,7 @@
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Range2(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas2 </span></a></label>');
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Weight(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-calculator"></i> Peso</span></a></label>');
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
+                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i>Adicionar</span></a></label>');
                         
                         $("#count").html($("#total-packs").text());
                         console.log(parseFloat(data.packs.total_weight));

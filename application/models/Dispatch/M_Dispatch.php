@@ -428,7 +428,7 @@ class M_Dispatch extends VS_Model {
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();
             return "ERROR ".$this->db->last_query();
-        }else{
+        }else{+
             $this->db->trans_commit();
             return "OK";
         }
@@ -479,7 +479,7 @@ class M_Dispatch extends VS_Model {
                 if($this->quantity > 0){
                     $data = array(
                         "quantity_packets" =>$this->quantity,
-                        "weight" =>$row->weight*$this->quantity,
+                        "weight" =>$row->weight*$this->quantity
                     );
                     $this->db->where("id_request_detail",$reg->id_request_detail);
                     $rs = $this->db->update("dis_request_sd_detail",$data);
@@ -560,7 +560,7 @@ class M_Dispatch extends VS_Model {
             if($this->quantity > 0){
                 $data = array(
                     "quantity_packets"  => $this->quantity,
-                    "weight"            => $this->weight*$this->quantity,
+                    "weight"            => $this->weight*$this->quantity
                 );
                 $this->db->where("id_request_detail",$reg->id_request_detail);
                 $rs = $this->db->update("dis_request_sd_detail",$data);
@@ -915,8 +915,9 @@ class M_Dispatch extends VS_Model {
     
     function UpdateRequestSD2(){
         $data = array(
-            "driver"=>$this->driver,
+            "driver"        => $this->driver,
             "license_plate" => $this->value,
+            "quantity_packages" => $this->quantity_packages,
             "id_weight_vehicle" => $this->vehicle,
             "modified_by" => $this->session->IdUser,
             "last_update" => date("Y-m-d H:i:s")

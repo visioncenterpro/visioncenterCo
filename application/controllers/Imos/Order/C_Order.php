@@ -191,20 +191,25 @@ class C_Order extends Controller {
     }
 
     function validate_LMAT($order,$code){
+        $vali = 1;
+        $iron = $this->M_Order->ChargedCodeAXiron($code);
+        if (count($iron) > 0) {
+            $vali = 0;
+        }
+
         //lamina
         $push = array();
         $count = 0;
         $val = "";
-        $vali = 0;
         $sheets = $this->M_Order->ListConsSheetXcode($order,$code);
-        if (count($sheets) == 0) {
-            $vali = 1;
+        if (count($sheets) > 0) {
+            $vali = 0;
         }
         
         // canto
         $cantos = $this->M_Order->ListConsCantoXcode($order,$code);
-        if (count($cantos) == 0) {
-            $vali = 1;
+        if (count($cantos) > 0) {
+            $vali = 0;
         }
 
         return $vali;
