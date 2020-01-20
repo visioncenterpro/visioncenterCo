@@ -218,7 +218,7 @@ class M_Delivery extends VS_Model {
     }
     
     function Add_Packed_Detail($id_access_order_package_supplies,$id_order_supplies,$id_supplies,$quantity_packaged){
-        
+
         $query = ("SELECT a.*,ao.quantity FROM access_order_package_supplies_detail a INNER JOIN access_order_supplies ao ON a.id_order_supplies = ao.id_order_supplies "
                 . "  WHERE a.id_order_supplies = $id_order_supplies AND a.access_order_package_supplies = $id_access_order_package_supplies "
                 . " AND ao.`order` = $this->order ORDER BY a.id_order_supplies ASC");
@@ -346,7 +346,7 @@ class M_Delivery extends VS_Model {
         }
         $validation = ("SELECT * FROM access_order_package_supplies_detail WHERE id_order_supplies = $id_order_supplies");
         $result_vali = $this->db->query($validation);
-        //echo $this->db->last_query();exit;
+        //echo $this->db->last_query();
         $quantity_packaged_sum2 = 0;
         $count_total = 0;
         $count_id = 0;
@@ -366,7 +366,7 @@ class M_Delivery extends VS_Model {
         //echo $quantity_packaged_sum2." - ".$total;
         //$rs = "";
         if($quantity_packaged_sum2 <= $total){
-            //echo 'netx ecos de amor';exit;
+            //echo 'netx';exit;
             if($count_id == 1){
                 //echo 'update';
                 $data = array(
@@ -602,7 +602,6 @@ class M_Delivery extends VS_Model {
             $res = array("res" => $this->db->last_query());
         } else {
             $this->db->trans_commit();
-
             $res = true;
         }
         return $res;
@@ -667,7 +666,7 @@ class M_Delivery extends VS_Model {
                     $data = array(
                         "id_request_detail" => '0',
                         "id_request_sd"     => '0',
-                        "id_order_package_supplies"  => $value->id_order_package_supplies, //id_order_package_supplies
+                        "id_order_package_supplies"  => $value->id_order_package_supplies, //id_order_package_supplies @saraorrego
                         "id_forniture"      => '0',
                         "id_supplies"       => '0',
                         "`order`"           => $order,
@@ -739,6 +738,16 @@ class M_Delivery extends VS_Model {
                 
             } 
         }
+    }
+
+    function data_supplies_all(){
+        $query = ("SELECT * FROM pro_supplies");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function Add_new_to_order(){
+        
     }
     
     function data_supplies($order,$id_order_package_supplies){
@@ -906,7 +915,6 @@ class M_Delivery extends VS_Model {
         if ($rs) {
             $tags['id_order_package_supplies'] = $this->db->insert_id();
             for ($index = 1; $index <= $data["quantity_packets"]; $index++) {
-
                 $this->db->insert("pro_tags_supplies", $tags);
             }
 

@@ -181,7 +181,7 @@ class C_Delivery extends Controller {
                 //print_r($vali);
                 $count = 0;
                 foreach ($rs['supplies'] as $key => $value) {
-                    //echo $value->id_supplies."--".$vali['id_supplies'][$count];,
+                    //echo $value->id_supplies."--".$vali['id_supplies'][$count];
                     if(isset($vali['quantity_packaged'][$count]) && $vali['quantity_packaged'][$count] == $value->quantity && $vali['id_supplies'][$count] == $value->id_supplies){
                         $array['quantity_packaged'][] = $vali['quantity_packaged'][$count];
                         $array['quantity_pending'][] = $value->quantity - $vali['quantity_packaged'][$count];
@@ -954,6 +954,19 @@ class C_Delivery extends Controller {
         $data['table'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_Manual',$data, true);
         echo json_encode($data);
     }
+
+    function get_data_add_to_order(){
+        $data['order'] = $this->input->post('order');
+        $data['supplies_all'] = $this->M_Delivery->data_supplies_all();
+        $data['supplies'] = $this->M_Delivery->get_data_manual($this->input->post('order'));
+        $data['table'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_To_Order',$data, true);
+        echo json_encode($data);
+    }
+
+    function Add_new_to_order(){
+        $data = $this->M_Delivery->Add_new_to_order();
+        echo json_encode($data);   
+    }
     
     function pb(){
         //echo phpinfo();
@@ -1370,7 +1383,6 @@ class C_Delivery extends Controller {
 
     function PrintPack($order, $min, $max) {
         $resulPack = $this->M_Delivery->LoadHeaderPack2($order, $min, $max);
-
 
         foreach ($resulPack as $r):
             $data = array(

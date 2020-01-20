@@ -154,6 +154,25 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_to_order">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Lista de insumos</h4>
+            </div>
+            <div class="modal-body" id="content_to_order">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary pull-right" onclick="Add_packed()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(function () {
         $("#edit_label").hide();
@@ -241,6 +260,7 @@
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Adicionar a la orden</span></a></label>');
                     $('input[type="checkbox"]').iCheck({
                         checkboxClass: 'icheckbox_minimal-blue'
                     }).on('ifChanged', function (e) {
@@ -268,6 +288,34 @@
                 swal({title: 'Error!', text: data.res, type: 'error'});
             }
         }, "json");
+    }
+
+    function Add_to_order(order){
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/get_data_add_to_order",{order:order},function(data){
+            $("#order").text(order);
+            $("#content_to_order").html(data.table);
+            $("#modal_to_order").modal("show");
+            $('#supplies').select2();
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+    }
+
+    function Add_new_to_order(){
+        var id_supplies = $("#supplies").val();
+        var order = $("#order_value_to").val();
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{order:order,id_supplies:id_supplies},function(data){
+            $("#order").text(order);
+            $("#content_to_order").html(data.table);
+            $("#modal_to_order").modal("show");
+
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+     }
+
+    function Delete_to_order(order){
+        console.log(order);
     }
 
     function Pending(order){
