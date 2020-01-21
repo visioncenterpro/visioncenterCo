@@ -741,13 +741,21 @@ class M_Delivery extends VS_Model {
     }
 
     function data_supplies_all(){
-        $query = ("SELECT * FROM pro_supplies");
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_order_supplies WHERE A.`order` <> $this->order");
         $result = $this->db->query($query);
         return $result->result();
     }
 
     function Add_new_to_order(){
-        
+        $data = array(
+            "order"         => $this->order,
+            "id_supplies"   => $this->id_supplies,
+            "quantity"      => $this->quantity,
+            "additional"    => '2'
+
+        );
+        $this->db->insert("access_order_supplies", $data);
+        $rs = $this->db->insert_id();
     }
     
     function data_supplies($order,$id_order_package_supplies){

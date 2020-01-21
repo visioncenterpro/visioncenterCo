@@ -1,20 +1,18 @@
 <input type="hidden" value="<?=$order?>" id="order_value_to">
 <div class="form-group">
     <div class="form-group">
+        <label>Insumo</label>
         <select class="form-control" id="supplies">
             <?php foreach ($supplies_all as $key => $value) { ?>
                 <option value="<?= $value->id_supplies?>"><?= $value->name?></option>
             <?php } ?>
         </select>
     </div>
-    <div class="form-inline">
-        <!-- <div class="form-group">
-            <input type="text" class="form-control" id="code" placeholder="CODIGO">
-        </div>
+    <div class="form-group">
         <div class="form-group">
-            <input type="text" class="form-control" id="name" placeholder="DESCRIPCIÓN">
-        </div> -->
-        
+            <label>Cantidad</label>
+            <input type="number" class="form-control" id="cnt" min="1">
+        </div>
         <button class="btn btn-primary" onclick="Add_new_to_order()">Agregar</button>
         <button class="btn btn-primary" onclick="create_new_to_order()">Crear nuevo item</button>
     </div>

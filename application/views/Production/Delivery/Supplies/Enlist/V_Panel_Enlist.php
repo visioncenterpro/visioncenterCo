@@ -167,7 +167,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary pull-right" onclick="Add_packed()">Guardar</button>
             </div>
         </div>
     </div>
@@ -220,14 +219,14 @@
             }
             
         });
-         $("#comment").bind('paste', function(e){
+        $("#comment").bind('paste', function(e){
             var characters_count = $("#comment").val().length;
             var data = e.originalEvent.clipboardData.getData('Text');
             if(parseInt(data.length) + parseInt(characters_count) > 80){
                 $("#warning").attr("style", "color:red");
                 return false;
             }
-         });
+        });
     });
 
     var pbt = 0;
@@ -304,7 +303,9 @@
     function Add_new_to_order(){
         var id_supplies = $("#supplies").val();
         var order = $("#order_value_to").val();
-        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{order:order,id_supplies:id_supplies},function(data){
+        var quantity = $("#cnt").val();
+        console.log(quantity);
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{ order:order,id_supplies:id_supplies,quantity:quantity},function(data){
             $("#order").text(order);
             $("#content_to_order").html(data.table);
             $("#modal_to_order").modal("show");
@@ -312,7 +313,7 @@
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
-     }
+    }
 
     function Delete_to_order(order){
         console.log(order);
@@ -357,7 +358,6 @@
     
     function modal_edit(id_order_package_supplies,number_pack,order){
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/get_data_edit",{id_order_package_supplies:id_order_package_supplies,number_pack:number_pack,order:order,type:'A'},function(data){
-            console.log(data);
             $("#order-edit").text(order);
             $("#content_edit_manual").html(data.table);
             $("#modal_edit_manual").modal("show");
@@ -374,11 +374,9 @@
 
     function modal_add_supplies(id_order_package_supplies,number_pack,order){
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/get_data_add",{order:order,number_pack:number_pack},function(data){
-            //console.log(data);
             $("#order-add").text(order);
             $("#content_add_supplies").html(data.table);
             $("#modal_add_supplies").modal("show");
-            
 
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
