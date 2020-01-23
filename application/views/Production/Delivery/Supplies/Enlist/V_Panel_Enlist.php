@@ -305,18 +305,33 @@
         var order = $("#order_value_to").val();
         var quantity = $("#cnt").val();
         console.log(quantity);
-        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{ order:order,id_supplies:id_supplies,quantity:quantity},function(data){
-            $("#order").text(order);
-            $("#content_to_order").html(data.table);
-            $("#modal_to_order").modal("show");
-
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{order:order,id_supplies:id_supplies,quantity:quantity},function(data){
+            swal({title: '', text: '', type: 'success'});
+            $("#modal_to_order").modal("hide");
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
     }
 
-    function Delete_to_order(order){
-        console.log(order);
+    function Delete_to_order(order,id_order_supplies){
+        swal({
+          title: 'Atención',
+          text: "Desea eliminar este item?",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si'
+        }).then((result) => {
+            if (result) {
+                $.post("<?= base_url()?>Production/Delivery/C_Delivery/Delete_to_order",{order:order,id_order_supplies:id_order_supplies},function(data){
+                    $("#modal_to_order").modal("hide");
+                    swal({title: '', text: '', type: 'success'});
+                },'json').fail(function (error) {
+                    swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                });
+            }
+        });
     }
 
     function Pending(order){

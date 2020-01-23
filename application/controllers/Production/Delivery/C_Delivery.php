@@ -964,8 +964,14 @@ class C_Delivery extends Controller {
     }
 
     function Add_new_to_order(){
+
         $data = $this->M_Delivery->Add_new_to_order();
-        echo json_encode($data);   
+        echo json_encode($data);
+    }
+
+    function Delete_to_order(){
+        $data = $this->M_Delivery->Delete_to_order();
+        echo json_encode($data);
     }
     
     function pb(){

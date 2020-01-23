@@ -121,7 +121,7 @@ class M_Delivery extends VS_Model {
     function get_data_manual($order){
         $query = ("SELECT P.id_supplies,P.name,P.code,P.weight_per_supplies,S.quantity, S.`order`, S.id_order_supplies, S.exclude "
                 . " FROM pro_supplies P INNER JOIN access_order_supplies S ON S.id_supplies = P.id_supplies WHERE S.`order` = $order "
-                . " AND S.exclude = 0 ORDER BY S.id_order_supplies ASC");
+                . " AND S.exclude = 0 AND S.id_status = 1 ORDER BY S.id_order_supplies ASC");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -756,6 +756,14 @@ class M_Delivery extends VS_Model {
         );
         $this->db->insert("access_order_supplies", $data);
         $rs = $this->db->insert_id();
+    }
+
+    function Delete_to_order(){
+        $data = array(
+            "id_status" => '2'
+        );
+        $this->db->where("id_order_supplies", $this->id_order_supplies);
+        $rs = $this->db->update("access_order_supplies", $data);
     }
     
     function data_supplies($order,$id_order_package_supplies){
