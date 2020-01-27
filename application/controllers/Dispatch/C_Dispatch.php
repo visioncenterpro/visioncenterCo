@@ -6,9 +6,15 @@ class C_Dispatch extends Controller {
 
     public function __construct() {
         parent::__construct();
-        if($this->router->fetch_method() != "report_supervisory" || $this->router->fetch_method() != "request_cargo"){
+        $var = $this->router->fetch_method();
+        if($var == "request_cargo" || $var == "report_supervisory"){
+            $f =1;
+        }else{
             $this->ValidateSession();
         }
+        // if($var != "report_supervisory" || $var != "request_cargo"){
+        //     $this->ValidateSession();
+        // }
         $this->load->model("Dispatch/M_Dispatch");
     }
 

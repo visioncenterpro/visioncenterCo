@@ -746,6 +746,18 @@ class M_Delivery extends VS_Model {
         return $result->result();
     }
 
+    function get_type_supplies(){
+        $query = ("SELECT * FROM pro_type_supplies");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_unity(){
+        $query = ("SELECT * FROM pro_unit");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
     function Add_new_to_order(){
         $data = array(
             "order"         => $this->order,
@@ -755,7 +767,30 @@ class M_Delivery extends VS_Model {
 
         );
         $this->db->insert("access_order_supplies", $data);
-        $rs = $this->db->insert_id();
+        return $this->db->insert_id();
+    }
+
+    function save_new_item(){
+        $data = array(
+            "name"         => $this->name,
+            "code"   => $this->code,
+            "id_unit"      => $this->unity,
+            "id_type_supplies"    => $this->type,
+            "quantity_per_package"  => $this->cnt,
+            "weight_per_supplies"   => $this->weight_unt,
+        );
+        $this->db->insert("pro_supplies", $data);
+        $id = $this->db->insert_id();
+
+        $data = array(
+            "order"     => $this->order,
+            "id_supplies"   => $id,
+            "quantity"      => $this->cnt,
+            "additional"    => '2',
+            "observation_additional" => $this->observation
+        );
+        $this->db->insert("access_order_supplies", $data);
+        return $this->db->insert_id();
     }
 
     function Delete_to_order(){

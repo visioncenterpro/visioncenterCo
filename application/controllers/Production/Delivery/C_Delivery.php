@@ -955,6 +955,14 @@ class C_Delivery extends Controller {
         echo json_encode($data);
     }
 
+    function data_new_item(){
+        $data['order'] = $this->input->post('order');
+        $data['unity'] = $this->M_Delivery->get_unity();
+        $data['type_supplies'] = $this->M_Delivery->get_type_supplies();
+        $data['table'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_New_Item',$data, true);
+        echo json_encode($data);
+    }
+
     function get_data_add_to_order(){
         $data['order'] = $this->input->post('order');
         $data['supplies_all'] = $this->M_Delivery->data_supplies_all();
@@ -964,13 +972,17 @@ class C_Delivery extends Controller {
     }
 
     function Add_new_to_order(){
-
         $data = $this->M_Delivery->Add_new_to_order();
         echo json_encode($data);
     }
 
     function Delete_to_order(){
         $data = $this->M_Delivery->Delete_to_order();
+        echo json_encode($data);
+    }
+
+    function save_new_item(){
+        $data = $this->M_Delivery->save_new_item();
         echo json_encode($data);
     }
     
@@ -991,8 +1003,7 @@ class C_Delivery extends Controller {
             if(count($res)>0){
                 $count_total = 0;
                 foreach ($res as $value) {
-                    //$count_total = $count_total + $value->quantity_packaged;
-                    //echo $this->input->post('id_order_package_supplies')." - ".$value->access_order_package_supplies."<br>";
+                    
                     if($this->input->post('id_order_package_supplies') == $value->access_order_package_supplies){
                         $val = 1;
                         $rs['quantity_packaged'][] = $value->quantity_packaged;

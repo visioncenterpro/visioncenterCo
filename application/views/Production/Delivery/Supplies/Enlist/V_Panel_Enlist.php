@@ -172,6 +172,25 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_new_item">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Agregar nuevo item</h4>
+            </div>
+            <div class="modal-body" id="content-new-item">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary pull-right" data-dismiss="modal" onclick="save_new_item()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(function () {
         $("#edit_label").hide();
@@ -259,7 +278,8 @@
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
-                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Adicionar a la orden</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
                     $('input[type="checkbox"]').iCheck({
                         checkboxClass: 'icheckbox_minimal-blue'
                     }).on('ifChanged', function (e) {
@@ -289,6 +309,33 @@
         }, "json");
     }
 
+    function modal_new_item(order){
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/data_new_item",{order:order},function(data){
+            $("#content-new-item").html(data.table);
+            $("#modal_new_item").modal("show");
+            $('#supplies').select2();
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+    }
+
+    function save_new_item(){
+        var code = $("#code").val();
+        var name = $("#name").val();
+        var unity = $("#unity").val();
+        var type = $("#type").val();
+        var cnt = $("#cnt_pq").val();
+        var weight_unt = $("#weight_unt").val();
+        var order = $("#order_new").val();
+        var observation = $("#observation").val();
+
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/save_new_item",{order:order, code:code, name:name, unity:unity, type:type, cnt:cnt, weight_unt:weight_unt, observation:observation},function(data){
+            console.log(data);
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+    }
+
     function Add_to_order(order){
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/get_data_add_to_order",{order:order},function(data){
             $("#order").text(order);
@@ -304,16 +351,17 @@
         var id_supplies = $("#supplies").val();
         var order = $("#order_value_to").val();
         var quantity = $("#cnt").val();
-        console.log(quantity);
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{order:order,id_supplies:id_supplies,quantity:quantity},function(data){
+
             swal({title: '', text: '', type: 'success'});
             $("#modal_to_order").modal("hide");
+
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
     }
 
-    function Delete_to_order(order,id_order_supplies){
+    function Delete_to_order(order,id_order_supplies){ // cambio de estado
         swal({
           title: 'Atención',
           text: "Desea eliminar este item?",
@@ -325,8 +373,10 @@
         }).then((result) => {
             if (result) {
                 $.post("<?= base_url()?>Production/Delivery/C_Delivery/Delete_to_order",{order:order,id_order_supplies:id_order_supplies},function(data){
+
                     $("#modal_to_order").modal("hide");
                     swal({title: '', text: '', type: 'success'});
+
                 },'json').fail(function (error) {
                     swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
                 });
@@ -1432,7 +1482,7 @@
         var id_order_supplies = $("#id_order_supplies_i").val();
         var exclude = $("#excl").val();
         var obs = $("#obs").val();
-        $.post("<?= base_url() ?>Production/Delivery/C_Delivery/UpdateOrderSupplies", {id_order_supplies: id_order_supplies,field:'exclude', value: exclude, obs:obs}, function (data) {   
+        $.post("<?= base_url() ?>Production/Delivery/C_Delivery/UpdateOrderSupplies", {id_order_supplies: id_order_supplies,field:'exclude', value: exclude, obs:obs}, function (data) {
             if(data.res == "OK" && exclude == 1){
                 swal({title: '', text: '', type: 'success'});
             }
