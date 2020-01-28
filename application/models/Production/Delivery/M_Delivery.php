@@ -36,7 +36,7 @@ class M_Delivery extends VS_Model {
     
     function SearchOrderSupplies2($order){
         $query = ("SELECT p.*,i.*,u.description,u.code as cd FROM access_order_supplies p JOIN pro_supplies i ON "
-                . " p.id_supplies = i.id_supplies JOIN pro_unit u ON u.id_unit = i.id_unit WHERE p.`order` = $order");
+                . " p.id_supplies = i.id_supplies JOIN pro_unit u ON u.id_unit = i.id_unit WHERE p.`order` = $order AND p.id_status = 1");
         $result = $this->db->query($query);
         //echo $this->db->last_query();
         return $result->result();
@@ -489,7 +489,7 @@ class M_Delivery extends VS_Model {
     
     function total_order_supplies($order){
         $query = ("SELECT A.id_order_supplies, A.quantity FROM access_order_supplies A WHERE A.`order` = $order "
-                . " AND A.exclude = 0 ");
+                . " AND A.exclude = 0 AND A.id_status = 1");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -770,7 +770,16 @@ class M_Delivery extends VS_Model {
         return $this->db->insert_id();
     }
 
+    function get_suppliesXcode(){
+        $query = ("SELECT * FROM pro_supplies p WHERE p.code = '$this->code'");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
     function save_new_item(){
+
+        $this->db->trans_begin();
+
         $data = array(
             "name"         => $this->name,
             "code"   => $this->code,
@@ -790,7 +799,17 @@ class M_Delivery extends VS_Model {
             "observation_additional" => $this->observation
         );
         $this->db->insert("access_order_supplies", $data);
-        return $this->db->insert_id();
+
+        $array = array();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $array = array("res" => "Error " . $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+            $array = array("res" => $this->db->insert_id());
+        }
+        
+        return $array;
     }
 
     function Delete_to_order(){

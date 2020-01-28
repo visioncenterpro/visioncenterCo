@@ -193,6 +193,19 @@
 
 <script>
     $(function () {
+        // const { value: text } = await Swal.fire({
+        // input: 'textarea',
+        // inputPlaceholder: 'Type your message here...',
+        // inputAttributes: {
+        //     'aria-label': 'Type your message here'
+        // },
+        // showCancelButton: true
+        // })
+
+        // if (text) {
+        // Swal.fire(text)
+        // }
+
         $("#edit_label").hide();
         $("#table_orders").DataTable();
         $("#btnload").click(function () {
@@ -331,6 +344,12 @@
 
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/save_new_item",{order:order, code:code, name:name, unity:unity, type:type, cnt:cnt, weight_unt:weight_unt, observation:observation},function(data){
             console.log(data);
+            if(data.vali == "error"){
+                swal({title: 'Error', text: 'Ya existe el codigo ingresado', type: 'error'});
+            }else{
+                search(order);
+                swal({title: '', text: '', type: 'success'});
+            }
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
@@ -373,10 +392,9 @@
         }).then((result) => {
             if (result) {
                 $.post("<?= base_url()?>Production/Delivery/C_Delivery/Delete_to_order",{order:order,id_order_supplies:id_order_supplies},function(data){
-
+                    search(order);
                     $("#modal_to_order").modal("hide");
                     swal({title: '', text: '', type: 'success'});
-
                 },'json').fail(function (error) {
                     swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
                 });

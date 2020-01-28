@@ -14,7 +14,7 @@
             <input type="number" class="form-control" id="cnt" min="1">
         </div>
         <button class="btn btn-primary" onclick="Add_new_to_order()">Agregar</button>
-        <button class="btn btn-primary" onclick="create_new_to_order()">Crear nuevo item</button>
+        <!-- <button class="btn btn-primary" onclick="create_new_to_order()">Crear nuevo item</button> -->
     </div>
 </div>
 <hr>

@@ -982,7 +982,13 @@ class C_Delivery extends Controller {
     }
 
     function save_new_item(){
-        $data = $this->M_Delivery->save_new_item();
+        $vali = $this->M_Delivery->get_suppliesXcode();
+        if(count($vali) > 0){
+            $data['vali'] = "error";
+        }else{
+            $data['vali'] = "ok";
+            $data['data'] = $this->M_Delivery->save_new_item();
+        }
         echo json_encode($data);
     }
     

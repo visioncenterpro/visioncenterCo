@@ -7,7 +7,7 @@ class C_Dispatch extends Controller {
     public function __construct() {
         parent::__construct();
         $var = $this->router->fetch_method();
-        if($var == "request_cargo" || $var == "report_supervisory"){
+        if($var == "request_cargo" || $var == "report_supervisory" || $var == "PdfRequest"){
             $f =1;
         }else{
             $this->ValidateSession();
