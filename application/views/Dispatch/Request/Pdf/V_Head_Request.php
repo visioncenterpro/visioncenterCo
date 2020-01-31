@@ -35,7 +35,7 @@
 
 <table  cellpadding="3" width="100%" style="font-size: 7pt; page-break-inside:avoid;">
     <tr>
-        <td rowspan="3" width="4%"><img src="<?= URL_IMAGE.$this->session->company ?>" width="140px" height="60px" /></td>
+        <td rowspan="3" width="4%"><img src="<?= URL_IMAGE.$this->session->company ?>MILESTONE.jpg" width="140px" height="60px" /></td>
         <td colspan="3" style="text-align: center;"><h3>SOLICITUD DE DESPACHO</h3></td>
         <td style="text-align: center;color: red;font-size: 20">No. <?= $head->id_request_sd ?></td>
     </tr>

@@ -8,6 +8,7 @@ class C_Dispatch extends Controller {
         parent::__construct();
         $var = $this->router->fetch_method();
         if($var == "request_cargo" || $var == "report_supervisory" || $var == "PdfRequest"){
+
             $f =1;
         }else{
             $this->ValidateSession();
@@ -44,6 +45,30 @@ class C_Dispatch extends Controller {
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
         $this->load->view('Template/V_Footer', $Footer);
     }
+
+    function Show_Packages($order) {
+        
+        $data['head'] = $this->M_Dispatch->LoadHeaderOrder($order);
+        
+        $this->load->view("Dispatch/Pack/Pdf/V_Head_Pack",$data);
+        
+        $forniture = $this->M_Dispatch->LoadFornitureOrder($order);
+      
+        foreach ($forniture as $m):
+            
+            $data['name'] = $m->description;
+            $data['item'] = $m->item;
+            $data['colorPdf'] = $m->colored;
+            
+            $data['packages'] = $this->M_Dispatch->LoadPackages($order,$m->id_forniture);
+            
+            $this->load->view("Dispatch/Pack/Pdf/V_Body_Pack",$data);
+        endforeach;
+        
+        
+        $this->load->view("Dispatch/Pack/Pdf/V_Footer_Pack");
+    }
+    
     
     function get_data_remission(){
         $get_data = $this->M_Dispatch->get_data_remission();
@@ -154,12 +179,12 @@ class C_Dispatch extends Controller {
                 "driver" => $r->driver,
                 "license_plate" => $r->license_plate,
                 "id_request_sd" => $id_request_sd,
-                "type" => $r->type,
+                "type"   => $r->type,
                 "quantity_packets" => $r->quantity_packets,
                 "forniture" => $r->description,
                 "start" => $r->number_pack,
-                "pack" => $this->M_Dispatch->MaxPack($id_request_sd, $r->id_forniture, $r->type_package),
-                "color" => '' //$this->M_Dispatch->Colorforniture($order, $r->id_forniture)
+                "pack"  => $this->M_Dispatch->MaxPack($id_request_sd, $r->id_forniture, $r->type_package),
+                "color" => '' //$this->M_Dispatch->Colorforniture($order, $r->id_forniture) 
             );
             $data['new'] = true;
             $data['quantity_packets'] = $r->quantity_packets;
@@ -841,7 +866,7 @@ class C_Dispatch extends Controller {
             $array = array("Tpacks"=>0,"Tweight"=>0);
             foreach ($det as $v) :
                 
-                if($v->name != $oldForniture && $oldForniture != ""){
+                if($v->name != $oldForniture && $0 != ""){
                     $this->load->view("Dispatch/Request/Pdf/V_Detail_Modulate", array("detail"=>$Table,"total"=>$array));
                     $Table = "";
                     $array = array("Tpacks"=>0,"Tweight"=>0);
@@ -879,4 +904,5 @@ class C_Dispatch extends Controller {
         $this->load->view("Dispatch/Request/Pdf/V_Footer_Remission");
     }
 
+    
 }

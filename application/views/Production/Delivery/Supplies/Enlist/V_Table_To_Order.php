@@ -31,14 +31,12 @@
         <?php
         //print_r($quantity_packaged);
         $count = 0;
-        foreach ($supplies as $s) :
-            ?>
+        foreach ($supplies as $s) : ?>
             <tr>
                 <td><button type="button" class="btn btn-danger btn-xs btn-tabla" onclick="Delete_to_order('<?=$order?>','<?=$s->id_order_supplies?>')" title="Quitar Paquete del contenedor"><i class="fa fa-trash"></i></button></td>
                 <td style="text-align: center"><?= $s->code ?></td>
                 <td><?= $s->name ?></td>
                 <td><?=$s->weight_per_supplies?></td>
-               
             </tr>
         <?php 
             $count++;

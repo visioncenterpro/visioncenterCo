@@ -12,6 +12,63 @@ class M_Dispatch extends VS_Model {
         endforeach;
     }
 
+    function LoadHeaderOrder($order){
+        $result = $this->db->select("*")
+                ->from("access_order")
+                ->where("`order`",$order)
+                ->get();
+       
+        return $result->row();
+    }
+
+    function LoadFornitureOrder($order){
+        $result = $this->db->select("*,o.color as colored")
+                ->from("access_order_item o")
+                ->join("access_forniture f","o.id_forniture = f.id_forniture and f.type_forniture = o.type_forniture")
+                ->where("`order`",$order)
+                ->order_by("f.item")
+                ->get();
+       
+        return $result->result();
+    }
+
+    function LoadHeaderPackI($order){
+        $result = $this->db->select("*")
+                ->from("access_order_package")
+                ->join("access_order","access_order_package.`order` = access_order.`order`")
+                ->join("access_forniture","access_forniture.id_forniture = access_order_package.id_forniture and access_forniture.type_forniture = access_order.line")
+                ->where("access_order_package.`order`",$order)
+//                ->where("id_order_package",1)
+                ->order_by("reference")
+                ->get();
+        
+        return $result->result();        
+       
+    }
+
+    function LoadDetailPack($id_order_package){
+        $result = $this->db->select("p.piece,p.code_sheet,p.code_sheet_ax,p.`long`,p.width,pd.quantity_pieces,if(ifnull(code_canto_l1,'')<>'',1,0) as l1, if(ifnull(code_canto_l2,'')<>'',1,0) as l2,if(ifnull(code_canto_a1,'')<>'',1,0) as a1, if(ifnull(code_canto_a2,'')<>'',1,0) as a2 ")
+                ->from("access_order_package_detail pd ")
+                ->join("access_order_pieces p ","pd.id_order_pieces = p.id_access_order_pieces")
+                ->where("id_order_package",$id_order_package)
+                ->where("p.print",1)
+                ->get();
+                
+        return $result->result(); 
+    }
+
+    function LoadPackages($order,$forniture){
+        
+        $result = $this->db->query("SELECT p.*, t.code, tp.description
+        FROM access_order_package p
+        JOIN access_type_package t ON p.type_package = t.id_type_package
+        JOIN access_type_packing tp ON p.type_packing = tp.id_type_packing
+        WHERE `order` = '$order' AND p.id_forniture = '$forniture'
+        ORDER BY CASE p.type_package WHEN 2 THEN 2 WHEN 1 THEN 0 ELSE 1 END, p.number_pack asc");
+
+        return $result->result();
+    }
+
     function ListRequest(){
         $result = $this->db->select("p.*,s.description")
                 ->from("dis_request_sd p")
@@ -978,7 +1035,7 @@ class M_Dispatch extends VS_Model {
             $this->db->update("dis_request_sd",$array);
             
             $array = array("id_remission"=>$this->remission);
-            $this->db->where("id_request_sd",$this->request); 
+            $this->db->where("id_request_sd",$this->request);
             $this->db->where("`order`",$o->order);
             $this->db->update("dis_request_sd_detail",$array);
         
@@ -998,7 +1055,8 @@ class M_Dispatch extends VS_Model {
                     if($cont < $o2->quantity_packets && $o3->id_request_detail == '0'){
                         $array = array(
                             "id_request_detail" => $o2->id_request_detail,
-                            "id_request_sd"     => $o2->id_request_sd
+                            "id_request_sd"     => $o2->id_request_sd,
+                            "pack"              => $o2->pack
                         );
                         $this->db->where("id_request_detail_package",$o3->id_request_detail_package);
                         //$this->db->where("`order`",$o->order);
@@ -1017,7 +1075,8 @@ class M_Dispatch extends VS_Model {
                     if($cont2 < $o2->quantity_packets && $o4->id_request_detail == '0'){
                         $array = array(
                             "id_request_detail" => $o2->id_request_detail,
-                            "id_request_sd"     => $o2->id_request_sd
+                            "id_request_sd"     => $o2->id_request_sd,
+                            "pack"              => $o2->pack
                         );
                         $this->db->where("id_request_detail_package",$o4->id_request_detail_package);
                         //$this->db->where("`order`",$o->order);
@@ -1042,7 +1101,7 @@ class M_Dispatch extends VS_Model {
     function UpdateStateRequest($status, $requisition = false){
         $this->date = date("Y-m-d H:i:s");
         $data = array(
-            "modified_by" => $this->session->IdUser, 
+            "modified_by" => $this->session->IdUser,
             "last_update" => $this->date,
             "id_status"=>$status
         );

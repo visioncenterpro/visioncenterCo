@@ -5,7 +5,7 @@
         <div class="col-md-6">
             <table cellpadding="3" width="100%" style="font-size: 7pt;">
                 <tr>
-                    <!--<td rowspan="3" width="4%"><img src="<?=URL_IMAGE.$this->session->company?>" width="140px" height="60px" /></td>-->
+                    <!--<td rowspan="3" width="4%"><img src="<?=URL_IMAGE?>MILESTONE.jpg" width="140px" height="60px" /></td>-->
                     <td colspan="5" style="text-align: center;font-size: 14px; background-color:<?=$color?> "><?=$forniture?>  (<?=$quantity_packets?>) UND &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PAQUETE NUMERO <?=$ItemQr?></td>
                     <td rowspan="2" style="/*padding: 7% !important;*/">
                         <input type="hidden" id="qrcode1" value="<?=$ItemQr?>-<?=$i?>-M">

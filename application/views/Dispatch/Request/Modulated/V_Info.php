@@ -316,10 +316,14 @@
             data: {id_request_sd:<?=$request->id_request_sd?>},
             success: function(data){
                 dato = JSON.parse(data);
-                var a = document.createElement('a');
-                a.href = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo/'+dato.id_request_cargue;
-                a.setAttribute('target', '_blank');
-                a.click();
+                if(dato == null){
+                    swal({title: 'Atención', text: 'no hay control de cargue relacionada a esta solicitud', type: 'error'});
+                }else{
+                    var a = document.createElement('a');
+                    a.href = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo/'+dato.id_request_cargue;
+                    a.setAttribute('target', '_blank');
+                    a.click();
+                }
             }
         });
     }
@@ -339,7 +343,7 @@
 
     function save_goBack(){
         var cnt = $("#cnt").val();
-        var observation = $("#observation").val();3
+        var observation = $("#observation").val();
         var id_order_package = $("#id_order_package").val();
         var number_pack = $("#number_pack_back").val();
         var order = $("#order_gp").val();
