@@ -8,7 +8,6 @@ class C_Dispatch extends Controller {
         parent::__construct();
         $var = $this->router->fetch_method();
         if($var == "request_cargo" || $var == "report_supervisory" || $var == "PdfRequest"){
-
             $f =1;
         }else{
             $this->ValidateSession();
@@ -184,7 +183,7 @@ class C_Dispatch extends Controller {
                 "forniture" => $r->description,
                 "start" => $r->number_pack,
                 "pack"  => $this->M_Dispatch->MaxPack($id_request_sd, $r->id_forniture, $r->type_package),
-                "color" => '' //$this->M_Dispatch->Colorforniture($order, $r->id_forniture) 
+                "color" => '' //$this->M_Dispatch->Colorforniture($order, $r->id_forniture)
             );
             $data['new'] = true;
             $data['quantity_packets'] = $r->quantity_packets;
@@ -837,6 +836,37 @@ class C_Dispatch extends Controller {
         }
         echo json_encode($rs);
     }
+
+    function Request_weight(){
+        $array['menus'] = $this->M_Main->ListMenu();
+
+        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
+        $this->load->view('Template/V_Header', $Header);
+
+        $data['request'] = $this->M_Dispatch->get_request_weight();
+        $this->load->view('Dispatch/Request/V_Panel_Request_Weight',$data);
+
+        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        $Footer['array_js']     = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
+        $this->load->view('Template/V_Footer', $Footer);
+    }
+
+    function Create_Request_weight(){
+        $data = $this->M_Dispatch->Create_Request_weight();
+        echo json_encode($data);
+    }
+
+    function data_request_weight(){
+        $data['data'] = $this->M_Dispatch->data_request_weight();
+        $data['content'] = $this->load->view("Dispatch/Request/Content_modal_Request_weight",$data, true);
+        echo json_encode($data);
+    }
+
+    function response_request_weight(){
+        $data = $this->M_Dispatch->response_request_weight();
+        echo json_encode($data);
+    }
     
     function PdfRequest($id_request_sd){
         $data['head'] = $this->M_Dispatch->InfoRequestSD($id_request_sd);
@@ -866,7 +896,7 @@ class C_Dispatch extends Controller {
             $array = array("Tpacks"=>0,"Tweight"=>0);
             foreach ($det as $v) :
                 
-                if($v->name != $oldForniture && $0 != ""){
+                if($v->name != $oldForniture && $oldForniture != ""){
                     $this->load->view("Dispatch/Request/Pdf/V_Detail_Modulate", array("detail"=>$Table,"total"=>$array));
                     $Table = "";
                     $array = array("Tpacks"=>0,"Tweight"=>0);

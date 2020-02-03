@@ -534,10 +534,35 @@
             });
         }else{
             if($("#max_weight").val() < Math.round($("#weightI").val())){
+                // swal({
+                //     title: 'Atención',
+                //     text: "El peso integral supera la capacidad del vehiculo, elimine paquetes",
+                //     type: 'error'
+                // });
                 swal({
                     title: 'Atención',
-                    text: "El peso integral supera la capacidad del vehiculo, elimine paquetes",
-                    type: 'error'
+                    text: "El peso integral supera la capacidad del vehiculo, desea solicitar autorizacion del peso?",
+                    type: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si'
+                }).then((result) => {
+                    if (result) {
+                        var id_vehicle = $("#vehicle").val();
+                        var weight_i = $("#weightI").val();
+                        $.post("<?= base_url() ?>Dispatch/C_Dispatch/Create_Request_weight", {request:<?= $request->id_request_sd ?>,id_vehicle:id_vehicle,weight_i:weight_i}, function (data) {
+                            swal({title: '', text: '', type: 'success'});
+                                 
+                        }, 'json').fail(function (error) {
+                            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                        });
+                        swal({
+                            title: 'Solicitud enviada',
+                            text: "",
+                            type: 'success'
+                        });
+                    }
                 });
             }else{
                 swal({
@@ -570,7 +595,7 @@
                                 } else {
                                     swal({title: 'Error!', text: data, type: 'error'});
                                 }
-                       CreateRequisition }, 'json').fail(function (error) {
+                        }, 'json').fail(function (error) {
                             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
                         });
                         
