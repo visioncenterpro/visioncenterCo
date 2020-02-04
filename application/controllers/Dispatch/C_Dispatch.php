@@ -90,6 +90,7 @@ class C_Dispatch extends Controller {
         
         $data['request'] = $this->M_Dispatch->InfoRequestSD($id);
         $data['vehicles'] = $this->M_Dispatch->get_vehicles();
+        $data['request_weight'] = $this->M_Dispatch->get_Request_weightxid_request($id);
         
         $content = $this->M_Dispatch->LoadContainerSDESP($id,'Modulado');
         $container = $this->load->view('Dispatch/Request/Modulated/V_Container_PackSD',array("content"=>$content),true);
@@ -853,7 +854,18 @@ class C_Dispatch extends Controller {
     }
 
     function Create_Request_weight(){
-        $data = $this->M_Dispatch->Create_Request_weight();
+        $vali = $this->M_Dispatch->get_Request_weightxid_request($this->input->post('request'));
+        if(count($vali) > 0){
+            foreach ($vali as $key => $value) {
+                if($value->id_status == "1"){
+                    $data = "already";
+                }else{
+                    $data = $this->M_Dispatch->Update_Request_weight();
+                }
+            }
+        }else{
+            $data = $this->M_Dispatch->Create_Request_weight();
+        }
         echo json_encode($data);
     }
 

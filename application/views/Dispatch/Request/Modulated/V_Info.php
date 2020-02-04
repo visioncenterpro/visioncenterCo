@@ -76,6 +76,16 @@
                             <input type="text" disabled="true" class="form-control" id="max_weight" value="0">
                         </div>
                     </div>
+                    <?php foreach ($request_weight as $key => $value) {
+                        if($value->id_status != "1"){ ?>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Observación solicitud peso</label>
+                                <p><?= $value->observation ?></p>
+                            </div>
+                        </div>
+                    <?php } 
+                        } ?>
                 </div>
                 
                 <div class="row">
@@ -239,12 +249,12 @@
                 e.preventDefault();
             }, false);
         } else {
-            $("#vehicle").val("<?=$request->id_weight_vehicle?>");
-            $("#max_weight").val("<?= $request->max_weight?>");
+            $("#vehicle").val("<?= $request->id_weight_vehicle ?>");
+            $("#max_weight").val("<?= $request->max_weight ?>");
             $('body').on('contextmenu', 'tr.test', function () {
                 var pack = $(this).attr("idpack");
                 $("#quantity-split").val(0);
-                $("#split").text("Agregar Paquete Al Contenedor ");
+                $("#split").text("Agregar Paquete Al Contenedor");
                 $("#t-order").text($(this).attr("order"));
                 $("#t-pack").text($(this).attr("pack"));
                 $("#t-balance").text($("#balance_" + pack).text());
@@ -552,7 +562,12 @@
                         var id_vehicle = $("#vehicle").val();
                         var weight_i = $("#weightI").val();
                         $.post("<?= base_url() ?>Dispatch/C_Dispatch/Create_Request_weight", {request:<?= $request->id_request_sd ?>,id_vehicle:id_vehicle,weight_i:weight_i}, function (data) {
-                            swal({title: '', text: '', type: 'success'});
+                            if(data == "already"){
+                                swal({title: 'Atención', text: 'Ya se envio una solicitud de cambio de peso, espere la respuesta del administrador', type: 'warning'});
+                            }else{
+                                swal({title: '', text: '', type: 'success'});
+                            }
+                            
                                  
                         }, 'json').fail(function (error) {
                             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});

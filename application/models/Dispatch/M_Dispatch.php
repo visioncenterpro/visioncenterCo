@@ -990,6 +990,12 @@ class M_Dispatch extends VS_Model {
         return $array;
     }
 
+    function get_Request_weightxid_request($id_request){
+        $query = ("SELECT * FROM dis_request_weight WHERE id_request_sd = $id_request");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
     function get_request_weight(){
         $query = ("SELECT D.*,DV.description as vehicle, DV.max_weight as weight_veh FROM dis_request_weight D INNER JOIN dis_request_sd DS ON D.id_request_sd = DS.id_request_sd
         INNER JOIN dis_weight_vehicle DV ON D.id_weight_vehicle = DV.id_weight_vehicle WHERE D.id_status = 1");
@@ -1022,10 +1028,31 @@ class M_Dispatch extends VS_Model {
         }
     }
 
+    function Update_Request_weight(){
+        $this->db->trans_begin();
+
+        $data = array(
+            "id_weight_vehicle" => $this->id_vehicle,
+            "weightI"   => $this->weight_i,
+            "observation"   => '',
+            "id_status"     => 1
+        );
+        $this->db->where("id_request_sd",$this->request);
+        $this->db->update("dis_request_weight",$data);
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return "ERROR ".$this->db->last_query();
+        } else {
+            $this->db->trans_commit();
+            return "OK";
+        }
+    }
+
     function response_request_weight(){
         $this->db->trans_begin();
 
-        if($this->response){
+        if($this->response){ 
             $this->response = 15;
         }else{
             $this->response = 16;
