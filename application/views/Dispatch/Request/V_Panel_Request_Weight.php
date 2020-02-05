@@ -74,7 +74,6 @@
         var id_request_weight = $("#id_request_weight").val();
         var observation = $("#observation").val();
         $.post("<?= base_url() ?>Dispatch/C_Dispatch/response_request_weight", {id_request_weight:id_request_weight,response:response,observation:observation}, function (data) {
-            
             swal({title: '', text: '', type: 'success'});
             $("#modal_request_weight").modal("hide");
         }, 'json').fail(function (error) {

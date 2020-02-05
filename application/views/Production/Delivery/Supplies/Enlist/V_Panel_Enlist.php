@@ -370,6 +370,7 @@
         var id_supplies = $("#supplies").val();
         var order = $("#order_value_to").val();
         var quantity = $("#cnt").val();
+        //console.log(id_supplies);
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{order:order,id_supplies:id_supplies,quantity:quantity},function(data){
 
             swal({title: '', text: '', type: 'success'});

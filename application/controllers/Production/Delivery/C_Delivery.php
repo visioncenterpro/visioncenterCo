@@ -54,7 +54,7 @@ class C_Delivery extends Controller {
 
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS, ICHECK_JS);
-        $Footer["btn_datatable"] = BTN_DATATABLE_JS;
+        $Footer["btn_datatable"] = BTN_DAT| ATABLE_JS;
         $this->load->view('Template/V_Footer', $Footer);
     }
 

@@ -1,4 +1,4 @@
-<div class="content-wrapper">
+<div class="col-md-12">
     <section class="content">
         <div class="box">
             <div class="box-header with-border">
@@ -14,9 +14,9 @@
                     </div>
                 </div>
             </div>
-            <div class="box-footer">
+            <!-- <div class="box-footer">
                 Footer
-            </div>
+            </div> -->
         </div>
     </section>
 </div>

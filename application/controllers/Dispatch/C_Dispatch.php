@@ -7,10 +7,10 @@ class C_Dispatch extends Controller {
     public function __construct() {
         parent::__construct();
         $var = $this->router->fetch_method();
-        if($var == "request_cargo" || $var == "report_supervisory" || $var == "PdfRequest"){
+        if($var == "request_cargo" || $var == "report_supervisory" || $var == "PdfRequest" || $var == "request_cargo_form1"){
             $f =1;
         }else{
-            $this->ValidateSession();
+            //$this->ValidateSession();
         }
         // if($var != "report_supervisory" || $var != "request_cargo"){
         //     $this->ValidateSession();
@@ -225,6 +225,25 @@ class C_Dispatch extends Controller {
     function goBack_Package(){
         $data = $this->M_Dispatch->goBack_Package();
         echo json_encode($data);
+    }
+
+    function request_cargo_form1(){ // formulario de control de cargue
+        // $array['menus'] = $this->M_Main->ListMenu();
+
+        // $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
+         $this->load->view('Template/V_Header2', $Header);
+
+        $data['remissions']     = $this->M_Dispatch->get_data_remission_all();
+        $data['data_request']   = $this->M_Dispatch->get_data_request();
+        $data['table']          = $this->load->view('Dispatch/Request/V_Table_Request_Cargo',$data,true);
+        $data['content_modal']  = $this->load->view('Dispatch/Request/Content_Modal',$data,true);
+        $this->load->view('Dispatch/Request/V_Panel_request_cargo',$data);
+
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        $Footer['array_js']     = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
+        $Footer["btn_datatable"] = BTN_DATATABLE_JS;
+        $this->load->view('Template/V_Footer2', $Footer);
     }
 
     function request_cargo_form(){ // formulario de control de cargue
