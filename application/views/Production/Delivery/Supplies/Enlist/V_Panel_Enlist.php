@@ -191,6 +191,32 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_synchronize">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Sincronizar Items AX</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Fecha inicio</label>
+                    <input type="date" class="form-control" id="date" />
+                </div>
+                <div class="form-group">
+                    <label>Fecha final</label>
+                    <input type="date" class="form-control" id="date2" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary pull-right" data-dismiss="modal" onclick="modal_synchronize()">Sincronizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(function () {
         // const { value: text } = await Swal.fire({
@@ -293,9 +319,10 @@
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
                     $('input[type="checkbox"]').iCheck({
                         checkboxClass: 'icheckbox_minimal-blue'
-                    }).on('ifChanged', function (e) {
+                    }).on('ifChanged', function (e) {                                                                         
                         var isChecked = e.currentTarget.checked;
                         if (isChecked == true) {
                             var exclude = 1;
@@ -322,6 +349,10 @@
         }, "json");
     }
 
+    function modal_synchronize(order){
+        $("#modal_synchronize").modal("show");
+    }
+
     function modal_new_item(order){
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/data_new_item",{order:order},function(data){
             $("#content-new-item").html(data.table);
@@ -344,11 +375,15 @@
 
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/save_new_item",{order:order, code:code, name:name, unity:unity, type:type, cnt:cnt, weight_unt:weight_unt, observation:observation},function(data){
             console.log(data);
-            if(data.vali == "error"){
-                swal({title: 'Error', text: 'Ya existe el codigo ingresado', type: 'error'});
+            if(data.vali == "error_vali"){
+                swal({title: 'Atención', text: 'El Item seleccionado no se encuentra en AX, por favor actualize los datos', type: 'error'});
             }else{
-                search(order);
-                swal({title: '', text: '', type: 'success'});
+                if(data.vali == "error"){
+                    swal({title: 'Error', text: 'Ya existe el codigo ingresado', type: 'error'});
+                }else{
+                    search(order);
+                    swal({title: '', text: '', type: 'success'});
+                }
             }
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
@@ -372,9 +407,12 @@
         var quantity = $("#cnt").val();
         //console.log(id_supplies);
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{order:order,id_supplies:id_supplies,quantity:quantity},function(data){
-
-            swal({title: '', text: '', type: 'success'});
-            $("#modal_to_order").modal("hide");
+            if(data.res == "error_vali"){
+                swal({title: 'Atención', text: 'El Item seleccionado no se encuentra en AX, por favor actualize los datos', type: 'error'});
+            }else{
+                swal({title: '', text: '', type: 'success'});
+                $("#modal_to_order").modal("hide");
+            }
 
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
@@ -400,6 +438,16 @@
                     swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
                 });
             }
+        });
+    }
+
+    function synchronize_items(order){
+        var date = $("#date").val();
+        var date2 = $("#date2").val();
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/synchronize_items_ax",{order:order,date:date,date2:date2},function(data){
+            swal({title: '', text: '', type: 'success'});
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
     }
 

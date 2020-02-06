@@ -567,7 +567,6 @@
                             }else{
                                 swal({title: '', text: '', type: 'success'});
                             }
-                            
                                  
                         }, 'json').fail(function (error) {
                             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
@@ -613,7 +612,6 @@
                         }, 'json').fail(function (error) {
                             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
                         });
-                        
                     }
                 }).catch(swal.noop)
             }

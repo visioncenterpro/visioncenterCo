@@ -972,7 +972,12 @@ class C_Delivery extends Controller {
     }
 
     function Add_new_to_order(){
-        $data = $this->M_Delivery->Add_new_to_order();
+        $vali = $this->Vali_AX_Supplies($this->input->post('id_supplies'));
+        if(count($vali) > 0){
+            $data = $this->M_Delivery->Add_new_to_order();
+        }else{
+            $data = array("res" => "error_vali");
+        }
         echo json_encode($data);
     }
 
@@ -982,14 +987,32 @@ class C_Delivery extends Controller {
     }
 
     function save_new_item(){
-        $vali = $this->M_Delivery->get_suppliesXcode();
-        if(count($vali) > 0){
-            $data['vali'] = "error";
+        $vali_ini = $this->M_Delivery->GetReference($this->input->post('code'));
+        if(count($vali_ini) == 0){
+            $data['vali'] = "error_vali";
         }else{
-            $data['vali'] = "ok";
-            $data['data'] = $this->M_Delivery->save_new_item();
+            $vali = $this->M_Delivery->get_suppliesXcode();
+            if(count($vali) > 0){
+                $data['vali'] = "error";
+            }else{
+                $data['vali'] = "ok";
+                $data['data'] = $this->M_Delivery->save_new_item();
+            }
         }
         echo json_encode($data);
+    }
+
+    function Vali_AX_Supplies($id_supplies){
+        $vali = array();
+        $data = $this->M_Delivery->get_suppliesXid($id_supplies);
+        foreach ($data as $key => $value) {
+            $vali = $this->M_Delivery->GetReference($value->code);
+        }
+        return $vali;
+    }
+
+    function synchronize_items_ax(){
+        $data = $this->M_delivery->GetReferenceDate($this->input->post('date'),$this->input->post('date2'));
     }
     
     function pb(){

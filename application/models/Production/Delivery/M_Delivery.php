@@ -741,7 +741,13 @@ class M_Delivery extends VS_Model {
     }
 
     function data_supplies_all(){
-        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_order_supplies WHERE A.`order` <> $this->order");
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` <> $this->order");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_suppliesXid($id_supplies){
+        $query = ("SELECT * FROM pro_supplies p WHERE p.id_supplies = $id_supplies");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -759,6 +765,8 @@ class M_Delivery extends VS_Model {
     }
 
     function Add_new_to_order(){
+        $this->db->trans_begin();
+
         $data = array(
             "order"         => $this->order,
             "id_supplies"   => $this->id_supplies,
@@ -767,7 +775,17 @@ class M_Delivery extends VS_Model {
 
         );
         $this->db->insert("access_order_supplies", $data);
-        return $this->db->insert_id();
+
+        $array = array();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $array = array("res" => "Error " . $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+            $array = array("res" => $this->db->insert_id());
+        }
+
+        return $array;
     }
 
     function get_suppliesXcode(){
