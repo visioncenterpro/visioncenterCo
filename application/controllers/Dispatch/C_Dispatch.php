@@ -10,7 +10,7 @@ class C_Dispatch extends Controller {
         if($var == "request_cargo" || $var == "report_supervisory" || $var == "PdfRequest" || $var == "request_cargo_form1"){
             $f =1;
         }else{
-            //$this->ValidateSession();
+            $this->ValidateSession();
         }
         // if($var != "report_supervisory" || $var != "request_cargo"){
         //     $this->ValidateSession();
