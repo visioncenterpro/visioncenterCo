@@ -1011,8 +1011,28 @@ class C_Delivery extends Controller {
         return $vali;
     }
 
+    function data_synchronize(){
+        $data['order'] = $this->input->post('order');
+        $data['content'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Content_Synchronize',$data, true);
+        echo json_encode($data);
+    }
+
     function synchronize_items_ax(){
-        $data = $this->M_delivery->GetReferenceDate($this->input->post('date'),$this->input->post('date2'));
+        $data = $this->M_Delivery->GetReferenceDate($this->input->post('date'),$this->input->post('date2'));
+        //$supplies = $this->M_delivery->get_supplies_all();
+        foreach($data as $key => $value){
+            $supplies = $this->M_Delivery->get_suppliesXcodeParam($value->referencia);
+            if(count($supplies) == 0){
+                $unity = $this->M_Delivery->get_unitxDes($value->BOMUNITID);
+                if(count($unity) == 0){
+                    $id_unit = 16;
+                }else{
+                    $id_unit = $unity->id_unit;
+                }
+                $data['insert'][] = $this->M_Delivery->save_supplies($value,$id_unit);
+            }
+        }
+        echo json_encode($data);
     }
     
     function pb(){

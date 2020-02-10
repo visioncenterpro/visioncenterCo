@@ -740,8 +740,15 @@ class M_Delivery extends VS_Model {
         }
     }
 
-    function data_supplies_all(){
+
+    function data_supplies_all(){ // function add item
         $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` <> $this->order");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_supplies_all(){
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` = $this->order");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -792,6 +799,44 @@ class M_Delivery extends VS_Model {
         $query = ("SELECT * FROM pro_supplies p WHERE p.code = '$this->code'");
         $result = $this->db->query($query);
         return $result->result();
+    }
+
+    function get_suppliesXcodeParam($code){
+        $query = ("SELECT * FROM pro_supplies p WHERE p.code = '$code'");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function save_supplies($arr,$id_unit){
+        $this->db->trans_begin();
+
+        $data = array(
+            "name"         => $arr->ITEMNAME,
+            "code"   => $arr->Referencia,
+            "id_unit"      => $id_unit,
+            "id_type_supplies"    => $arr->type,
+            "quantity_per_package"  => $arr->cnt,
+            "weight_per_supplies"   => $arr->weight_unt,
+        );
+        $this->db->insert("pro_supplies", $data);
+
+        $array = array();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $array = array("res" => "Error " . $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+            $array = array("res" => $this->db->insert_id());
+        }
+        
+        return $array;
+
+    }
+
+    function get_unitxDes($description){
+        $query = ("SELECT * FROM pro_unit WHERE description LIKE '%$description%'");
+        $result = $this->db->query($query);
+        return $result->row();
     }
 
     function save_new_item(){

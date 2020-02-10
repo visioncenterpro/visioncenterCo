@@ -110,6 +110,14 @@ class VS_Model extends CI_Model {
         //echo $this->ax->last_query();
         return $result->result();
     }
+
+    function GetReferenceType($date,$date2){
+        $this->ax = $this->load->database("ax", TRUE);
+        $result = $this->ax->query("SELECT * FROM JaymInventtable WHERE itemtype = 0 AND costgroupid <>'MPLAMINA'
+        AND CREATEDDATETIME BETWEEN ('".$date." 00:00:00') AND ('".$date2." 23:59:59')
+        AND itemgroupid not IN ('CONSIG','REP','MER','dotinv','ACF1','ACF','ACT6','AseoBqll','CafetBqlla','SUB-ESTACI','REPDIFER','PBQ')");
+        return $result->result();
+    }
     
     function ListOrderItemImosAll($name) {
         $this->ix = $this->load->database("ImosIX", TRUE);

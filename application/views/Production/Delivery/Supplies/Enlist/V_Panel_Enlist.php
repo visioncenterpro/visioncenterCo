@@ -199,19 +199,11 @@
                     <span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Sincronizar Items AX</h4>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Fecha inicio</label>
-                    <input type="date" class="form-control" id="date" />
-                </div>
-                <div class="form-group">
-                    <label>Fecha final</label>
-                    <input type="date" class="form-control" id="date2" />
-                </div>
+            <div class="modal-body" id="content-synchronize">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary pull-right" data-dismiss="modal" onclick="modal_synchronize()">Sincronizar</button>
+                <button type="button" class="btn btn-primary pull-right" data-dismiss="modal" onclick="synchronize()">Sincronizar</button>
             </div>
         </div>
     </div>
@@ -351,6 +343,24 @@
 
     function modal_synchronize(order){
         $("#modal_synchronize").modal("show");
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/data_synchronize",{order:order},function(data){
+            console.log(data);
+            $("#content-synchronize").html(data.content);
+
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+    }
+
+    function synchronize(){
+        var order = $("#order_synchronize").val();
+        var date = $("#date").val();
+        var date2 = $("#date2").val();
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/synchronize_items_ax",{order:order,date:date,date2:date2},function(data){
+            console.log(data);
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
     }
 
     function modal_new_item(order){
