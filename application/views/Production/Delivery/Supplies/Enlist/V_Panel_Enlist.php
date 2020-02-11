@@ -167,6 +167,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary pull-right" onclick="Add_new_to_order()"> Agregar</button>
+                <button type="button" class="btn btn-success pull-right" onclick="Replace_to_order()"> Reemplazar</button>
             </div>
         </div>
     </div>
@@ -346,18 +348,21 @@
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/data_synchronize",{order:order},function(data){
             console.log(data);
             $("#content-synchronize").html(data.content);
-
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
     }
 
     function synchronize(){
+        $(".overlay_ajax").show();
         var order = $("#order_synchronize").val();
         var date = $("#date").val();
         var date2 = $("#date2").val();
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/synchronize_items_ax",{order:order,date:date,date2:date2},function(data){
             console.log(data);
+            $(".overlay_ajax").hide();
+            $(".loader_ajax2").text("");
+            swal({title: '', text: '', type: 'success'});
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
@@ -383,21 +388,24 @@
         var order = $("#order_new").val();
         var observation = $("#observation").val();
 
-        $.post("<?= base_url()?>Production/Delivery/C_Delivery/save_new_item",{order:order, code:code, name:name, unity:unity, type:type, cnt:cnt, weight_unt:weight_unt, observation:observation},function(data){
-            console.log(data);
-            if(data.vali == "error_vali"){
-                swal({title: 'Atención', text: 'El Item seleccionado no se encuentra en AX, por favor actualize los datos', type: 'error'});
-            }else{
-                if(data.vali == "error"){
-                    swal({title: 'Error', text: 'Ya existe el codigo ingresado', type: 'error'});
+        if(code == "" || name == "" || cnt == "" || weight_unt == ""){
+            swal({title: 'Error', text: 'Digite todos los campos', type: 'error'});
+        }else{
+            $.post("<?= base_url()?>Production/Delivery/C_Delivery/save_new_item",{order:order, code:code, name:name, unity:unity, type:type, cnt:cnt, weight_unt:weight_unt, observation:observation},function(data){
+                if(data.vali == "error_vali"){
+                    swal({title: 'Atención', text: 'El Item seleccionado no se encuentra en AX, por favor actualize los datos', type: 'error'});
                 }else{
-                    search(order);
-                    swal({title: '', text: '', type: 'success'});
+                    if(data.vali == "error"){
+                        swal({title: 'Error', text: 'Ya existe el codigo ingresado', type: 'error'});
+                    }else{
+                        search(order);
+                        swal({title: '', text: '', type: 'success'});
+                    }
                 }
-            }
-        },'json').fail(function (error) {
-            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
-        });
+            },'json').fail(function (error) {
+                swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+            });
+        }
     }
 
     function Add_to_order(order){
@@ -406,6 +414,7 @@
             $("#content_to_order").html(data.table);
             $("#modal_to_order").modal("show");
             $('#supplies').select2();
+            $("#table_to_order").DataTable();
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
@@ -414,30 +423,92 @@
     function Add_new_to_order(){
         var id_supplies = $("#supplies").val();
         var order = $("#order_value_to").val();
-        var quantity = $("#cnt").val();
-        //console.log(id_supplies);
-        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{order:order,id_supplies:id_supplies,quantity:quantity},function(data){
-            if(data.res == "error_vali"){
-                swal({title: 'Atención', text: 'El Item seleccionado no se encuentra en AX, por favor actualize los datos', type: 'error'});
-            }else{
-                swal({title: '', text: '', type: 'success'});
-                $("#modal_to_order").modal("hide");
-            }
+        var quantity = $("#cnt2").val();
+        var observation = $("#observation_to_order").val();
+        console.log(quantity);
+        if(quantity == ""){
+            swal({title: 'Atención', text: 'Digite una cantidad', type: 'error'});
+        }else{
+            $.post("<?= base_url()?>Production/Delivery/C_Delivery/Add_new_to_order",{order:order,id_supplies:id_supplies,quantity:quantity,observation:observation},function(data){
+                if(data.res == "error_vali"){
+                    swal({title: 'Atención', text: 'El Item seleccionado no se encuentra en AX, por favor actualize los datos', type: 'error'});
+                }else{
+                    if(data.vali == "error"){
+                        swal({title: 'Error', text: 'Ya existe el codigo ingresado', type: 'error'});
+                    }else{
+                        search(order);
+                        swal({title: '', text: '', type: 'success'});
+                        $("#modal_to_order").modal("hide");
+                    }
+                }
 
-        },'json').fail(function (error) {
-            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
-        });
+            },'json').fail(function (error) {
+                swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+            });
+        }
+    }
+
+    function Select_Replace(order,id_order_supplies,id_supplies){
+        $("#id_supplies_h").val("");
+        $("#id_supplies_h").val(id_supplies);
+        $(".line").css("background-color","white");
+        $(".line."+id_order_supplies).css("background-color","#7497e4");
+    }
+
+    function Replace_to_order(){
+        var order = $("#order_value_to").val();
+        var id_supplies = $("#id_supplies_h").val(); // old supplies
+        var supplies = $("#supplies").val(); // new supplies
+        var cnt = $("#cnt2").val();
+        var observation = $("#observation_to_order").val();
+
+        if(cnt != ""){
+            if(id_supplies == ""){
+                swal({title: 'Atención', text: 'Seleccione 1 item a reemplazar', type: 'error'});
+            }else{
+                swal({
+                    title: 'Atención',
+                    text: "Desea reemplazar este item de la orden?",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si'
+                }).then((result) => {
+                    if(result){
+                        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Replace_to_order",{order:order,id_supplies:id_supplies,supplies:supplies,cnt:cnt,observation:observation},function(data){
+                            if(data.res == "error_vali"){
+                                swal({title: 'Atención', text: 'El Item seleccionado no se encuentra en AX, por favor actualize los datos', type: 'error'});
+                            }else{
+                                if(data.vali == "error"){
+                                    swal({title: 'Error', text: 'Ya existe el codigo ingresado', type: 'error'});
+                                }else{
+                                    search(order);
+                                    swal({title: '', text: '', type: 'success'});
+                                    $("#modal_to_order").modal("hide");
+                                    $("#id_supplies_h").val("");
+                                }
+                            }
+                        },'json').fail(function (error) {
+                            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                        });
+                    }
+                });
+            }
+        }else{
+            swal({title: 'Atención', text: 'Ingrese una cantidad', type: 'error'});
+        }
     }
 
     function Delete_to_order(order,id_order_supplies){ // cambio de estado
         swal({
-          title: 'Atención',
-          text: "Desea eliminar este item?",
-          type: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Si'
+            title: 'Atención',
+            text: "Desea eliminar este item de la orden?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si'
         }).then((result) => {
             if (result) {
                 $.post("<?= base_url()?>Production/Delivery/C_Delivery/Delete_to_order",{order:order,id_order_supplies:id_order_supplies},function(data){
