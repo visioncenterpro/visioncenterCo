@@ -748,8 +748,9 @@ class M_Delivery extends VS_Model {
     }
 
     function data_suppliesxSupplies($id_supplies){ // function replace
-        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` <> $this->order AND A.id_supplies = $id_supplies");
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` = $this->order AND A.id_supplies = $id_supplies");
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->result();
     }
 
@@ -888,15 +889,6 @@ class M_Delivery extends VS_Model {
         $result = $this->db->query($query);
         $data_query = $result->row();
 
-        // se actualiza el item viejo
-        $data = array(
-            "exclude"           => '1',
-            "id_status"         => '2',
-            "replaced_supplies" => $this->supplies,
-            "observation_replaced"  => $this->observation
-        );
-        $this->db->where("id_order_supplies", $data_query->id_order_supplies);
-        $rs = $this->db->update("access_order_supplies", $data);
 
         //se agrega el item nuevo
         $data = array(
@@ -907,8 +899,17 @@ class M_Delivery extends VS_Model {
             "replaced_supplies" => $data_query->id_order_supplies,
             "observation_replaced"  => $this->observation
         );
-        $this->db->insert("access_order_supplies", $data);
+        $id = $this->db->insert("access_order_supplies", $data);
 
+        // se actualiza el item viejo
+        $data = array(
+            "exclude"           => '1',
+            "id_status"         => '2',
+            "replaced_supplies" => $this->db->insert_id(), //id_order_supplies
+            "observation_replaced"  => $this->observation
+        );
+        $this->db->where("id_order_supplies", $data_query->id_order_supplies);
+        $rs = $this->db->update("access_order_supplies", $data);
 
         $array = array();
         if ($this->db->trans_status() === FALSE) {
@@ -942,6 +943,12 @@ class M_Delivery extends VS_Model {
         }
         
         return $array;
+    }
+
+    function Detail_replaced($id_order_supplies){
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.id_order_supplies=$id_order_supplies");
+        $result = $this->db->query($query);
+        return $result->result();
     }
     
     function data_supplies($order,$id_order_package_supplies){

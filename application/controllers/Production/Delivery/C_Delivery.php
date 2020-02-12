@@ -989,7 +989,7 @@ class C_Delivery extends Controller {
     function Replace_to_order(){
         $vali = $this->Vali_AX_Supplies($this->input->post('supplies'));
         if(count($vali) > 0){
-            $vali2 = $this->M_Delivery->data_suppliesxSupplies($this->input->post('id_supplies'));
+            $vali2 = $this->M_Delivery->data_suppliesxSupplies($this->input->post('supplies'));
             if(count($vali2)>0){
                 $data['vali'] = "error";
             }else{
@@ -998,6 +998,16 @@ class C_Delivery extends Controller {
         }else{
             $data = array("res" => "error_vali");
         }
+        echo json_encode($data);
+    }
+
+    function Detail_replaced(){
+        $order_supplies = $this->M_Delivery->get_order_supplies();
+        foreach ($order_supplies as $key => $value){
+            $data['old'] = $this->M_Delivery->Detail_replaced($value->replaced_supplies);
+            $data['new'] = $this->M_Delivery->Detail_replaced($this->input->post('id_order_supplies'));
+        }
+        $data['content'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Detail_Replaced',$data, true);
         echo json_encode($data);
     }
 

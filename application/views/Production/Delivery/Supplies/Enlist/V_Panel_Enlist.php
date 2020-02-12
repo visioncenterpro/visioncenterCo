@@ -211,6 +211,23 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_detail_replaced">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Detalle item Reemplazado</h4>
+            </div>
+            <div class="modal-body" id="content-detail_replaced">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(function () {
         // const { value: text } = await Swal.fire({
@@ -341,6 +358,16 @@
                 swal({title: 'Error!', text: data.res, type: 'error'});
             }
         }, "json");
+    }
+
+    function Detail_replaced(order,id_order_supplies){
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Detail_replaced",{order:order,id_order_supplies:id_order_supplies},function(data){
+            console.log(data);
+            $("#content-detail_replaced").html(data.content);
+            $("#modal_detail_replaced").modal("show");
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
     }
 
     function modal_synchronize(order){
