@@ -740,8 +740,22 @@ class M_Delivery extends VS_Model {
         }
     }
 
-    function data_supplies_all(){
+
+    function data_supplies_all(){ // function add item
         $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` <> $this->order");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function data_suppliesxSupplies($id_supplies){ // function replace
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` = $this->order AND A.id_supplies = $id_supplies");
+        $result = $this->db->query($query);
+        //echo $this->db->last_query();
+        return $result->result();
+    }
+
+    function get_supplies_all(){
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` = $this->order");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -771,8 +785,8 @@ class M_Delivery extends VS_Model {
             "order"         => $this->order,
             "id_supplies"   => $this->id_supplies,
             "quantity"      => $this->quantity,
-            "additional"    => '2'
-
+            "additional"    => '2',
+            "observation_additional" => $this->observation
         );
         $this->db->insert("access_order_supplies", $data);
 
@@ -792,6 +806,44 @@ class M_Delivery extends VS_Model {
         $query = ("SELECT * FROM pro_supplies p WHERE p.code = '$this->code'");
         $result = $this->db->query($query);
         return $result->result();
+    }
+
+    function get_suppliesXcodeParam($code){
+        $query = ("SELECT * FROM pro_supplies p WHERE p.code = '$code'");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function save_supplies($arr,$id_unit){
+        $this->db->trans_begin();
+
+        $data = array(
+            "name"          => $arr->ITEMNAME,
+            "code"          => $arr->Referencia,
+            "id_unit"       => $id_unit,
+            "id_type_supplies"    => '1' // netx
+            //"quantity_per_package"  => ,
+            //"weight_per_supplies"   => $arr->weight_unt,
+        );
+        $this->db->insert("pro_supplies", $data);
+
+        $array = array();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $array = array("res" => "Error " . $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+            $array = array("res" => $this->db->insert_id());
+        }
+        
+        return $array;
+
+    }
+
+    function get_unitxDes($description){
+        $query = ("SELECT * FROM pro_unit WHERE description LIKE '%$description%'");
+        $result = $this->db->query($query);
+        return $result->row();
     }
 
     function save_new_item(){
@@ -830,12 +882,73 @@ class M_Delivery extends VS_Model {
         return $array;
     }
 
+    function Replace_to_order(){
+        $this->db->trans_begin();
+
+        $query = ("SELECT * FROM access_order_supplies WHERE `order` = $this->order AND id_supplies = $this->id_supplies");
+        $result = $this->db->query($query);
+        $data_query = $result->row();
+
+
+        //se agrega el item nuevo
+        $data = array(
+            "order"         => $this->order,
+            "id_supplies"   => $this->supplies,
+            "quantity"      => $this->cnt,
+            "additional"    => '2',
+            "replaced_supplies" => $data_query->id_order_supplies,
+            "observation_replaced"  => $this->observation
+        );
+        $id = $this->db->insert("access_order_supplies", $data);
+
+        // se actualiza el item viejo
+        $data = array(
+            "exclude"           => '1',
+            "id_status"         => '2',
+            "replaced_supplies" => $this->db->insert_id(), //id_order_supplies
+            "observation_replaced"  => $this->observation
+        );
+        $this->db->where("id_order_supplies", $data_query->id_order_supplies);
+        $rs = $this->db->update("access_order_supplies", $data);
+
+        $array = array();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $array = array("res" => "Error " . $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+            $array = array("res" => $this->db->insert_id());
+        }
+        
+        return $array;
+    }
+
     function Delete_to_order(){
+
+        $this->db->trans_begin();
+
         $data = array(
             "id_status" => '2'
         );
         $this->db->where("id_order_supplies", $this->id_order_supplies);
         $rs = $this->db->update("access_order_supplies", $data);
+
+        $array = array();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $array = array("res" => "Error " . $this->db->last_query());
+        } else {
+            $this->db->trans_commit();
+            $array = array("res" => $rs);
+        }
+        
+        return $array;
+    }
+
+    function Detail_replaced($id_order_supplies){
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.id_order_supplies=$id_order_supplies");
+        $result = $this->db->query($query);
+        return $result->result();
     }
     
     function data_supplies($order,$id_order_package_supplies){

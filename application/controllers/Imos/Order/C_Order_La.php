@@ -20,12 +20,12 @@ class C_Order_La extends Controller {
 
         $fields['orders'] = $this->M_Order->ListOrderImosAll();
         $data['table'] = $this->load->view("Imos/Order/V_Table_Order", $fields, true);
-        $this->load->view('Imos/Order/V_List_Order', $data);
+        $this->load->view('Imos/Order/V_List_Order_La', $data);
 
         //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
-        $this->load->view('Template/V_Footer2', $Footer);
+        $this->load->view('Template/V_Footer2', $Footer); 
     }
 
     public function ListItems($name, $id) {
@@ -148,7 +148,7 @@ class C_Order_La extends Controller {
         if ($row) {
             if ($row->status == 9) {
                 $res = "COMPLETE";
-            } else {
+            } else {                  
                 $itemImos = $this->M_Acknow->ValidateItemOrder($row->id_import_salestable, $this->input->post('name'));
                 if ($itemImos['status'] == 9) {
                     $res = "COMPLETE";

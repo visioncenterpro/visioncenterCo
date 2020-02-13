@@ -974,10 +974,40 @@ class C_Delivery extends Controller {
     function Add_new_to_order(){
         $vali = $this->Vali_AX_Supplies($this->input->post('id_supplies'));
         if(count($vali) > 0){
-            $data = $this->M_Delivery->Add_new_to_order();
+            $vali2 = $this->M_Delivery->data_suppliesxSupplies($this->input->post('id_supplies'));
+            if(count($vali2)>0){
+                $data['vali'] = "error";
+            }else{
+                $data = $this->M_Delivery->Add_new_to_order();
+            }
         }else{
             $data = array("res" => "error_vali");
         }
+        echo json_encode($data);
+    }
+
+    function Replace_to_order(){
+        $vali = $this->Vali_AX_Supplies($this->input->post('supplies'));
+        if(count($vali) > 0){
+            $vali2 = $this->M_Delivery->data_suppliesxSupplies($this->input->post('supplies'));
+            if(count($vali2)>0){
+                $data['vali'] = "error";
+            }else{
+                $data = $this->M_Delivery->Replace_to_order();
+            }
+        }else{
+            $data = array("res" => "error_vali");
+        }
+        echo json_encode($data);
+    }
+
+    function Detail_replaced(){
+        $order_supplies = $this->M_Delivery->get_order_supplies();
+        foreach ($order_supplies as $key => $value){
+            $data['old'] = $this->M_Delivery->Detail_replaced($value->replaced_supplies);
+            $data['new'] = $this->M_Delivery->Detail_replaced($this->input->post('id_order_supplies'));
+        }
+        $data['content'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Detail_Replaced',$data, true);
         echo json_encode($data);
     }
 
@@ -1011,13 +1041,31 @@ class C_Delivery extends Controller {
         return $vali;
     }
 
+    function data_synchronize(){
+        $data['order'] = $this->input->post('order');
+        $data['content'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Content_Synchronize',$data, true);
+        echo json_encode($data);
+    }
+
     function synchronize_items_ax(){
-        $data = $this->M_delivery->GetReferenceDate($this->input->post('date'),$this->input->post('date2'));
-        
+        $data = $this->M_Delivery->GetReferenceType($this->input->post('date'),$this->input->post('date2'));
+        foreach($data as $key => $value){
+            $supplies = $this->M_Delivery->get_suppliesXcodeParam($value->Referencia);
+            if(count($supplies) == 0){
+                $unity = $this->M_Delivery->get_unitxDes($value->BOMUNITID);
+                if(count($unity) == 0){
+                    $id_unit = 16;
+                }else{
+                    $id_unit = $unity->id_unit;
+                }
+                $data['insert'][] = $this->M_Delivery->save_supplies($value,$id_unit);
+            }
+        }
+        echo json_encode($data);
     }
     
     function pb(){
-        //echo phpinfo();
+        //echo phpinfo(); 
         echo isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : "";
     }
     
