@@ -13,11 +13,26 @@
                         <th style="width: 70px">CANTIDAD</th>
                         <th style="width: 50px">ENTREGADO</th>
                         <th style="width: 50px">SALDO</th>
+                        <th style="width: 50px">DETALLE</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($supplies as $key => $t) : ?>
-                        <tr>
+                    <?php foreach ($supplies as $key => $t) :
+                        if($t->replaced_supplies != "" || $t->additional == 2){
+                            if($t->replaced_supplies != ""){
+                                $btn = '<button type="button" class="btn btn-success btn-xs btn-tabla" onclick="Detail_replaced('.$t->order.','.$t->id_order_supplies.')" title="Detalle item reemplazado"><i class="fa fa-search"></i></button>';
+                            }else{
+                                $btn = "";
+                            }
+                            $color = "#8aa3dc";
+                            
+                        }else{
+                            $color = "white";
+                            $btn = "No hay detalle relacionado";
+                        }
+
+                        ?>
+                        <tr style="background-color:<?=$color?>;">
                             <td style="text-align: center"><?= $t->code ?></td>
                             <td><?= $t->name ?></td>
                             <td style="text-align: center"><?= $t->quantity ?></td>
@@ -27,6 +42,7 @@
                             <?php    }else{ ?>
                                     <td style="text-align: center"><?=$data['quantity_pending'][$key]?></td>
                             <?php    } ?>
+                            <td style="text-align: center"><?=$btn?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

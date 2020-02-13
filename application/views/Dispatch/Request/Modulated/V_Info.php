@@ -77,11 +77,24 @@
                         </div>
                     </div>
                     <?php //foreach ($request_weight as $key => $value) {
-                        if($request_weight->id_status != "1"){ ?>
+                        print_r($vali_request_w);
+                        if(count($request_weight) > 0 && $request_weight->id_status != "1"){ ?>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Observación solicitud peso</label>
                                 <p><?= $request_weight->observation ?></p>
+                            </div>
+                        </div>
+                    <?php } 
+                        //} ?>
+
+                    <?php //foreach ($request_weight as $key => $value) {
+                        
+                        if(count($request_weight) > 0 && $request_weight->id_status == "1"){ ?>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Observación solicitud peso</label>
+                                <p>En espera respuesta de solicitud peso</p>
                             </div>
                         </div>
                     <?php } 
@@ -239,7 +252,7 @@
 //        TableData("table_container", false, false, false);
         InitializeCheck();
 
-        if (<?= $request->status ?> == 17 || <?= $vali_request_w ?> == 0) {
+        if (<?= $request->status ?> == 17  || <?= $vali_request_w ?> == 1) {
             Lock();
         }
 
@@ -543,7 +556,7 @@
                 type: 'error'
             });
         }else{
-            if($("#max_weight").val() < Math.round($("#weightI").val())){
+            if($("#max_weight").val() < Math.round($("#weightI").val()) && (<?= $vali_request_w ?> == 0 || <?= $status ?> == 16)){
                 // swal({
                 //     title: 'Atención',
                 //     text: "El peso integral supera la capacidad del vehiculo, elimine paquetes",
@@ -566,6 +579,7 @@
                                 swal({title: 'Atención', text: 'Ya se envio una solicitud de cambio de peso, espere la respuesta del administrador', type: 'warning'});
                             }else{
                                 swal({title: '', text: '', type: 'success'});
+                                location.reload();
                             }
                                  
                         }, 'json').fail(function (error) {

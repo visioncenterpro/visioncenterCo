@@ -993,7 +993,14 @@ class M_Dispatch extends VS_Model {
     function get_Request_weightxid_request($id_request){
         $query = ("SELECT * FROM dis_request_weight WHERE id_request_sd = $id_request");
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->row();
+    }
+
+    function get_Request_weightxid_request2($id_request){
+        $query = ("SELECT * FROM dis_request_weight WHERE id_request_sd = $id_request");
+        $result = $this->db->query($query);
+        return $result->result();
     }
 
     function get_request_weight(){
@@ -1052,7 +1059,8 @@ class M_Dispatch extends VS_Model {
     function response_request_weight(){
         $this->db->trans_begin();
 
-        if($this->response){ 
+        //print_r($this->response);
+        if($this->response === "true"){ 
             $this->response = 15;
         }else{
             $this->response = 16;

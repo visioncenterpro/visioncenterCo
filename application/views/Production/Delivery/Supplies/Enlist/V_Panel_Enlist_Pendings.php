@@ -60,6 +60,24 @@
     </section>
 </div>
 
+<div class="modal fade" id="modal_detail_replaced">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Detalle item Reemplazado</h4>
+            </div>
+            <div class="modal-body" id="content-detail_replaced">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function(){
        $("#table_orders").DataTable({});
@@ -100,9 +118,18 @@
             for(var i = 0; i < data.order_validation.length; i++){
                 TableData2("table_supplies_"+data.order_validation[i], false, false, true, data.order_validation[i]);
                 //$("#table_supplies_"+data.order_validation[i]).append('<label style="margin-left: 5px;"><a onclick="Excel_All(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Excel ALL</span></a></label>');
-           
             }
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Excel_All(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-excel-o"></i> Excel ALL</span></a></label>');
+        },'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+    }
+
+    function Detail_replaced(order,id_order_supplies){
+        $.post("<?= base_url()?>Production/Delivery/C_Delivery/Detail_replaced",{order:order,id_order_supplies:id_order_supplies},function(data){
+            console.log(data);
+            $("#content-detail_replaced").html(data.content);
+            $("#modal_detail_replaced").modal("show");
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });

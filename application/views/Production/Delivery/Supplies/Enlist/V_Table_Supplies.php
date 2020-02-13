@@ -24,7 +24,7 @@
                             <?php foreach ($record as $key => $t) : 
                                 if($t->replaced_supplies != "" || $t->additional == 2){
                                     if($t->replaced_supplies != ""){
-                                        $btn = '<button type="button" class="btn btn-primary btn-xs btn-tabla" onclick="Detail_replaced('.$t->order.','.$t->id_order_supplies.')" title="Detalle item reemplazado"><i class="fa fa-search"></i></button>';
+                                        $btn = '<button type="button" class="btn btn-success btn-xs btn-tabla" onclick="Detail_replaced('.$t->order.','.$t->id_order_supplies.')" title="Detalle item reemplazado"><i class="fa fa-search"></i></button>';
                                     }else{
                                         $btn = "";
                                     }

@@ -37,7 +37,7 @@
     <tr>
         <td rowspan="3" width="4%"><img src="<?= URL_IMAGE.$this->session->company ?>MILESTONE.jpg" width="140px" height="60px" /></td>
         <td colspan="3" style="text-align: center;"><h3>SOLICITUD DE DESPACHO</h3></td>
-        <td style="text-align: center;color: red;font-size: 20">No. <?= $head->id_request_sd ?></td>
+        <td style="text-align: center;color: red;font-size: 20">CNT <?= $head->id_request_sd ?></td>
     </tr>
     <tr>
         <td colspan="2">CONDUCTOR:&nbsp;&nbsp; <?= $head->driver ?></td>

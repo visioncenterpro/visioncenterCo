@@ -92,9 +92,12 @@ class C_Dispatch extends Controller {
         $data['vehicles'] = $this->M_Dispatch->get_vehicles();
         $data['request_weight'] = $this->M_Dispatch->get_Request_weightxid_request($id);
         $data['vali_request_w'] = 0;
+        $data['status'] = 0;
         if(count($data['request_weight']) > 0){
-            if($data['request_weight']->id_status == 15){
-                $data['vali_request_w'] = 1;
+            $data['status'] = $data['request_weight']->id_status;
+            $data['vali_request_w'] = 1;
+            if($data['request_weight']->id_status == 15 || $data['request_weight']->id_status == 16){
+                $data['vali_request_w'] = 2;
             }
         }
         
@@ -879,7 +882,7 @@ class C_Dispatch extends Controller {
     }
 
     function Create_Request_weight(){
-        $vali = $this->M_Dispatch->get_Request_weightxid_request($this->input->post('request'));
+        $vali = $this->M_Dispatch->get_Request_weightxid_request2($this->input->post('request'));
         if(count($vali) > 0){
             foreach ($vali as $key => $value) {
                 if($value->id_status == "1"){
