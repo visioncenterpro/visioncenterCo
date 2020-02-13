@@ -76,16 +76,16 @@
                             <input type="text" disabled="true" class="form-control" id="max_weight" value="0">
                         </div>
                     </div>
-                    <?php //foreach ($request_weight as $key => $value) {
-                        if($request_weight->id_status != "1"){ ?>
+                    <?php foreach ($request_weight as $key => $value) {
+                        if($value->id_status != "1"){ ?>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Observación solicitud peso</label>
-                                <p><?= $request_weight->observation ?></p>
+                                <p><?= $value->observation ?></p>
                             </div>
                         </div>
                     <?php } 
-                        //} ?>
+                        } ?>
                 </div>
                 
                 <div class="row">
@@ -239,13 +239,13 @@
 //        TableData("table_container", false, false, false);
         InitializeCheck();
 
-        if (<?= $request->status ?> == 17 || <?= $vali_request_w ?> == 0) {
+        if (<?= $request->status ?> == 17) {
             Lock();
         }
-
+        
         if ($("#test").addEventListener) {
             $("#test").addEventListener('contextmenu', function (e) {
-                alert("Has intentado abrir el menú contextual"); // here you draw your own menu
+                alert("Has intentado abrir el menú contextual"); //here you draw your own menu
                 e.preventDefault();
             }, false);
         } else {
@@ -271,7 +271,7 @@
 
         if ($("#test2").addEventListener) {
             $("#test2").addEventListener('contextmenu', function (e) {
-                alert("Has intentado abrir el menú contextual"); //here you draw your own menu 
+                alert("Has intentado abrir el menú contextual"); //here you draw your own menu
                 e.preventDefault();
             }, false);
         } else {

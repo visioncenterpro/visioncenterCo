@@ -993,7 +993,7 @@ class M_Dispatch extends VS_Model {
     function get_Request_weightxid_request($id_request){
         $query = ("SELECT * FROM dis_request_weight WHERE id_request_sd = $id_request");
         $result = $this->db->query($query);
-        return $result->row();
+        return $result->result();
     }
 
     function get_request_weight(){

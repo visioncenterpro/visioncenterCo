@@ -49,8 +49,8 @@ defined('FOPEN_WRITE_CREATE_STRICT')            OR define('FOPEN_WRITE_CREATE_ST
 defined('FOPEN_READ_WRITE_CREATE_STRICT')       OR define('FOPEN_READ_WRITE_CREATE_STRICT', 'x+b');
 
 
-defined('URL_PROJETC')       OR define('URL_PROJETC', "http://192.168.5.209/visioncenterco/");
-defined('URL_PROJETC1')       OR define('URL_PROJETC1', "http://visioncenter.milestone.com.co/visioncenterco/");
+defined('URL_PROJETC')       OR define('URL_PROJETC', "http://192.168.5.209/VisionCenter/");
+defined('URL_PROJETC1')       OR define('URL_PROJETC1', "http://visioncenter.milestone.com.co/VisionCenter/");
 
 //defined('URL_IMAGE')       OR define('URL_IMAGE', URL_PROJETC."dist/img/LogoVerticalMilestone");
 defined('URL_IMAGE')       OR define('URL_IMAGE', URL_PROJETC."dist/img/");
