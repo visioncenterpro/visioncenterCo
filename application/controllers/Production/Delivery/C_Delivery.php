@@ -90,9 +90,9 @@ class C_Delivery extends Controller {
     function SearchOrder2() {
         //$rs = $this->M_Delivery->SearchOrderSupplies(true);
         $rs['record'] = $this->M_Delivery->searchOrderSupplies2($this->input->post("order"));
+        $rs['record_deleted'] = $this->M_Delivery->searchOrderSupplies_deleted($this->input->post("order"));
         //if ($rs['res'] == "OK" && count($rs['record']) > 0) {
         if(count($rs['record'])>0){
-            //echo $this->input->post("order");
             $rs['res'] = "OK";
             $rs['rows'] = count($rs['record']);
             $rs['packs'] = $this->M_Delivery->get_order_package_supplies($this->input->post("order"));
@@ -105,7 +105,6 @@ class C_Delivery extends Controller {
                 }
                 $rs['weight'][] = $cont;
             }
-            //print_r($rs['vali_pack']);
             $data_q = $this->M_Delivery->total_order_supplies($this->input->post("order"));
             $total = 0;
             foreach ($data_q as $valueq) {
@@ -122,6 +121,7 @@ class C_Delivery extends Controller {
             $rs['total_quantity'] = $total;
             $rs['order'] = $this->input->post('order');
             $rs['table_pack'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_Pack', $rs, true);
+            $rs['table_deleted'] = $this->load->view("Production/Delivery/Supplies/Enlist/V_Table_Deleted",$rs,true);
             $rs['table'] = $this->load->view("Production/Delivery/Supplies/Enlist/V_Table_Supplies", $rs, true);
         }
         
@@ -329,12 +329,10 @@ class C_Delivery extends Controller {
                         $array['name'][] = $value->name;
                         
                         if(isset($vali['quantity_packaged'][$count]) && $vali['id_supplies'][$count] == $value->id_supplies){
-                            
                             $this->excel->getActiveSheet()->setCellValue('E'.$count_cell, $vali['quantity_packaged'][$count]);
                             $this->excel->getActiveSheet()->setCellValue('F'.$count_cell,$value->quantity - $vali['quantity_packaged'][$count]);
                             $count++;
                         }else{
-                            
                             $this->excel->getActiveSheet()->setCellValue('E'.$count_cell, 0);
                             $this->excel->getActiveSheet()->setCellValue('F'.$count_cell,$value->quantity);
                         }

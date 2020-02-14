@@ -41,6 +41,14 @@ class M_Delivery extends VS_Model {
         //echo $this->db->last_query();
         return $result->result();
     }
+
+    function searchOrderSupplies_deleted($order){
+        $query = ("SELECT p.*,i.*,u.description,u.code as cd FROM access_order_supplies p JOIN pro_supplies i ON "
+                . " p.id_supplies = i.id_supplies JOIN pro_unit u ON u.id_unit = i.id_unit WHERE p.`order` = $order AND p.id_status = 2");
+        $result = $this->db->query($query);
+        //echo $this->db->last_query();
+        return $result->result();
+    }
     
     function get_quantity_supplies($order,$id_order_supplies,$id_supplies){
         $query = ("SELECT A.* FROM access_order_package_supplies_detail A INNER JOIN access_order_package_supplies P "

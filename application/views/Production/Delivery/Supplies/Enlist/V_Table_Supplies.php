@@ -2,6 +2,7 @@
     <ul class="nav nav-tabs">
         <li class="active"><a href="#tab_1" data-toggle="tab">Insumos</a></li>
         <li><a href="#tab_2" data-toggle="tab">Paquetes</a></li>
+        <li><a href="#tab_3" data-toggle="tab">Eliminados</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="tab_1">
@@ -117,7 +118,7 @@
                                 foreach ($packs as $value) {
                                     $total_packed = $total_packed + $value->quantity_supplies;
                                 }
-                                $perc = (100 * $total_packed) / $total_quantity; 
+                                $perc = (100 * $total_packed) / $total_quantity;
                                 ?>
                                 <h3 id="supplies_per"><?= round($perc)?>%</h3>
 
@@ -132,6 +133,29 @@
                 </div>
             </div>
         </div>
+        <div class="tab-pane" id="tab_3">
+            <div class="row">
+                <div class="col-md-8" id="content-deleted">
+                    <?=$table_deleted?>
+                </div>
+                <div class="col-md-4">
+                    <div class="col-lg-8 col-xs-12">
+                        <!-- small box -->
+                        <div class="small-box">
+                            <div class="inner">
+                                <h3 id="order-lbl3">0</h3>
+
+                                <p>Order</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-social-dropbox"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 

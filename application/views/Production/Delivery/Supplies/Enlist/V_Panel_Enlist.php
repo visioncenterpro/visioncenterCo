@@ -319,7 +319,6 @@
         $.post("<?= base_url() ?>Production/Delivery/C_Delivery/SearchOrder2", {order: order}, function (data) {
             if (data.res == "OK") {
                 if (data.rows > 0) {
-                    console.log(data);
                     $("#content-table").html(data.table);
                     TableData("table_supplies", false, false, true);
                     TableData("table_pack", false, false, true);
@@ -333,7 +332,7 @@
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
                     $('input[type="checkbox"]').iCheck({
                         checkboxClass: 'icheckbox_minimal-blue'
-                    }).on('ifChanged', function (e) {                                                                         
+                    }).on('ifChanged', function (e) {
                         var isChecked = e.currentTarget.checked;
                         if (isChecked == true) {
                             var exclude = 1;
@@ -345,6 +344,7 @@
                     $("#count").html(data.packs.length);
                     $("#order-lbl").html(order);
                     $("#order-lbl2").html(order);
+                    $("#order-lbl3").html(order);
                     window.scroll({
                         top: 700,
                         left: 700,
