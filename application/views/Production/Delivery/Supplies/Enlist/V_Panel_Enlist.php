@@ -322,6 +322,7 @@
                     $("#content-table").html(data.table);
                     TableData("table_supplies", false, false, true);
                     TableData("table_pack", false, false, true);
+                    TableData("table_deleted", false, false, true);
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
@@ -330,6 +331,7 @@
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
                     $('input[type="checkbox"]').iCheck({
                         checkboxClass: 'icheckbox_minimal-blue'
                     }).on('ifChanged', function (e) {
@@ -708,12 +710,16 @@
                             $("#content-table").html(data.table);
                             TableData("table_supplies", false, false, true);
                             TableData("table_pack", false, false, true);
+                            TableData("table_deleted", false, false, true);
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
-                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
-
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
                             $('input.minimal:checkbox').iCheck({
                                 checkboxClass: 'icheckbox_minimal-blue'
                             }).on('ifChanged', function (e) {
@@ -805,12 +811,16 @@
                     $("#content-table").html(data.table);
                     TableData("table_supplies", false, false, true);
                     TableData("table_pack", false, false, true);
+                    TableData("table_deleted", false, false, true);
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
-                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
-
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
                     $('input.minimal:checkbox').iCheck({
                         checkboxClass: 'icheckbox_minimal-blue'
                     }).on('ifChanged', function (e) {
@@ -907,11 +917,16 @@
             $("#content-table").html(data.table);
             TableData("table_supplies", false, false, true);
             TableData("table_pack", false, false, true);
+            TableData("table_deleted", false, false, true);
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
             $('input.minimal:checkbox').iCheck({
                 checkboxClass: 'icheckbox_minimal-blue'
             }).on('ifChanged', function (e) {
@@ -982,11 +997,16 @@
                     $("#content-table").html(data.table);
                     TableData("table_supplies", false, false, true);
                     TableData("table_pack", false, false, true);
+                    TableData("table_deleted", false, false, true);
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                     $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
-                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+                    $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
                     $('input.minimal:checkbox').iCheck({
                         checkboxClass: 'icheckbox_minimal-blue'
                     }).on('ifChanged', function (e) {
@@ -1157,11 +1177,16 @@
                             $("#content-table").html(data.table);
                             TableData("table_supplies", false, false, true);
                             TableData("table_pack", false, false, true);
+                            TableData("table_deleted", false, false, true);
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
-                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+                            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
                             $('input.minimal:checkbox').iCheck({
                                 checkboxClass: 'icheckbox_minimal-blue'
                             }).on('ifChanged', function (e) {
@@ -1246,11 +1271,16 @@
             $("#content-table").html(data.table);
             TableData("table_supplies", false, false, true);
             TableData("table_pack", false, false, true);
+            TableData("table_deleted", false, false, true);
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
             $('input.minimal:checkbox').iCheck({
                 checkboxClass: 'icheckbox_minimal-blue'
             }).on('ifChanged', function (e) {
@@ -1293,11 +1323,16 @@
                         $("#content-table").html(data.table);
                         TableData("table_supplies", false, false, true);
                         TableData("table_pack", false, false, true);
+                        TableData("table_deleted", false, false, true);
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
                         $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
-                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
+                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+                        $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
                         $('input.minimal:checkbox').iCheck({
                             checkboxClass: 'icheckbox_minimal-blue'
                         }).on('ifChanged', function (e) {
@@ -1361,11 +1396,16 @@
             $("#content-table").html(data.table);
             TableData("table_supplies", false, false, true);
             TableData("table_pack", false, false, true);
+            TableData("table_deleted", false, false, true);
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
             $('input.minimal:checkbox').iCheck({
                 checkboxClass: 'icheckbox_minimal-blue'
             }).on('ifChanged', function (e) {
@@ -1434,11 +1474,16 @@
             $("#content-table").html(data.table);
             TableData("table_supplies", false, false, true);
             TableData("table_pack", false, false, true);
+            TableData("table_deleted", false, false, true);
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Enlist(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Alistar</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Tags(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-print"></i> Etiquetas</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Reporte Alistamiento insumos</span></a></label>');
-            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Reporte Pendientes</span></a></label>');
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Manual_Package(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cube"></i> Paq. Manual</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="PDF(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-pdf-o"></i> Alistamiento</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Pending(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-cubes"></i> Pendientes</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Add_to_order(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-edit"></i> Gestionar items de la orden</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_new_item(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-plus"></i> Agregar item nuevo</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="modal_synchronize(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-refresh"></i> Sincronizar items AX</span></a></label>');
+            $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="deleted(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-trash"></i> Eliminados </span></a></label>');
             $('input.minimal:checkbox').iCheck({
                 checkboxClass: 'icheckbox_minimal-blue'
             }).on('ifChanged', function (e) {
@@ -1573,7 +1618,7 @@
         var arrayq = document.querySelectorAll("input[id=quantity_pack_edit]");
         var array_quantity = [];
         arrayq.forEach(function(element){
-           array_quantity.push(element.value); 
+           array_quantity.push(element.value);
         });
         var array = document.querySelectorAll("input[id=select_edit]");
         var count = 0;
@@ -1587,6 +1632,11 @@
             }
             count++;
         });
+    }
+
+    function deleted(order){
+        var win = window.open("<?= base_url() ?>Production/Delivery/C_Delivery/Report_Deleted/"+order+"", '_blank');
+        win.focus();
     }
     
     function PDF(order){
@@ -1673,7 +1723,7 @@
                 $("#content-pack").html(data.table);
                 TableData("table_pack", false, false, true);
                 $("#count").html($("#total-packs").text());
-                swal({title: 'OK !', text: "Paquetes generados con exito!", type: 'success'}); 
+                swal({title: 'OK !', text: "Paquetes generados con exito!", type: 'success'});
             }else if(data.res == "WEIGHT"){
                 $("#modal-weight").html(data.supplies);
                 

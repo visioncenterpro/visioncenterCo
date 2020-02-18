@@ -1,4 +1,4 @@
-<?php if($val->replaced_supplies == ""){ ?>
+<?php if($val->replaced_supplies == "" && $val->id_status == 1){ ?>
     <tr>
         <td><?=$val->code?></td>
         <td><?=$val->name?></td>

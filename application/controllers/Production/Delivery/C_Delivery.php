@@ -1415,6 +1415,38 @@ class C_Delivery extends Controller {
         $this->load->view('Production/Delivery/pdf/v_head_pdf_supplies',$rs);
     }
 
+    function Report_Deleted($order){
+        $data['head'] = $this->M_Delivery->LoadHeaderOrder($order);
+        $this->load->view("Production/Delivery/pdf/V_Head_Detail_Pack_Supplies_Deleted", $data);
+        
+        $data['content'] = $this->M_Delivery->LoadContentPendintOrder($order);
+        foreach ($data['content'] as $valuec) {
+            $data['id_supplies'][] = $valuec->id_supplies;
+            $data['total'][] = $valuec->total;
+        }
+        $data['order_supplies'] = $this->M_Delivery->get_order_suppliesxorder($order);
+        foreach ($data['order_supplies'] as $key => $value) {
+            if(isset($data['id_supplies'][$key]) && $data['id_supplies'][$key] == $value->id_supplies && $data['total'][$key] == $value->quantity){
+                
+            }else{
+                $packed = $this->M_Delivery->get_quantity_packaged($order,$value->id_order_supplies);
+                if(count($packed) > 0){
+                    $countp = 0;
+                    foreach ($packed as $valuep) {
+                        $countp = $countp + $valuep->quantity_packaged;
+                    }
+                    $data['packed'] = $countp;
+                }else{
+                    $data['packed'] = 0;
+                }
+                $array['val'] = $value;
+                $array['packed'] = $data['packed'];
+                $data['content'] = $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Deleted", $array,true);
+                $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Pending2", $data);
+            }
+        }
+    }
+
     function SearchOrderPackSD() {
 
         $rs = $this->M_Delivery->SearchOrderPackSD();

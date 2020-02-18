@@ -71,7 +71,7 @@
             <td style="width: 90px">VERSION:&nbsp;&nbsp; 01</td>
         </tr>
     </table>
-<?php } ?>
+<?php }  ?>
 
 <table cellpadding="4" style="font-size: 7px;" width="100%" id="tabla">
     <tr>
@@ -95,7 +95,7 @@
     </tr>
     
     <?php foreach ($details as $d){
-        if($d->exclude != 1){
+        if($d->exclude != 1 && $d->id_status == 1){
     ?>
     <tr>
         <td style="font-size: 10px; text-align: left; vertical-align: bottom"><?=$d->name?></td>

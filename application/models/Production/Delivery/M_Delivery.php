@@ -1324,7 +1324,7 @@ class M_Delivery extends VS_Model {
 
         $result = $this->db->query("SELECT p.*, t.code, tp.description
             FROM access_order_package p
-            JOIN access_type_package t ON p.type_package = t.id_type_package
+            JOIN access_type_package t ON p.type_package = t. 
             JOIN access_type_packing tp ON p.type_packing = tp.id_type_packing
             WHERE `order` = '$order' AND p.id_forniture = '$forniture'
             ORDER BY CASE p.type_package WHEN 2 THEN 2 WHEN 1 THEN 0 ELSE 1 END, p.number_pack asc");
@@ -1976,7 +1976,7 @@ class M_Delivery extends VS_Model {
             $data = array(
                 "modified_by" => $this->session->IdUser,
                 "`order`" => $this->order,
-                "date" => date("Y-m-d H:i:s"),
+                "date" => date("Y-m-d H:i:s")
             );
 
             $rs = $this->db->insert("pro_delivery_supplies", $data);
