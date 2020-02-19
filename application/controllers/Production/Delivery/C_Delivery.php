@@ -1424,7 +1424,8 @@ class C_Delivery extends Controller {
             $data['id_supplies'][] = $valuec->id_supplies;
             $data['total'][] = $valuec->total;
         }
-        $data['order_supplies'] = $this->M_Delivery->get_order_suppliesxorder($order);
+        $data['order_supplies'] = $this->M_Delivery->get_order_suppliesxorder2($order);
+        $data['content'] = "";
         foreach ($data['order_supplies'] as $key => $value) {
             if(isset($data['id_supplies'][$key]) && $data['id_supplies'][$key] == $value->id_supplies && $data['total'][$key] == $value->quantity){
                 
@@ -1439,12 +1440,18 @@ class C_Delivery extends Controller {
                 }else{
                     $data['packed'] = 0;
                 }
+                if($value->observation_replaced != ""){
+                    $array['hd'] = '<tr><td colspan="3" style="text-align: center;font-size: 120%;">Reeplazados</td></tr>';
+                }else{
+                    $array['hd'] = '<tr><td colspan="3" style="text-align: center;font-size: 120%;">Eliminados</td></tr>';
+                }
+                
                 $array['val'] = $value;
                 $array['packed'] = $data['packed'];
-                $data['content'] = $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Deleted", $array,true);
-                $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Pending2", $data);
+                $data['content'] .= $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Deleted", $array,true);
             }
         }
+        $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Pending2", $data);
     }
 
     function SearchOrderPackSD() {

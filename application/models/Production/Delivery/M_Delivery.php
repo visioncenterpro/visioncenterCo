@@ -1210,6 +1210,13 @@ class M_Delivery extends VS_Model {
         $result = $this->db->query($query);
         return $result->result();
     }
+
+    function get_order_suppliesxorder2($order){
+        $query = ("SELECT * FROM access_order_supplies A INNER JOIN pro_supplies P ON A.id_supplies = P.id_supplies "
+                . " WHERE A.`order` = $order");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
     
     function get_quantity_packaged($order,$id_order_supplies){
         $query = ("SELECT AO.* FROM access_order_package_supplies A INNER JOIN access_order_package_supplies_detail AO "
