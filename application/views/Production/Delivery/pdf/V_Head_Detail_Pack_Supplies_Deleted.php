@@ -56,6 +56,9 @@
 <table cellpadding="3" width="100%" style="font-size: 7pt;">
     <thead>
         <tr>
+            <td colspan="3" style="text-align: center;font-weight: bold;font-size: 12px;">Eliminados</td>
+        </tr>
+        <tr>
             <td style="text-align: center;font-size: 120%;">Referencia</td>
             <td style="text-align: center;font-size: 120%;">Nombre</td>
             <td style="text-align: center;font-size: 120%;width: 5%;">Cantidad total</td>

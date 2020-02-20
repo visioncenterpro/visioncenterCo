@@ -54,7 +54,7 @@ class C_Delivery extends Controller {
 
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS, ICHECK_JS);
-        $Footer["btn_datatable"] = BTN_DAT| ATABLE_JS;
+        $Footer["btn_datatable"] = BTN_DATATABLE_JS;
         $this->load->view('Template/V_Footer', $Footer);
     }
 
@@ -1426,6 +1426,8 @@ class C_Delivery extends Controller {
         }
         $data['order_supplies'] = $this->M_Delivery->get_order_suppliesxorder2($order);
         $data['content'] = "";
+        $data['rp'] = "";
+        $data['del'] = "";
         foreach ($data['order_supplies'] as $key => $value) {
             if(isset($data['id_supplies'][$key]) && $data['id_supplies'][$key] == $value->id_supplies && $data['total'][$key] == $value->quantity){
                 
@@ -1440,18 +1442,31 @@ class C_Delivery extends Controller {
                 }else{
                     $data['packed'] = 0;
                 }
-                if($value->observation_replaced != ""){
-                    $array['hd'] = '<tr><td colspan="3" style="text-align: center;font-size: 120%;">Reeplazados</td></tr>';
+                if($value->observation_replaced != "" && $value->id_status == 2){
+                    $new = $this->M_Delivery->data_suppliesxSuppliesParam($value->replaced_supplies,$value->order);  
+                    print_r($new);
+                    $data['rp'] .= '<tr>
+                                        <td>'.$value->code.'</td>
+                                        <td>'.$value->name.'</td>
+                                        <td style="text-align: center;">'.$value->quantity.'</td>
+                                       
+                                    </tr>';
                 }else{
-                    $array['hd'] = '<tr><td colspan="3" style="text-align: center;font-size: 120%;">Eliminados</td></tr>';
+                    if($value->observation_replaced == "" && $value->id_status == 2){
+                        $data['del'] .= '<tr>
+                                            <td>'.$value->code.'</td>
+                                            <td>'.$value->name.'</td>
+                                            <td style="text-align: center;">'.$value->quantity.'</td>
+                                         </tr>';
+                    }
                 }
                 
                 $array['val'] = $value;
                 $array['packed'] = $data['packed'];
-                $data['content'] .= $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Deleted", $array,true);
+                //$data['content'] .= $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Deleted", $array,true);
             }
         }
-        $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Pending2", $data);
+        $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack_Supplies_Deleted", $data);
     }
 
     function SearchOrderPackSD() {
