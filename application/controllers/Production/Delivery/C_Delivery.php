@@ -1442,17 +1442,30 @@ class C_Delivery extends Controller {
                 }else{
                     $data['packed'] = 0;
                 }
-                if($value->observation_replaced != "" && $value->id_status == 2){
-                    $new = $this->M_Delivery->data_suppliesxSuppliesParam($value->replaced_supplies,$value->order);  
-                    print_r($new);
+                if($value->replaced_supplies != 0 && $value->id_status == 2){
+                    $old = $this->M_Delivery->data_suppliesxSuppliesParam($value->replaced_supplies,$value->order);  
+                    if(isset($old->id_supplies)){
+                        $code = $old->code;
+                        $name = $old->name;
+                        $quantity = $old->quantity;
+                        $obs = $old->observation_replaced;
+                    }else{
+                        $code = "";
+                        $name = "";
+                        $quantity = "";
+                        $obs = "";
+                    }
                     $data['rp'] .= '<tr>
                                         <td>'.$value->code.'</td>
                                         <td>'.$value->name.'</td>
                                         <td style="text-align: center;">'.$value->quantity.'</td>
-                                       
+                                        <td>'.$code.'</td>
+                                        <td>'.$name.'</td>
+                                        <td style="text-align: center;">'.$quantity.'</td>
+                                        <td style="text-align: center;">'.$obs.'</td>
                                     </tr>';
                 }else{
-                    if($value->observation_replaced == "" && $value->id_status == 2){
+                    if($value->replaced_supplies == 0 && $value->id_status == 2){
                         $data['del'] .= '<tr>
                                             <td>'.$value->code.'</td>
                                             <td>'.$value->name.'</td>

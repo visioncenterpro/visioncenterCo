@@ -763,7 +763,8 @@ class M_Delivery extends VS_Model {
     }
 
     function data_suppliesxSuppliesParam($id_supplies,$order){ // function replace
-        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A ON p.id_supplies = A.id_supplies WHERE A.`order` = $order AND A.id_supplies = $id_supplies");
+        $query = ("SELECT * FROM pro_supplies p INNER JOIN access_order_supplies A 
+        ON p.id_supplies = A.id_supplies WHERE A.`order` = $order AND A.id_order_supplies = $id_supplies");
         $result = $this->db->query($query);
         //echo $this->db->last_query();
         return $result->row();
