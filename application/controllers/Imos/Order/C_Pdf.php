@@ -42,6 +42,7 @@ class C_Pdf extends Controller {
             endif;
         endforeach;
 
+        //adicionales
         $ad = $this->M_Order->ListOrderItemImosAditionals($order);
         $array = $d['consolidate'];
         if ($ad['count'] > 0) {
@@ -73,6 +74,8 @@ class C_Pdf extends Controller {
             endforeach;
             $this->load->view("Imos/Order/Pdf/V_Ironworks_Order", $ad);
         }
+
+
         //CONSOLIDADO TOTAL DEL PEDIDO
         $item = 1;
         $c['tbody'] = "";
@@ -1365,6 +1368,38 @@ class C_Pdf extends Controller {
         $array = $d['consolidate'];
         //var_dump($d['consolidate']);
         
+        //adicionales
+        $ad = $this->M_Order->ListOrderItemImosAditionals($order);
+        $array = $d['consolidate'];
+        if ($ad['count'] > 0) {
+            $item = 1;
+            $sum = 0;
+            $ad['sum'] = '0';
+            $ad['html'] = "";
+            
+            foreach ($ad['result'] as $r) :
+                $descAX = $this->M_Order->ChargedCodeAXiron($r->code);
+                $desc = strtoupper((!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $r->description . "(Crear En AX)");
+                $und = (empty($descAX)) ? '' : $descAX->UNITID;
+
+                $ad['html'] .= '<tr>
+                    <td style="text-align: center">' . $item++ . '</td>
+                    <td style="text-align: center">' . $r->code . '</td>
+                    <td>' . $desc . '(Add)</td>
+                    <td style="text-align: center">' . $r->qty . '</td>
+                    <td style="text-align: center">' . $und . '</td>
+                </tr>';
+
+                $ad['sum'] += $r->qty;
+                if (array_key_exists($r->code, $array)) {
+                    $array[$r->code]["qty"] += $r->qty;
+                } else {
+                    $array[$r->code] = array("desc" => $desc.'(Add)', "uni" => $und, "qty" => $r->qty);
+                }
+
+            endforeach;
+            //$this->load->view("Imos/Order/Pdf/V_Ironworks_Order", $ad);
+        }
         
         $item = 1;
         $c['tbody'] = "";
@@ -1535,6 +1570,39 @@ class C_Pdf extends Controller {
             
             $d = $this->CreateBodyIronWorks($t->ID, $order, $d['consolidate']);
         endforeach;
+        
+        //adicionales
+        $ad = $this->M_Order->ListOrderItemImosAditionals($order);
+        $array_add = array();
+        if ($ad['count'] > 0) {
+            $item = 1;
+            $sum = 0;
+            $ad['sum'] = '0';
+            $ad['html'] = "";
+            
+            foreach ($ad['result'] as $r) :
+                $descAX = $this->M_Order->ChargedCodeAXiron($r->code);
+                $desc = strtoupper((!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $r->description . "(Crear En AX)");
+                $und = (empty($descAX)) ? '' : $descAX->UNITID;
+
+                $ad['html'] .= '<tr>
+                    <td style="text-align: center">' . $item++ . '</td>
+                    <td style="text-align: center">' . $r->code . '</td>
+                    <td>' . $desc . '</td>
+                    <td style="text-align: center">' . $r->qty . '</td>
+                    <td style="text-align: center">' . $und . '</td>
+                </tr>';
+
+                $ad['sum'] += $r->qty;
+                if (array_key_exists($r->code, $array_add)) {
+                    $array_add[$r->code]["qty"] += $r->qty;
+                } else {
+                    $array_add[$r->code] = array("desc" => $desc, "uni" => $und, "qty" => $r->qty);
+                }
+
+            endforeach;
+            //$this->load->view("Imos/Order/Pdf/V_Ironworks_Order", $ad);
+        }
         $array = $d['consolidate'];
 
         //lamina
@@ -1631,6 +1699,39 @@ class C_Pdf extends Controller {
         $count_item = 0;
         
         foreach ($array as $key => $k) {
+            $count_item++;
+            $this->excel->getActiveSheet()->setCellValue('A'.$count_data, 'L');
+            //$this->excel->getActiveSheet()->setCellValue('B'.$count_data, str_replace("_","-",$order));
+            $this->excel->getActiveSheet()->setCellValue('B'.$count_data, $order);
+            $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
+            $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
+            $this->excel->getActiveSheet()->setCellValue('M'.($count_data+1), $key);
+            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), $k['qty']);
+            $this->excel->getActiveSheet()->setCellValue('S'.($count_data+1), '0');
+            
+            $res = 12 - strlen($order);
+            $zero = "";
+            for($r = 0; $r < $res; $r++){
+                $zero  .= "0";
+            }
+            $this->excel->getActiveSheet()->setCellValue('T'.($count_data+1), "LM".$zero.$order."_14660");
+            //$this->excel->getActiveSheet()->setCellValue('T'.($count_data+1), "LM".$zero.str_replace("_","-",$order)."_14660");
+            
+            //$count_data++;
+            
+            if($count_data == 2){
+                $this->excel->getActiveSheet()->setCellValue('A'.$count_data, 'LQ');
+                
+                $this->excel->getActiveSheet()->setCellValue('K'.$count_data, '1');
+                $this->excel->getActiveSheet()->setCellValue('P'.$count_data, 'PDT');
+                $this->excel->getActiveSheet()->setCellValue('R'.$count_data, '1');
+                $this->excel->getActiveSheet()->setCellValue('S'.$count_data, '0');
+                //$this->excel->getActiveSheet()->setCellValue('T'.$count_data, '');
+            }
+            $count_data++;
+        }
+
+        foreach ($array_add as $key => $k) {
             $count_item++;
             $this->excel->getActiveSheet()->setCellValue('A'.$count_data, 'L');
             //$this->excel->getActiveSheet()->setCellValue('B'.$count_data, str_replace("_","-",$order));
