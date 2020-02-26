@@ -1426,8 +1426,8 @@ class C_Delivery extends Controller {
         }
         $data['order_supplies'] = $this->M_Delivery->get_order_suppliesxorder2($order);
         $data['content'] = "";
-        $data['rp'] = "";
-        $data['del'] = "";
+        $data['rp'] = ""; //replaced
+        $data['del'] = ""; //deleted
         foreach ($data['order_supplies'] as $key => $value) {
             if(isset($data['id_supplies'][$key]) && $data['id_supplies'][$key] == $value->id_supplies && $data['total'][$key] == $value->quantity){
                 

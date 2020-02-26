@@ -75,7 +75,7 @@
         if (array_id.length == 0) {
             swal({title: 'Error', text: 'Escoga una solicitud', type: 'error'});
         }else{
-            $.post("<?= base_url() ?>Dispatch/C_Dispatch/modal_add_data", {array_id:array_sds2}, function (data) {
+            $.post("<?= base_url() ?>Dispatch/C_Dispatch_La/modal_add_data", {array_id:array_sds2}, function (data) {
                     $("#modal-add-content").html(data.content_modal);
                     $("#modal-add").modal("show");
                     $("#add_license2").hide();
@@ -93,7 +93,7 @@
         }else{
             $("#add_license2").hide();
         }
-        $.post("<?= base_url() ?>Dispatch/C_Dispatch/data_truck", {id_request_sd:id_request_sd}, function (data) {
+        $.post("<?= base_url() ?>Dispatch/C_Dispatch_La/data_truck", {id_request_sd:id_request_sd}, function (data) {
             console.log(data);
             $("#driver").val(data[0].driver);
             $("#type_truck").val(data[0].description);
@@ -133,10 +133,10 @@
             text = "";
         }
 
-        $.post("<?= base_url() ?>Dispatch/C_Dispatch/create_request_cargo", {id_data_header:id_data_header,observation:observation,array_id:array_id,text:text,array_sds:array_sds2}, function (data) {
+        $.post("<?= base_url() ?>Dispatch/C_Dispatch_La/create_request_cargo", {id_data_header:id_data_header,observation:observation,array_id:array_id,text:text,array_sds:array_sds2}, function (data) {
             console.log(data);
             var a = document.createElement('a');
-            a.href = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo/'+data.id;
+            a.href = '<?= base_url() ?>Dispatch/C_Dispatch_La/request_cargo/'+data.id;
             a.setAttribute('target', '_blank');
             a.click();
             location.reload();

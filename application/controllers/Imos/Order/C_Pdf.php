@@ -68,7 +68,7 @@ class C_Pdf extends Controller {
                 if (array_key_exists($r->code, $array)) {
                     $array[$r->code]["qty"] += $r->qty;
                 } else {
-                    $array[$r->code] = array("desc" => $desc, "uni" => $und, "qty" => $r->qty);
+                    $array[$r->code] = array("desc" => $desc.'(Add)', "uni" => $und, "qty" => $r->qty);
                 }
 
             endforeach;

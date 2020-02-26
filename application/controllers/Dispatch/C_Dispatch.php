@@ -120,7 +120,7 @@ class C_Dispatch extends Controller {
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {
-                    //echo $vf->quantity_packets ."==". $vf->quantity_dispatch."-";
+                    echo $vf->quantity_packets ."==". $vf->quantity_dispatch."-";
                     if($vf->quantity_packets == $vf->quantity_dispatch){
                         $val_f2 = 1;
                     }else{

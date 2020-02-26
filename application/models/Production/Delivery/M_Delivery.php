@@ -1223,6 +1223,7 @@ class M_Delivery extends VS_Model {
         $query = ("SELECT * FROM access_order_supplies A INNER JOIN pro_supplies P ON A.id_supplies = P.id_supplies "
                 . " WHERE A.`order` = $order");
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->result();
     }
     
@@ -1339,7 +1340,7 @@ class M_Delivery extends VS_Model {
 
         $result = $this->db->query("SELECT p.*, t.code, tp.description
             FROM access_order_package p
-            JOIN access_type_package t ON p.type_package = t. 
+            JOIN access_type_package t ON p.type_package = t.id_type_package
             JOIN access_type_packing tp ON p.type_packing = tp.id_type_packing
             WHERE `order` = '$order' AND p.id_forniture = '$forniture'
             ORDER BY CASE p.type_package WHEN 2 THEN 2 WHEN 1 THEN 0 ELSE 1 END, p.number_pack asc");
