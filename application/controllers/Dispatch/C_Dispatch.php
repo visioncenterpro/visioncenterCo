@@ -117,10 +117,33 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
+
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {
-                    echo $vf->quantity_packets ."==". $vf->quantity_dispatch."-";
+                    //echo $vf->quantity_packets ."==". $vf->quantity_dispatch."-";
+                    if($vf->quantity_packets == $vf->quantity_dispatch){
+                        $val_f2 = 1;
+                    }else{
+                        $val_f2 = 0;
+                        break;
+                    }
+                }
+                if($val_f2 == 0){
+                    break;
+                }
+            }
+            if($val_f2 == 0){
+                $iftab[$v->order] = 0;
+            }else{
+                $iftab[$v->order] = 1;
+            }
+            //echo $iftab . "-".$v->order."/";
+
+            foreach ($furnitures as $f){
+                $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
+                foreach ($val as $vf) {
+                    //echo $vf->quantity_packets ."==". $vf->quantity_dispatch."-";
                     if($vf->quantity_packets == $vf->quantity_dispatch){
                         $val_f2 = 1;
                     }else{
@@ -130,6 +153,7 @@ class C_Dispatch extends Controller {
                 }
                 $val_f[] = $val_f2;
             }
+
             $packs_available_supplies = $this->M_Dispatch->ListPackSDAvailableSupplies2($v->order);
             $count = 0;
             foreach ($packs_available as $key => $value) {
@@ -158,12 +182,12 @@ class C_Dispatch extends Controller {
             "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
         endforeach;
         
-        $data['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS, "validation" => $count_arr),true);
+        $data['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS, "validation" => $count_arr,"if"=>$iftab),true);
         
         $this->load->view('Dispatch/Request/Modulated/V_Info',$data);
 
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
-        $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS,ICHECK_JS);
+        $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, ICHECK_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
         $this->load->view('Template/V_Footer', $Footer);
     }
@@ -397,6 +421,27 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
+
+            foreach ($furnitures as $f){
+                $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
+                foreach ($val as $vf) {
+                    if($vf->quantity_packets == $vf->quantity_dispatch){
+                        $val_f2 = 1;
+                    }else{
+                        $val_f2 = 0;
+                        break;
+                    }
+                }
+                if($val_f2 == 0){
+                    break;
+                }
+            }
+            if($val_f2 == 0){
+                $iftab[$v->order] = 0;
+            }else{
+                $iftab[$v->order] = 1;
+            }
+
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {
@@ -436,7 +481,7 @@ class C_Dispatch extends Controller {
             $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
         endforeach;
 
-        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr),true);
+        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr, "if" => $iftab),true);
          
         echo json_encode($rs);
     }
@@ -462,6 +507,27 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
+
+            foreach ($furnitures as $f){
+                $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
+                foreach ($val as $vf) {
+                    if($vf->quantity_packets == $vf->quantity_dispatch){
+                        $val_f2 = 1;
+                    }else{
+                        $val_f2 = 0;
+                        break;
+                    }
+                }
+                if($val_f2 == 0){
+                    break;
+                }
+            }
+            if($val_f2 == 0){
+                $iftab[$v->order] = 0;
+            }else{
+                $iftab[$v->order] = 1;
+            }
+            
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {
@@ -501,7 +567,7 @@ class C_Dispatch extends Controller {
             $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
         endforeach;
 
-        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr),true);
+        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr,"if"=>$iftab),true);
            
         echo json_encode($rs);
     }
@@ -528,6 +594,27 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
+
+            foreach ($furnitures as $f){
+                $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
+                foreach ($val as $vf) {
+                    if($vf->quantity_packets == $vf->quantity_dispatch){
+                        $val_f2 = 1;
+                    }else{
+                        $val_f2 = 0;
+                        break;
+                    }
+                }
+                if($val_f2 == 0){
+                    break;
+                }
+            }
+            if($val_f2 == 0){
+                $iftab[$v->order] = 0;
+            }else{
+                $iftab[$v->order] = 1;
+            }
+            
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {
@@ -567,7 +654,7 @@ class C_Dispatch extends Controller {
             $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
         endforeach;
 
-        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr),true);
+        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr, "if" => $iftab),true);
         
         echo json_encode($rs);
     }
@@ -599,6 +686,27 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
+
+            foreach ($furnitures as $f){
+                $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
+                foreach ($val as $vf) {
+                    if($vf->quantity_packets == $vf->quantity_dispatch){
+                        $val_f2 = 1;
+                    }else{
+                        $val_f2 = 0;
+                        break;
+                    }
+                }
+                if($val_f2 == 0){
+                    break;
+                }
+            }
+            if($val_f2 == 0){
+                $iftab[$v->order] = 0;
+            }else{
+                $iftab[$v->order] = 1;
+            }
+
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {
@@ -638,7 +746,7 @@ class C_Dispatch extends Controller {
             $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
         endforeach;
 
-        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr),true);
+        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr, "if" => $iftab),true);
             
         echo json_encode($rs);
     }
@@ -666,6 +774,27 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
+
+            foreach ($furnitures as $f){
+                $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
+                foreach ($val as $vf) {
+                    if($vf->quantity_packets == $vf->quantity_dispatch){
+                        $val_f2 = 1;
+                    }else{
+                        $val_f2 = 0;
+                        break;
+                    }
+                }
+                if($val_f2 == 0){
+                    break;
+                }
+            }
+            if($val_f2 == 0){
+                $iftab[$v->order] = 0;
+            }else{
+                $iftab[$v->order] = 1;
+            }
+
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {
@@ -705,7 +834,7 @@ class C_Dispatch extends Controller {
             $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
         endforeach;
 
-        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr),true);
+        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr, "if" => $iftab),true);
             
         echo json_encode($rs);
     }
@@ -737,6 +866,27 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
+
+            foreach ($furnitures as $f){
+                $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
+                foreach ($val as $vf) {
+                    if($vf->quantity_packets == $vf->quantity_dispatch){
+                        $val_f2 = 1;
+                    }else{
+                        $val_f2 = 0;
+                        break;
+                    }
+                }
+                if($val_f2 == 0){
+                    break;
+                }
+            }
+            if($val_f2 == 0){
+                $iftab[$v->order] = 0;
+            }else{
+                $iftab[$v->order] = 1;
+            }
+
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {
@@ -776,7 +926,7 @@ class C_Dispatch extends Controller {
             $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
         endforeach;
 
-        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr),true);
+        $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr, "if" => $iftab),true);
             
         echo json_encode($rs);
     }
@@ -803,6 +953,27 @@ class C_Dispatch extends Controller {
                 $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
                 $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
                 $val_f = array();
+
+                foreach ($furnitures as $f){
+                    $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
+                    foreach ($val as $vf) {
+                        if($vf->quantity_packets == $vf->quantity_dispatch){
+                            $val_f2 = 1;
+                        }else{
+                            $val_f2 = 0;
+                            break;
+                        }
+                    }
+                    if($val_f2 == 0){
+                        break;
+                    }
+                }
+                if($val_f2 == 0){
+                    $iftab[$v->order] = 0;
+                }else{
+                    $iftab[$v->order] = 1;
+                }
+
                 foreach ($furnitures as $f){
                     $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                     foreach ($val as $vf) {
@@ -842,7 +1013,7 @@ class C_Dispatch extends Controller {
                 $tab_pane .= $this->load->view('Dispatch/Request/Modulated/V_Div_Tab',array("order"=>$v->order,"packs"=>$packs_available, "supplies"=>$packs_available_supplies, "furnitures" => $furnitures,"val_f" => $val_f, "weight_p" => $weight_p, "suppliesP" => $suppliesP),true);
             endforeach;
 
-            $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr),true);
+            $rs['tabs'] = $this->load->view('Dispatch/Request/Modulated/V_Tabs',array("orders"=>$row,"tab_pane"=>$tab_pane, "content"=>$container, "contentS"=>$containerS,"validation" => $count_arr, "if" => $iftab),true);
 
         }
         echo json_encode($rs);

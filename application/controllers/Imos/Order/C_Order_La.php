@@ -48,11 +48,11 @@ class C_Order_La extends Controller {
         $data['typePiece'] = $this->M_Order->ListTypePiece();
         
         $data['table'] = $this->load->view("Imos/Order/V_Table_Order_Item", $fields, true);
-        $this->load->view('Imos/Order/V_List_Order_Item', $data);
+        $this->load->view('Imos/Order/V_List_Order_Item_La', $data);
 
         //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
-        $this->load->view('Template/V_Footer2', $Footer);
+        $this->load->view('Template/V_Footer', $Footer);
     }
     
     public function ShowDetailsItem($id, $order, $cpid, $idProadmin, $nameid, $med, $pos) {
