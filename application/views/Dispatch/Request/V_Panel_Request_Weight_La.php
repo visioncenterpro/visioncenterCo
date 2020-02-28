@@ -62,7 +62,7 @@
     });
 
     function modal_request_weight(id_request_weight){
-        $.post("<?= base_url() ?>Dispatch/C_Dispatch/data_request_weight", {id_request_weight:id_request_weight}, function (data) {
+        $.post("<?= base_url() ?>Dispatch/C_Dispatch_La/data_request_weight", {id_request_weight:id_request_weight}, function (data) {
             $("#content_request_weight").html(data.content);
             $("#modal_request_weight").modal("show");
         }, 'json').fail(function (error) {
@@ -73,7 +73,7 @@
     function response(response){
         var id_request_weight = $("#id_request_weight").val();
         var observation = $("#observation").val();
-        $.post("<?= base_url() ?>Dispatch/C_Dispatch/response_request_weight", {id_request_weight:id_request_weight,response:response,observation:observation}, function (data) {
+        $.post("<?= base_url() ?>Dispatch/C_Dispatch_La/response_request_weight", {id_request_weight:id_request_weight,response:response,observation:observation}, function (data) {
             swal({title: '', text: '', type: 'success'});
             $("#modal_request_weight").modal("hide");
         }, 'json').fail(function (error) {

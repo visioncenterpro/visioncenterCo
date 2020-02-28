@@ -328,31 +328,49 @@
         $("#table_iron_wrapper >.row >.col-sm-6:eq(0)").append('<label style="margin-left: 5px;"><button type="button" class="btn btn-default btn-sm " onclick="OpenModalAdicional()"><i class="fa  fa-plus-circle"></i> Add Adicional</button></label>');
 
         $(".btn-pieces").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/Pieces/<?= $id ?>/<?= $name ?>/<?= $cpid ?>/<?= $idProadmin ?>/<?= $nameid ?>/<?= $med?>/<?= $pos?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/Pieces/<?= $id ?>/<?= $name ?>/<?= $cpid ?>/<?= $idProadmin ?>/<?= $nameid ?>/<?= $med?>/<?= $pos?>', '_blank');
         });
 
         $(".btn-ironwork").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/IronWorks/<?= $id ?>/<?= $name ?>/<?= $cpid ?>/<?= $idProadmin ?>/<?= $nameid ?>/<?= $med?>/<?= $pos?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/IronWorks/<?= $id ?>/<?= $name ?>/<?= $cpid ?>/<?= $idProadmin ?>/<?= $nameid ?>/<?= $med?>/<?= $pos?>', '_blank');
         });
         
         $(".btn-ironwork-all").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/IronWorksAll/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/IronWorksAll/<?= $name ?>', '_blank');
         });
         
         $(".btn-pieces-all").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/PiecesAll/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/PiecesAll/<?= $name ?>', '_blank');
         });
         
         $(".btn-sheets-all").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/ConsolidateSheet/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/ConsolidateSheet/<?= $name ?>', '_blank');
         });
         
         $(".btn-canto-all").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/ConsolidateCanto/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/ConsolidateCanto/<?= $name ?>', '_blank');
         });
 
         $(".return").click(function () {
             location.href = "<?= base_url() ?>Imos/Order/C_Order_La/ListItems/<?= $name ?>/<?= $cpid ?>/<?= $idProadmin ?>";
+        });
+
+        $(".btn-consolidated_total").click(function () {
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/ConsolidatedTotal/<?= $name ?>', '_blank');
+        });
+        
+        $(".btn-export-lmat").click(function () {
+            $.post("<?= base_url() ?>Imos/Order/C_Pdf_La/validate_LMAT", {name: <?= $name ?>}, function (data) {
+               if(data == 0){
+                   window.location = "<?= URL_PROJETC ?>Imos/Order/C_Pdf_La/ExportLMAT?name="+<?= $name ?>;
+               }else{
+                   swal({title: 'Atención', text: 'No se puede generar el reporte, no se encontraron datos en Imos por favor agregarlos', type: 'error'});
+               }
+                
+            }, 'json').fail(function (error) {
+                swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+            });
+            //window.open('<?= base_url() ?>Imos/Order/C_Pdf/ExportLMAT/<?= $name ?>', '_blank');
         });
         
         $("#comment").keypress(function(character){

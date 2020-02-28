@@ -144,8 +144,7 @@
                                 <option value="9">9%</option>
                                 <option value="10">10%</option>
                             </select>
-<!--                            <label>Porcentaje Adicional</label>
-                            <input type="number" class="form-control required" id="proportion">-->
+
                         </div>
                     </div>
                 </div>
@@ -295,32 +294,32 @@
         });
 
         $(".btn-ironwork-all").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/IronWorksAll/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/IronWorksAll/<?= $name ?>', '_blank');
         });
 
         $(".btn-pieces-all").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/PiecesAll/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/PiecesAll/<?= $name ?>', '_blank');
         });
 
         $(".btn-sheets-all").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/ConsolidateSheet/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/ConsolidateSheet/<?= $name ?>', '_blank');
         });
 
         $(".btn-canto-all").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/ConsolidateCanto/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/ConsolidateCanto/<?= $name ?>', '_blank');
         });
         
         $(".btn-consolidated_total").click(function () {
-            window.open('<?= base_url() ?>Imos/Order/C_Pdf/ConsolidatedTotal/<?= $name ?>', '_blank');
+            window.open('<?= base_url() ?>Imos/Order/C_Pdf_La/ConsolidatedTotal/<?= $name ?>', '_blank');
         });
         
         $(".btn-export-lmat").click(function () {
-            $.post("<?= base_url() ?>Imos/Order/C_Pdf/validate_LMAT", {name: $("#order_p").val()}, function (data) {
-               if(data == 0){
-                   window.location = "<?= URL_PROJETC ?>Imos/Order/C_Pdf/ExportLMAT?name="+$("#order_p").val();
-               }else{
+            $.post("<?= base_url() ?>Imos/Order/C_Pdf_La/validate_LMAT", {name: $("#order_p").val()}, function (data) {
+                if(data == 0){
+                   window.location = "<?= URL_PROJETC ?>Imos/Order/C_Pdf_La/ExportLMAT?name="+$("#order_p").val();
+                }else{
                    swal({title: 'Atención', text: 'No se puede generar el reporte, no se encontraron datos en Imos por favor agregarlos', type: 'error'});
-               }
+                }
                 
             }, 'json').fail(function (error) {
                 swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
@@ -460,7 +459,7 @@
     function AddNewItem() {
         $(".form-group").removeClass("has-error");
         if (validatefield()) {
-            $.post("<?= base_url() ?>Imos/Order/C_Order/AddNewItem", {order: '<?= $name ?>', type: $("#type").val(), code: $("#code").val(), qty: $("#qty").val(), weight: $("#weight").val(), height: $("#height").val(), width: $("#width").val(), depth: $("#depth").val(), typepiece: $("#typepiece").val(), weight_c: $("#weight_c").val()}, function (data) {
+            $.post("<?= base_url() ?>Imos/Order/C_Order_La/AddNewItem", {order: '<?= $name ?>', type: $("#type").val(), code: $("#code").val(), qty: $("#qty").val(), weight: $("#weight").val(), height: $("#height").val(), width: $("#width").val(), depth: $("#depth").val(), typepiece: $("#typepiece").val(), weight_c: $("#weight_c").val()}, function (data) {
                 if (data.res == "OK") {
                     $('#table_items').DataTable().destroy();
 
@@ -472,6 +471,7 @@
                         scrollCollapse: true
                     });
                     $('a[data-toggle="tab"]').off('shown.bs.tab');
+
                     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                         table.columns.adjust();
                     });
@@ -522,7 +522,7 @@
     function OpenModalDetailsItem(id_salesline, type) {
         $("#btn-update").attr("onclick", "UpdateDetailsItem(" + id_salesline + ",\"" + type + "\")");
 
-        $.post("<?= base_url() ?>Imos/Order/C_Order/LoadDetailsItem", {id_salesline: id_salesline}, function (data) {
+        $.post("<?= base_url() ?>Imos/Order/C_Order_La/LoadDetailsItem", {id_salesline: id_salesline}, function (data) {
             $("#codeU").val(data.res.code);
             $("#heightU").val(data.res.height);
             $("#widthU").val(data.res.width);
@@ -547,7 +547,7 @@
 
         if (type == "P") {
             if (ValidateInput("codeU") && ValidateInput("widthU") && ValidateInput("heightU") && ValidateInput("depthU") && ValidateInput("qtyU") && ValidateInput("typepieceU")) {
-                $.post("<?= base_url() ?>Imos/Order/C_Order/UpdateDetailsItem", {type: type, id_salesline: id_salesline, code: $("#codeU").val(), qty: $("#qtyU").val(), typepiece: $("#typepieceU").val(), weight: $("#weightU").val(), width: $("#widthU").val(), height: $("#heightU").val(), depth: $("#depthU").val()}, function (data) {
+                $.post("<?= base_url() ?>Imos/Order/C_Order_La/UpdateDetailsItem", {type: type, id_salesline: id_salesline, code: $("#codeU").val(), qty: $("#qtyU").val(), typepiece: $("#typepieceU").val(), weight: $("#weightU").val(), width: $("#widthU").val(), height: $("#heightU").val(), depth: $("#depthU").val()}, function (data) {
                     $("#weight-" + id_salesline).text($("#weightU").val());
                     $("#code-" + id_salesline).text($("#codeU").val());
                     $("#qty-" + id_salesline).text($("#qtyU").val());
@@ -561,7 +561,7 @@
             }
         } else {
             if (ValidateInput("codeU") && ValidateInput("qtyU")) {
-                $.post("<?= base_url() ?>Imos/Order/C_Order/UpdateDetailsItem", {type: type, id_salesline: id_salesline,qty: $("#qtyU").val(), code: $("#codeU").val(), typepiece: $("#typepieceU").val(), weight: $("#weightU").val()}, function (data) {
+                $.post("<?= base_url() ?>Imos/Order/C_Order_La/UpdateDetailsItem", {type: type, id_salesline: id_salesline,qty: $("#qtyU").val(), code: $("#codeU").val(), typepiece: $("#typepieceU").val(), weight: $("#weightU").val()}, function (data) {
                     $("#code-" + id_salesline).text($("#codeU").val());
                     $("#weight-" + id_salesline).text($("#weightU").val());
                     $("#qty-" + id_salesline).text($("#qtyU").val());
@@ -584,7 +584,7 @@
             confirmButtonText: 'Eliminar!'
         }).then((result) => {
             if (result) {
-                $.post("<?= base_url() ?>Imos/Order/C_Order/DeleteDetailsItem", {id_salesline: id_salesline}, function (data) {
+                $.post("<?= base_url() ?>Imos/Order/C_Order_La/DeleteDetailsItem", {id_salesline: id_salesline}, function (data) {
                     if (data.res == "OK") {
                         $('#table_items').DataTable().destroy();
                         $('#tr-' + id_salesline).remove();

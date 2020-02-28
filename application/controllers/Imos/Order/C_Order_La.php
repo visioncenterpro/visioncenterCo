@@ -93,8 +93,8 @@ class C_Order_La extends Controller {
             $und = (empty($descAX)) ? '' : $descAX->UNITID;
             $class = (!empty($descAX->ITEMNAME)) ? "" : "bg-danger";
             $data['iron'] .= "<tr class='$class' >";
-            $data['iron'] .= "<td >" . $t->ARTICLE_ID . "</td>";
-            $data['iron'] .= "<td >" . strtoupper($desc) . "</td>";
+            $data['iron'] .= "<td>" . $t->ARTICLE_ID . "</td>";
+            $data['iron'] .= "<td>" . strtoupper($desc) . "</td>";
             $data['iron'] .= "<td style='text-align:center'>" . $t->PURCHCNT . "</td>";
             $data['iron'] .= "<td style='text-align:center'>" . $und . "</td>";
             $data['iron'] .= "<td ></td>";
@@ -107,7 +107,7 @@ class C_Order_La extends Controller {
         $data['iron'] = $this->load->view('Imos/Order/V_Table_Tab_Ironworks', $data, true);
         
 
-        $this->load->view('Imos/Order/V_Order_Item_Details', $data);
+        $this->load->view('Imos/Order/V_Order_Item_Details_La', $data);
 
         //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, BARCODE39_JS);
@@ -148,7 +148,7 @@ class C_Order_La extends Controller {
         if ($row) {
             if ($row->status == 9) {
                 $res = "COMPLETE";
-            } else {                  
+            } else {
                 $itemImos = $this->M_Acknow->ValidateItemOrder($row->id_import_salestable, $this->input->post('name'));
                 if ($itemImos['status'] == 9) {
                     $res = "COMPLETE";

@@ -93,7 +93,7 @@
 
         $('#btn-tags').click(function () {
             if (arrayGeneral.length > 0) {
-                $.post("<?= base_url() ?>Imos/Order/C_Order/LoadSheetOrders", {arrayGeneral: arrayGeneral}, function (data) {
+                $.post("<?= base_url() ?>Imos/Order/C_Order_La/LoadSheetOrders", {arrayGeneral: arrayGeneral}, function (data) {
                     if (data.res == "OK") {
                         $("#table-sheet").html(data.tabla);
                         $("#modal").modal("show");
@@ -127,7 +127,7 @@
                 });
                 
                 $("#modal").modal("hide");
-                $.post("<?= base_url() ?>Imos/Order/C_Order/GenerateTagsOrder", {arrayGeneral: arrayGeneral,cnt:cnt,type_generation:type_generation,array_body:array_body}, function (data) {
+                $.post("<?= base_url() ?>Imos/Order/C_Order_La/GenerateTagsOrder", {arrayGeneral: arrayGeneral,cnt:cnt,type_generation:type_generation,array_body:array_body}, function (data) {
                     if (data.res == "OK") {
                         swal({title: 'Exito!', text: "Etiquetas Generadas!", type: 'success'});
                         $('tr.selected').removeClass('selected');
