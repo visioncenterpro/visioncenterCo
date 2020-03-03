@@ -27,7 +27,7 @@
                 <td style="text-align: center;"><?= $v->date ?></td>                
                 <td style="text-align: center; min-width: 50px">
                     <!--<button type="button"  class="btn btn-warning btn-xs btn-tabla" title="Actualizar Novedad"  onclick="evidence('<?= $v->evidence ?>')"><i class="fa fa-download"></i></button>-->
-                    <button type="button"  class="btn btn-info btn-xs btn-tabla" title="Actualizar Novedad"  onclick="Updat(<?= $v->id_absenteeism ?>)"><i class="fa fa-search"></i></button>
+                    <button type="button"  class="btn btn-info btn-xs btn-tabla" title="Actualizar Novedad"  onclick="Update(<?= $v->id_absenteeism ?>)"><i class="fa fa-search"></i></button>
                                       
                 </td>
             </tr>

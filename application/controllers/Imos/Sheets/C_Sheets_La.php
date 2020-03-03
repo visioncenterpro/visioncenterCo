@@ -24,7 +24,7 @@ class C_Sheets_La extends Controller {
         $data['formats'] = $this->M_Sheets->get_formats();
         $data['calibers'] = $this->M_Sheets->get_calibers();
         $data['table'] = $this->load->view('Imos/Sheets/V_table_sheets', $data, true);
-        $this->load->view('Imos/Sheets/V_panel_sheets', $data);
+        $this->load->view('Imos/Sheets/V_panel_sheets_La', $data);
         
         // carga el footer y los js
         //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);

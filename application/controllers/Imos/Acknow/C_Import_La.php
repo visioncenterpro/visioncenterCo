@@ -39,7 +39,7 @@ class C_Import_La extends Controller {
             array('type' => '#¡NULO!', 'description' => 'rango en la funcion, incorrecto'),
             array('type' => '#¡VALOR!', 'description' => 'se espera tipo de datos diferente en la funcion'),
             array('type' => '#¡DIV/0!', 'description' => 'division entre 0'),
-            array('type' => '#¡REF!', 'description' => 'celda no se encuentra'),
+            array('type' => '#¡REF!', 'description' => 'no se encuentra celda'),
             array('type' => '#¿NOMBRE?', 'description' => 'nombre de formula no valido')
         );
         foreach ($arrayDetail as $value) {

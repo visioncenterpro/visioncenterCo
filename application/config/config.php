@@ -33,7 +33,7 @@ $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : "";
 
 if((stristr($host, "192.168.5.209") !== FALSE)  || (stristr($host, '127.0.0.1') !== FALSE) )
 	{
-   $config['base_url'] = URL_PROJETC; 
+   $config['base_url'] = URL_PROJETC;
 }
 else $config['base_url'] = URL_PROJETC1;
 

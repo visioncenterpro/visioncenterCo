@@ -280,7 +280,6 @@
     
     function modal_edit(id_wood_sheet){
         $.post("<?= base_url()?>Imos/Sheets/C_Sheets_La/get_data_edit",{id_wood_sheet:id_wood_sheet},function(data){
-            console.log(data);
             data.sheet.forEach(function(element){
                 $("#before-id").val(element.id_pro_sheet_area);
                 $("#id-wood-edit").val(element.id_wood_sheet);
@@ -304,7 +303,7 @@
         var id = $("#id-wood-edit").val();
         var code = $("#code-edit").val();
         var id_format = $("#format-edit").val();
-        var format = $( "#format-edit option:selected" ).text();
+        var format = $("#format-edit option:selected").text();
         var caliber = $("#caliber-edit").val();
         var description = $("#description-edit").val();
         var waste = $("#waste-edit").val();
