@@ -11,19 +11,19 @@ class C_Delivery_La extends Controller {
     }
 
     function Enlist_Supplies() {
-        $array['menus'] = $this->M_Main->ListMenu();
+        //$array['menus'] = $this->M_Main->ListMenu();
 
-        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        //$Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, SELECT2_CSS, ICHECK_CSS_BLUE);
-        $this->load->view('Template/V_Header', $Header);
+        $this->load->view('Template/V_Header2', $Header);
         
         $data['orders'] = $this->M_Delivery->get_orders_supplies();
-        $this->load->view('Production/Delivery/Supplies/Enlist/V_Panel_Enlist',$data);
+        $this->load->view('Production/Delivery/Supplies/Enlist/V_Panel_Enlist_La',$data);
 
-        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS, ICHECK_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
-        $this->load->view('Template/V_Footer', $Footer);
+        $this->load->view('Template/V_Footer2', $Footer);
     }
     
     function Enlist_Supplies_Pendings(){
@@ -2324,21 +2324,21 @@ class C_Delivery_La extends Controller {
     // -------------------------------------------------   ENTREGA DE INSUMOS ----------------------------------------------------------------
 
     function Delivery_SD_Supplies() {
-        $array['menus'] = $this->M_Main->ListMenu();
+        //$array['menus'] = $this->M_Main->ListMenu();
 
-        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        //$Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, SELECT2_CSS);
-        $this->load->view('Template/V_Header', $Header);
+        $this->load->view('Template/V_Header2', $Header);
 
         $data['rows'] = $this->M_Delivery->ListDeliverySupplies();
         $data['table'] = $this->load->view('Production/Delivery/Supplies/V_Table_Delivery', $data, true);
         $data['orders'] = $this->M_Delivery->ListOrderIncompleteSupplies();
         $this->load->view('Production/Delivery/Supplies/V_Panel_Supplies', $data);
 
-        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
-        $this->load->view('Template/V_Footer', $Footer);
+        $this->load->view('Template/V_Footer2', $Footer);
     }
 
     function CreateDeliverySupplies() {
