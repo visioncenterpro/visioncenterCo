@@ -27,51 +27,51 @@ class C_Delivery_La extends Controller {
     }
     
     function Enlist_Supplies_Pendings(){
-        $array['menus'] = $this->M_Main->ListMenu();
+        //$array['menus'] = $this->M_Main->ListMenu();
 
-        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        //$Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, SELECT2_CSS, ICHECK_CSS_BLUE);
-        $this->load->view('Template/V_Header', $Header);
+        $this->load->view('Template/V_Header2', $Header);
         
         $data['orders'] = $this->M_Delivery->get_orders_supplies();
-        $this->load->view('Production/Delivery/Supplies/Enlist/V_Panel_Enlist_Pendings',$data);
+        $this->load->view('Production/Delivery/Supplies/Enlist/V_Panel_Enlist_Pendings_La',$data);
 
-        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS, ICHECK_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
-        $this->load->view('Template/V_Footer', $Footer);
+        $this->load->view('Template/V_Footer2', $Footer);
     }
     
     function Enlist_Packets_Pending(){
-        $array['menus'] = $this->M_Main->ListMenu();
+        //$array['menus'] = $this->M_Main->ListMenu();
 
-        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        //$Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, SELECT2_CSS, ICHECK_CSS_BLUE);
-        $this->load->view('Template/V_Header', $Header);
+        $this->load->view('Template/V_Header2', $Header);
         
         $data['orders'] = $this->M_Delivery->get_orders();
         $this->load->view('Production/Delivery/Supplies/Enlist/V_Panel_Enlist_Modulated_Pendings',$data);
 
-        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS, ICHECK_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
-        $this->load->view('Template/V_Footer', $Footer);
+        $this->load->view('Template/V_Footer2', $Footer);
     }
 
     function Enlist_PackageSD() {
-        $array['menus'] = $this->M_Main->ListMenu();
+        //$array['menus'] = $this->M_Main->ListMenu();
 
-        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        //$Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, SELECT2_CSS, ICHECK_CSS_BLUE);
-        $this->load->view('Template/V_Header', $Header);
+        $this->load->view('Template/V_Header2', $Header);
         
         $data['orders'] = $this->M_Delivery->get_orders();
-        $this->load->view('Production/Delivery/PackageSD/Enlist/V_Panel_Enlist', $data);
+        $this->load->view('Production/Delivery/PackageSD/Enlist/V_Panel_Enlist_La', $data);
 
-        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS, ICHECK_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
-        $this->load->view('Template/V_Footer', $Footer);
+        $this->load->view('Template/V_Footer2', $Footer);
     }
 
     function SearchOrder() {
@@ -557,7 +557,7 @@ class C_Delivery_La extends Controller {
         $objWorkSheet->setCellValue('A1', 'ITEM')
            ->setCellValue('B1', 'DESCRIPCIÓN')
            ->setCellValue('C1', 'PACK')
-           ->setCellValue('D1', 'CANTIDAD')     
+           ->setCellValue('D1', 'CANTIDAD')
            ->setCellValue('E1', 'CANTIDAD EMPACADA')
            ->setCellValue('F1', 'SALDO');
 
@@ -565,7 +565,7 @@ class C_Delivery_La extends Controller {
         
         
         $delimiter = implode(",", $array_order);
-        $dt = $this->M_Delivery->data_order_package($delimiter);
+        //$dt = $this->M_Delivery->data_order_package($delimiter);
         $array_supplies = "";
         foreach ($dt as $value) {
             $array_supplies['id_supplies'][] = $value->id_supplies;
@@ -627,6 +627,7 @@ class C_Delivery_La extends Controller {
         );
         echo json_encode($opResult);
     }
+    
     
     function excel(){
         
@@ -1985,24 +1986,24 @@ class C_Delivery_La extends Controller {
 
     // -------------------------------------------------   ENTREGA DE PAQUETES SD ----------------------------------------------------------------
 
-    function Delivery_SD_Packages() { 
-        $array['menus'] = $this->M_Main->ListMenu();
+    function Delivery_SD_Packages() {
+        //$array['menus'] = $this->M_Main->ListMenu();
 
-        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        //$Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, SELECT2_CSS);
-        $this->load->view('Template/V_Header', $Header);
+        $this->load->view('Template/V_Header2', $Header);
 
         $data['rows'] = $this->M_Delivery->ListDeliveryPackageSD();
         $data['table'] = $this->load->view('Production/Delivery/PackageSD/V_Table_Delivery', $data, true);
 
         $data['orders'] = $this->M_Delivery->ListOrderIncomplete();
 
-        $this->load->view('Production/Delivery/PackageSD/V_Panel_Package', $data);
+        $this->load->view('Production/Delivery/PackageSD/V_Panel_Package_La', $data);
 
-        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
-        $this->load->view('Template/V_Footer', $Footer);
+        $this->load->view('Template/V_Footer2', $Footer);
     }
 
     function CreateDeliveryPackage() {
@@ -2333,7 +2334,7 @@ class C_Delivery_La extends Controller {
         $data['rows'] = $this->M_Delivery->ListDeliverySupplies();
         $data['table'] = $this->load->view('Production/Delivery/Supplies/V_Table_Delivery', $data, true);
         $data['orders'] = $this->M_Delivery->ListOrderIncompleteSupplies();
-        $this->load->view('Production/Delivery/Supplies/V_Panel_Supplies', $data);
+        $this->load->view('Production/Delivery/Supplies/V_Panel_Supplies_La', $data);
 
         //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS, SELECT2_JS);
@@ -2347,11 +2348,11 @@ class C_Delivery_La extends Controller {
     }
 
     function InfoDeliverySupplies($id_delivery, $order, $view) {
-        $array['menus'] = $this->M_Main->ListMenu();
+        //$array['menus'] = $this->M_Main->ListMenu();
 
-        $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        //$Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
-        $this->load->view('Template/V_Header', $Header);
+        $this->load->view('Template/V_Header2', $Header);
 
         $data["info"] = $this->M_Delivery->InfoDeliverySupplies($id_delivery);
 
@@ -2370,17 +2371,16 @@ class C_Delivery_La extends Controller {
             $data['tables'] = $this->load->view('Dispatch/Delivery/V_Table_Supplies', $d, true);
         }
 
-
         foreach ($this->M_Delivery->LoadButtonPermissions("Despacho") as $btn) {
             $data[$btn->name] = $btn->name;
         }
 
-        $this->load->view('Production/Delivery/Supplies/V_Panel_Detail_Supplies', $data);
+        $this->load->view('Production/Delivery/Supplies/V_Panel_Detail_Supplies_La', $data);
 
-        $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
         $Footer["btn_datatable"] = BTN_DATATABLE_JS;
-        $this->load->view('Template/V_Footer', $Footer);
+        $this->load->view('Template/V_Footer2', $Footer);
     }
 
     function AddPackToDeliverySupplies() {

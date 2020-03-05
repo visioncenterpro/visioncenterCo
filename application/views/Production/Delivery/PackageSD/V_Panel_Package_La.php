@@ -2,7 +2,7 @@
     <section class="content">
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title">Entrega De Insumos SD</h3>
+                <h3 class="box-title">Entrega De Paquetes SD</h3>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -27,7 +27,6 @@
             </div>
             <div class='modal-body'>
                 <div class='box-body no-padding'>
-                
                     <form role="form">
                         <div class="row">
                             <div class="col-md-12">
@@ -43,7 +42,6 @@
                             </div>
                         </div>
                     </form>
-
                 </div>
             </div>
             <div class="modal-footer">
@@ -80,11 +78,13 @@
             }).then((result) => {
                 if (result) {
                     var order = $("#order").val();
-                    $.post("<?= base_url() ?>Production/Delivery/C_Delivery_La/CreateDeliverySupplies", {order: order}, function (data) {
+                    $.post("<?= base_url() ?>Production/Delivery/C_Delivery_La/CreateDeliveryPackage", {order: order}, function (data) {
                         if(data.res == "OK"){
-                            window.location.href = "<?= base_url() ?>Production/Delivery/C_Delivery_La/InfoDeliverySupplies/" + data.id +"/"+ order+"/Delivery";;
+                            window.location.href = "<?= base_url() ?>Production/Delivery/C_Delivery_La/InfoDeliveryPackage/" + data.id +"/"+ order+"/Delivery";
                         }else if(data.res == "open" || data.res == "zero"){
                             swal({title: 'Error!', text: data.id, type: 'error'});
+                        }else if(data.res == "weight"){
+                            swal({title: 'Error', text: data.id, type: 'error'});
                         }else{
                             swal({title: 'Error Toma un screem y envialo a sistemas!', text: data.res, type: 'error'});
                         }
@@ -96,6 +96,6 @@
         }
     }
     function InfoDelivery(id_delivery,order) {
-        window.location.href = "<?= base_url() ?>Production/Delivery/C_Delivery_La/InfoDeliverySupplies/" + id_delivery +"/"+ order+"/Delivery";;
+        window.location.href = "<?= base_url() ?>Production/Delivery/C_Delivery_La/InfoDeliveryPackage/" + id_delivery +"/"+ order+"/Delivery";
     }
 </script>

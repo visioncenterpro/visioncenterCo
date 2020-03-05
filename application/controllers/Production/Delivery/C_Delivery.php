@@ -565,7 +565,7 @@ class C_Delivery extends Controller {
         
         
         $delimiter = implode(",", $array_order);
-        $dt = $this->M_Delivery->data_order_package($delimiter);
+        //$dt = $this->M_Delivery->data_order_package($delimiter);
         $array_supplies = "";
         foreach ($dt as $value) {
             $array_supplies['id_supplies'][] = $value->id_supplies;
