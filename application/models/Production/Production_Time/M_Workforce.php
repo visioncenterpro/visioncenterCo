@@ -9,7 +9,7 @@ class M_Workforce extends VS_Model {
     }
 
     function ListNo_Machine() {
-        $result = $this->db->select("u.id_machine,u.model,u.id_no_maquine")
+        $result = $this->db->select("u.id_machine,u.model")
                 ->from("pro_no_machine u")
                 ->order_by("u.id_machine")
                 ->get();
@@ -56,7 +56,7 @@ class M_Workforce extends VS_Model {
 
         $result = $this->db->select(" r.id_production_time,r.day,r.hour,e.model,r.quantity,o.description,r.stopped_time,r.number_operators  ")
                 ->from("pro_production_time r ")
-                ->join("pro_no_machine e", "r.id_machine=e.id_no_maquine ")
+                ->join("pro_no_machine e", "r.id_machine=e.id_machine ")
                  ->join("pro_reason_stop_machine o", "o.id_reason_stop_machine = r.reason","left")
                 ->where("r.day", $datepicker)
                 ->get();

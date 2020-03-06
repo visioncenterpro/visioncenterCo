@@ -26,6 +26,12 @@
         <script src="<?= base_url() ?>dist/jquery/jquery.js"></script>
         <script src="<?= base_url() ?>dist/js/function.js"></script>
         <!--<script src="<?= base_url() ?>dist/js/session.js"></script>-->
+        <style>
+            .content-wrapper{
+                margin-left: 2px !important;
+                margin-right: 0px !important;
+            }
+        </style>
     </head>
     <body>
         <!-- Site wrapper -->
