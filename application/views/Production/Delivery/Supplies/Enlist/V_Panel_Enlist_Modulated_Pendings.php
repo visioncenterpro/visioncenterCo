@@ -102,6 +102,11 @@
                 //$("#table_supplies_"+data.order_validation[i]).append('<label style="margin-left: 5px;"><a onclick="Excel_All(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-list"></i> Excel ALL</span></a></label>');
             }
             $(".dt-buttons").append('<label style="margin-left: 5px;"><a onclick="Excel_All(\'' + order + '\')" class="btn btn-default btn-sm buttons-excel buttons-html5" tabindex="0" aria-controls="tabla_user" href="#"><span><i class="fa fa-file-excel-o"></i> Excel ALL</span></a></label>');
+            window.scroll({
+                top: 700,
+                left: 700,
+                behavior: 'smooth'
+            });
         },'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });

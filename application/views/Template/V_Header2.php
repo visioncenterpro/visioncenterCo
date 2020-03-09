@@ -28,7 +28,7 @@
         <!--<script src="<?= base_url() ?>dist/js/session.js"></script>-->
         <style>
             .content-wrapper{
-                margin-left: 2px !important;
+                margin-left: 0px !important;
                 margin-right: 0px !important;
             }
         </style>

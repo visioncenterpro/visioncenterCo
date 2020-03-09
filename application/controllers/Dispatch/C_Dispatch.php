@@ -81,7 +81,6 @@ class C_Dispatch extends Controller {
     }
     
     function InfoRequestDispatchSD($id){
-        //$count_arr=array();
         $array['menus'] = $this->M_Main->ListMenu();
 
         $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);

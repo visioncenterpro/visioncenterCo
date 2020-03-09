@@ -547,56 +547,6 @@ class C_Delivery_La extends Controller {
             }
         }
         
-        
-        $sheet = $this->excel->getActiveSheet();
-        
-        // Add new sheet 
-        $objWorkSheet = $this->excel->createSheet(1); //Setting index when creating
-        
-        //Write cells
-        $objWorkSheet->setCellValue('A1', 'ITEM')
-           ->setCellValue('B1', 'DESCRIPCIÓN')
-           ->setCellValue('C1', 'PACK')
-           ->setCellValue('D1', 'CANTIDAD')
-           ->setCellValue('E1', 'CANTIDAD EMPACADA')
-           ->setCellValue('F1', 'SALDO');
-
-        // Rename sheet 
-        
-        
-        $delimiter = implode(",", $array_order);
-        //$dt = $this->M_Delivery->data_order_package($delimiter);
-        $array_supplies = "";
-        foreach ($dt as $value) {
-            $array_supplies['id_supplies'][] = $value->id_supplies;
-            $array_supplies['total_s'][] = $value->total;
-        }
-        $dt2 = $this->M_Delivery->data_order_supplies2($delimiter);
-        $count = 2;
-        $count2 = 0;
-        foreach ($dt2 as $key => $value2) {
-            //Write cells
-            $d = 0;
-            $e = $value2->total;
-            for($i = 0; $i < count($array_supplies['id_supplies']); $i++){
-                if($array_supplies['id_supplies'][$i] == $value2->id_supplies){
-                    $d = $array_supplies['total_s'][$i];
-                    $e = $value2->total - $array_supplies['total_s'][$i];
-                }
-            }
-            $objWorkSheet->setCellValue('A'.$count, $value2->code)
-               ->setCellValue('B'.$count, $value2->name)
-               ->setCellValue('C'.$count, $value2->total)
-               
-               //
-               ->setCellValue('D'.$count, $d)
-               ->setCellValue('E'.$count, $e);
-
-            // Rename sheet 
-            $count++;
-        }
-        $objWorkSheet->setTitle("Relación");
-        
         // Auto size
         foreach ($this->excel->getWorksheetIterator() as $worksheet) {
 
@@ -613,7 +563,7 @@ class C_Delivery_La extends Controller {
         
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="ReporteModuladosPendientes.xls"');
-        header('Cache-Control: max-age=0'); //no cache
+        header('Cache-Control: max-age=0'); // no cache
         $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
         // Forzamos a la descarga
         ob_start();
@@ -628,14 +578,12 @@ class C_Delivery_La extends Controller {
         echo json_encode($opResult);
     }
     
-    
     function excel(){
         
         $this->load->library('excel');
         $this->excel->setActiveSheetIndex(0);
         $this->excel->getActiveSheet()->setTitle('Reporte Insumo Pendientes');
         
-        // HEADER
         $gdImage = imagecreatefromjpeg(URL_IMAGE.$this->session->company);
         $objDrawing = new PHPExcel_Worksheet_MemoryDrawing();
         $objDrawing->setName('Sample image');$objDrawing->setDescription('Sample image');
@@ -717,7 +665,7 @@ class C_Delivery_La extends Controller {
                 $rs['packs'] = 0;
             }
             
-            if(count($rs['supplies'])>0){
+            //if(count($rs['supplies'])>0){
                 //$rs['table_pack'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_Pack_Pending', $rs, true);
                 $vali = [];
                 foreach ($rs['record'] as $value) {
@@ -730,8 +678,8 @@ class C_Delivery_La extends Controller {
                 foreach ($rs['supplies'] as $key => $value) {
                     $this->excel->getActiveSheet()->setCellValue('A'.$count_cell, $array_order[$i]);
                     $this->excel->getActiveSheet()->setCellValue('B'.$count_cell, $value->code);
-                    $this->excel->getActiveSheet()->setCellValue('C'.$count_cell,$value->name);
-                    $this->excel->getActiveSheet()->setCellValue('D'.$count_cell,$value->quantity);
+                    $this->excel->getActiveSheet()->setCellValue('C'.$count_cell, $value->name);
+                    $this->excel->getActiveSheet()->setCellValue('D'.$count_cell, $value->quantity);
                     
                     if(isset($vali['quantity_packaged'][$count]) && $vali['quantity_packaged'][$count] == $value->quantity && $vali['id_supplies'][$count] == $value->id_supplies){
                         
@@ -756,7 +704,7 @@ class C_Delivery_La extends Controller {
                     
                     $count_cell++;
                 }
-            }
+            //}
         }
         
         
@@ -777,34 +725,36 @@ class C_Delivery_La extends Controller {
         
         $delimiter = implode(",", $array_order);
         $dt = $this->M_Delivery->data_order_supplies($delimiter);
-        $array_supplies = "";
         foreach ($dt as $value) {
             $array_supplies['id_supplies'][] = $value->id_supplies;
             $array_supplies['total_s'][] = $value->total;
         }
-        $dt2 = $this->M_Delivery->data_order_supplies2($delimiter);
-        $count = 2;
-        $count2 = 0;
-        foreach ($dt2 as $key => $value2) {
-            //Write cells
-            $d = 0;
-            $e = $value2->total;
-            for($i = 0; $i < count($array_supplies['id_supplies']); $i++){
-                if($array_supplies['id_supplies'][$i] == $value2->id_supplies){
-                    $d = $array_supplies['total_s'][$i];
-                    $e = $value2->total - $array_supplies['total_s'][$i];
-                }
-            }
-            $objWorkSheet->setCellValue('A'.$count, $value2->code)
-               ->setCellValue('B'.$count, $value2->name)
-               ->setCellValue('C'.$count, $value2->total)
-               
-               //
-               ->setCellValue('D'.$count, $d)
-               ->setCellValue('E'.$count, $e);
 
-            // Rename sheet 
-            $count++;
+        if(isset($array_supplies['id_supplies'])){
+            $dt2 = $this->M_Delivery->data_order_supplies2($delimiter);
+            $count = 2;
+            $count2 = 0;
+            foreach ($dt2 as $key => $value2) {
+                //Write cells
+                $d = 0;
+                $e = $value2->total;
+                for($i = 0; $i < count($array_supplies['id_supplies']); $i++){
+                    if($array_supplies['id_supplies'][$i] == $value2->id_supplies){
+                        $d = $array_supplies['total_s'][$i];
+                        $e = $value2->total - $array_supplies['total_s'][$i];
+                    }
+                }
+                $objWorkSheet->setCellValue('A'.$count, $value2->code)
+                ->setCellValue('B'.$count, $value2->name)
+                ->setCellValue('C'.$count, $value2->total)
+                
+                //
+                ->setCellValue('D'.$count, $d)
+                ->setCellValue('E'.$count, $e);
+
+                // Rename sheet 
+                $count++;
+            }
         }
         $objWorkSheet->setTitle("Relación");
         

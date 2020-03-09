@@ -19,7 +19,7 @@ class C_Panel_La extends Controller {
 
 
         $data['person'] = $this->M_Panel->ListPersonAll();
-        $data['indicators'] = $this->load->view("Absenteeism/Panel/V_Indicators", $this->M_Panel->CountIndicators(), true);
+        $data['indicators'] = $this->load->view("Absenteeism/Panel/V_Indicators_La", $this->M_Panel->CountIndicators(), true);
 
         $d['indicators'] = $this->M_Panel->CountSubIndicator();
         $data['subindicators'] = $this->load->view("Absenteeism/Panel/V_Sub_Indicators", $d, true);
