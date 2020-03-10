@@ -1247,7 +1247,7 @@ class M_Dispatch extends VS_Model {
         $query = ("SELECT A.access_order_package_supplies,P.name,P.code,A.quantity_packaged,P.weight_per_supplies FROM access_order_package_supplies_detail A INNER JOIN "
                 . " access_order_package_supplies AO ON A.access_order_package_supplies = AO.id_order_package_supplies INNER JOIN "
                 . " pro_supplies P ON A.id_supplies = P.id_supplies WHERE A.access_order_package_supplies = $id_order_package_supplies "
-                . " AND AO.`order` = $order ");
+                . " AND AO.`order` = $order");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -1258,5 +1258,25 @@ class M_Dispatch extends VS_Model {
                 ->get();
 
         return $result->result();
+    }
+
+    function save_maximun(){
+        $query = ("SELECT * FROM dis_max_weight");
+        $result = $this->db->query($query);
+        if(count($result->result()) >0 ){
+            $dt = $result->row();
+            $data = array(
+                "weight" => $this->weight
+            );
+            $this->db->where("id_max_weight",$dt->id_max_weight);
+            $rs = $this->db->update("dis_max_weight",$data);
+        }else{
+            $data = array(
+                "weight"=>$this->weight
+            );
+            $this->db->insert("dis_max_weight",$data);
+            $rs = $this->db->insert_id();
+        }
+        return $rs;
     }
 }

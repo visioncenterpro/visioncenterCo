@@ -1077,6 +1077,11 @@ class C_Dispatch extends Controller {
         $data = $this->M_Dispatch->response_request_weight();
         echo json_encode($data);
     }
+
+    function save_maximun(){
+        $data = $this->M_Dispatch->save_maximun();
+        echo json_encode($data);
+    }
     
     function PdfRequest($id_request_sd){
         $data['head'] = $this->M_Dispatch->InfoRequestSD($id_request_sd);

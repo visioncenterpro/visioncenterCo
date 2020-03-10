@@ -7,6 +7,9 @@
                 </div>
             </div>
             <div class="box-body">
+                <div class="form-group">
+                    <button class="btn btn-primary" title="Maximo peso autorizado" onclick="modal_maximun()">Peso maximo autorizado</button>
+                </div>
                 <table id="table_request" class="table table-bordered table-striped table-condensed">
                     <thead>
                         <tr>
@@ -56,6 +59,28 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_maximun">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Detalle solicitud</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label> Peso maximo permitido (Kg)</label>
+                    <input type="number" class="form-control" id="mx_w" min="1"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left">Cerrar</button>
+                <button type="button" class="btn btn-primary pull-right" onclick="save_maximun()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(function () {
         $("#table_request").DataTable();
@@ -79,5 +104,31 @@
         }, 'json').fail(function (error) {
             swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
+    }
+
+    function modal_maximun(){
+        $("#modal_maximun").modal("show");
+    }
+
+    function save_maximun(){
+        swal({
+            title: 'Confirma actualizar peso maximo permitido?',
+            text: "",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Aceptar!'
+        }).then((result) => {
+            if (result) {
+                var weight = $("#mx_w").val();
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/save_maximun", {weight:weight}, function (data) {
+                    swal({title: '', text: '', type: 'success'});
+                    $("#modal_maximun").modal("hide");
+                }, 'json').fail(function (error) {
+                    swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                });
+            }
+        }).catch(swal.noop)
     }
 </script>

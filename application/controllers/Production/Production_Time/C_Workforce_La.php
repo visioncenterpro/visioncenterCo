@@ -31,15 +31,15 @@ class C_Workforce_La extends Controller {
         $this->load->view('Template/V_Footer2', $Footer);
     }
     
-      function date_register(){
+    function date_register(){
         $data['register'] = $this->M_Workforce->ListRegisterWhere();
         $data['hour'] = $this->M_Workforce->ListHours();
         $data['table'] = $this->load->view('Production/Production_Time/V_Table_Workforce', $data, true); 
        
         echo json_encode($data);
-        
     }
-     function Creaworkforce() {
+
+    function Creaworkforce() {
         $result = $this->M_Workforce->Creaworkforce();
         echo json_encode(array("res" => $result));
     }
