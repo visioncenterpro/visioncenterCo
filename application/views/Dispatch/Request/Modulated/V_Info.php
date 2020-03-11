@@ -465,7 +465,6 @@
             success: function(data){
                 var dt = JSON.parse(data);
                 if (dt.res == "OK") {
-                    console.log(dt);
                     $("#quantity_packages").val(dt.num_packets);
                     $("#weight").val(dt.total_weight_modulate);
                     $("#weight_supplies").val(dt.total_weight_supplies);
@@ -574,22 +573,30 @@
                     if (result) {
                         var id_vehicle = $("#vehicle").val();
                         var weight_i = $("#weightI").val();
-                        $.post("<?= base_url() ?>Dispatch/C_Dispatch/Create_Request_weight", {request:<?= $request->id_request_sd ?>,id_vehicle:id_vehicle,weight_i:weight_i}, function (data) {
-                            if(data == "already"){
-                                swal({title: 'Atención', text: 'Ya se envio una solicitud de cambio de peso, espere la respuesta del administrador', type: 'warning'});
-                            }else{
-                                swal({title: '', text: '', type: 'success'});
-                                location.reload();
-                            }
-                                 
-                        }, 'json').fail(function (error) {
-                            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
-                        });
-                        swal({
-                            title: 'Solicitud enviada',
-                            text: "",
-                            type: 'success'
-                        });
+                        var total = parseFloat($("#max_weight").val()) + parseFloat(<?= $max_weight->weight ?>);
+                        if(weight_i > total){
+                            swal({
+                                title: 'Atención',
+                                text: "El peso integral supera el sobrepeso maximo permitido ("+<?= $max_weight->weight ?>+" Kg)",
+                                type: 'error'
+                            });
+                        }else{
+                            $.post("<?= base_url() ?>Dispatch/C_Dispatch/Create_Request_weight", {request:<?= $request->id_request_sd ?>,id_vehicle:id_vehicle,weight_i:weight_i}, function (data) {
+                                if(data == "already"){
+                                    swal({title: 'Atención', text: 'Ya se envio una solicitud de cambio de peso, espere la respuesta del administrador', type: 'warning'});
+                                }else{
+                                    swal({title: '', text: '', type: 'success'});
+                                    location.reload();
+                                }
+                            }, 'json').fail(function (error) {
+                                swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                            });
+                            swal({
+                                title: 'Solicitud enviada',
+                                text: "",
+                                type: 'success'
+                            });
+                        }
                     }
                 });
             }else{

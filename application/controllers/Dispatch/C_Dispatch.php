@@ -87,6 +87,7 @@ class C_Dispatch extends Controller {
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS, ICHECK_CSS_BLUE);
         $this->load->view('Template/V_Header', $Header);
         
+        $data['max_weight'] = $this->M_Dispatch->get_max_weight();
         $data['request'] = $this->M_Dispatch->InfoRequestSD($id);
         $data['vehicles'] = $this->M_Dispatch->get_vehicles();
         $data['request_weight'] = $this->M_Dispatch->get_Request_weightxid_request($id);

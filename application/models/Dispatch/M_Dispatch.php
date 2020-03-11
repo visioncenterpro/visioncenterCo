@@ -1279,4 +1279,10 @@ class M_Dispatch extends VS_Model {
         }
         return $rs;
     }
+
+    function get_max_weight(){
+        $query = ("SELECT * FROM dis_max_weight");
+        $result = $this->db->query($query);
+        return $result->row();
+    }
 }
