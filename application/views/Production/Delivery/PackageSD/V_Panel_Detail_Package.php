@@ -212,8 +212,9 @@
             if(element.id == furniture){
                 var pack = $("#p-"+furniture+"-"+cont).val();
                 var sum = element.value;
+                var id_order_package = $("#id_order_package_"+cont).val();
                 if(sum > 0){
-                    $.post("<?= base_url() ?>Production/Delivery/C_Delivery/Add_furniture", {delivery:<?= $delivery ?>, order:<?= $order ?>, furniture:furniture, pack:pack, sum:sum}, function (data) {
+                    $.post("<?= base_url() ?>Production/Delivery/C_Delivery/Add_furniture", {delivery:<?= $delivery ?>, order:<?= $order ?>, furniture:furniture, pack:pack, sum:sum, id_order_package:id_order_package}, function (data) {
                         var e = data;
                         add_furniture_table(e);
                     }, 'json');

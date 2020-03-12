@@ -77,7 +77,6 @@
                         </div>
                     </div>
                     <?php //foreach ($request_weight as $key => $value) {
-                        print_r($vali_request_w);
                         if(count($request_weight) > 0 && $request_weight->id_status != "1"){ ?>
                         <div class="col-md-6">
                             <div class="form-group">
@@ -577,7 +576,7 @@
                         if(weight_i > total){
                             swal({
                                 title: 'Atención',
-                                text: "El peso integral supera el sobrepeso maximo permitido ("+<?= $max_weight->weight ?>+" Kg)",
+                                text: "El peso integral ("+weight_i+" Kg) supera el sobrepeso maximo permitido ("+<?= $max_weight->weight ?>+" Kg). Peso maximo camión: "+$("#max_weight").val()+" Kg + sobrepeso maximo permitido "+<?= $max_weight->weight ?>+" Kg ("+total+" Kg)",
                                 type: 'error'
                             });
                         }else{

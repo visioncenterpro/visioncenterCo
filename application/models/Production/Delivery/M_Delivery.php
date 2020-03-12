@@ -1552,17 +1552,16 @@ class M_Delivery extends VS_Model {
     function add_furniture(){
         $reg = $this->db->select("*")
                 ->from("access_order_package o")
-                ->where("o.`order`", $this->order)
-                ->where("o.number_pack", $this->pack)
-                ->where("o.id_forniture", $this->furniture)
+                //->where("o.`order`", $this->order)
+                //->where("o.number_pack", $this->pack)
+                //->where("o.id_forniture", $this->furniture)
+                ->where("o.id_order_package", $this->id_order_package)
                 ->get();
 
         $rowDelivery = $reg->row();
         
         $data = array("delivered_quantity" => $this->sum);
-        $this->db->where("order", $this->order);
-        $this->db->where("number_pack", $this->pack);
-        $this->db->where("id_forniture", $this->furniture);
+        $this->db->where("id_order_package", $this->id_order_package);
         $rs = $this->db->update("access_order_package", $data);
         
         $data = array("id_delivery_package" => $this->delivery, "id_order_package" => $rowDelivery->id_order_package, "quantity" => $this->sum);

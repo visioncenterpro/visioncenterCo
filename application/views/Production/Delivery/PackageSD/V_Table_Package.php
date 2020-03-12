@@ -45,6 +45,8 @@
                         <?= $t->saldo ?>
                         <input type="hidden" id="<?=$t->id_forniture?>" value="<?=$t->saldo?>">
                         <input type="hidden" id="p-<?=$t->id_forniture?>-<?=$t->number_pack?>" value="<?=$t->number_pack?>">
+                        <input type="hidden" id="id_order_package_<?=$rows?>" value="<?=$t->id_order_package?>">
+                        <input type="hidden" id="type_<?=$t->id_forniture?>" value="<?=$t->code?>">
                     </td>
                 </tr>
             <?php endforeach; ?>
