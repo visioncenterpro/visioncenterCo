@@ -1,4 +1,16 @@
 <div class=" table-wrapper-scroll-y">
+    <div class="form-group">
+        <label>Insumos</label>
+        <div class="form-inline">
+            <select class="form-control" id="supplies_d">
+                <?php foreach ($itemsS as $key => $value) { ?>
+                    <option value='{"id_order_package":"<?= $value->id_order_package?>","order":"<?= $value->order?>"}'>Paquete <?= $value->number_pack." - ".$value->order ?></option>
+                <?php } ?>
+            </select>
+            <button class="btn btn-danger" id="btn-delete" title="Reversar paquete del despacho" onclick="delete_supplies_group()"><span class="fa fa-trash" aria-hidden="true"></span></button>
+            <!-- <button class="btn btn-danger" id="btn-delete" title="Reversar paquete hasta produccion" onclick="delete_supplies_group2()"><span class="fa fa-forward" aria-hidden="true"></span></button> -->
+        </div>
+    </div>
     <table id="table_container_supplies" class="table table-bordered table-striped table-condensed ">
         <thead>
             <tr>

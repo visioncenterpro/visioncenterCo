@@ -77,7 +77,7 @@
                         </div>
                     </div>
                     <?php //foreach ($request_weight as $key => $value) {
-                        if(count($request_weight) > 0 && $request_weight->id_status != "1"){ ?>
+                        if($request_weight != NULL  && $request_weight->id_status != "1"){ ?>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Observación solicitud peso</label>
@@ -89,7 +89,7 @@
 
                     <?php //foreach ($request_weight as $key => $value) {
                         
-                        if(count($request_weight) > 0 && $request_weight->id_status == "1"){ ?>
+                        if($request_weight != NULL && $request_weight->id_status == "1"){ ?>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Observación solicitud peso</label>
@@ -245,14 +245,37 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_goBackP">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Revertir Mueble hasta producción</h4>
+            </div>
+            <div class="modal-body" id="content-goBackP">
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary pull-right" onclick="delete_item_group2()">Reversar</button>
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     
     $(function () {
-//        TableData("table_container", false, false, false);
+    //        TableData("table_container", false, false, false);
         InitializeCheck();
 
         if (<?= $request->status ?> == 17  || <?= $vali_request_w ?> == 1) {
             Lock();
+        }
+
+        if (<?= $request->updated_subdetail ?> == 2) {
+            $("#btn-aprob").attr("disabled", true);
         }
 
         if ($("#test").addEventListener) {
@@ -350,11 +373,11 @@
         });
     }
 
-    function modal_goBack(type,id_order_package,id_delivery_package_detail){
+    function modal_goBack(type,id_order_package,id_delivery_package_detail,id_request_detail){
         $.ajax({
             url:  "<?= base_url() ?>Dispatch/C_Dispatch/get_data_goBack",
             type: 'POST',
-            data: {type:type,id_order_package:id_order_package,id_delivery_package_detail:id_delivery_package_detail},
+            data: {type:type,id_order_package:id_order_package,id_delivery_package_detail:id_delivery_package_detail,id_request_detail:id_request_detail},
             success: function(data){
                 dato = JSON.parse(data);
                 $("#content-goBack").html(dato.content);
@@ -364,31 +387,67 @@
     }
 
     function save_goBack(){
-        var cnt = $("#cnt").val();
-        var observation = $("#observation").val();
-        var id_order_package = $("#id_order_package").val();
-        var number_pack = $("#number_pack_back").val();
-        var order = $("#order_gp").val();
-        var id_delivery_detail = $("#id_delivery_detailFF").val();
 
-        var arr_modulate = document.querySelectorAll("#quantity_h"); //remissions
-        var total_modulate = 0;
-        arr_modulate.forEach(function(element){
-            total_modulate = parseInt(total_modulate) + parseInt(element.value);
-        });
-        var pack_supplies = $("#packs_supplies").val();
-        var quantity_packages = (parseInt(pack_supplies) + parseInt(total_modulate)) - parseInt(cnt);
+        swal({
+            title: 'Atención',
+            text: "Desea revertir paquetes de esta solicitud?",
+            type: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si'
+        }).then((result) => {
+            if (result) {
+                var type2 = $("#type").val();
 
-        $.ajax({
-            url:  "<?= base_url() ?>Dispatch/C_Dispatch/goBack_Package",
-            type: 'POST',
-            data: {order:order,cnt:cnt,observation:observation,id_order_package:id_order_package,number_pack:number_pack,quantity_packages:quantity_packages,id_request_sd:<?=$request->id_request_sd?>,id_delivery_detail:id_delivery_detail},
-            success: function(data){
-                dato = JSON.parse(data);
-                location.reload();
-                console.log(dato);
+                if (type2 == "M") {
+                    var cnt = $("#cnt").val();
+                    var observation = $("#observation").val();
+                    var id_order_package = $("#id_order_package").val();
+                    var number_pack = $("#number_pack_back").val();
+                    var order = $("#order_gp").val();
+                    var id_delivery_detail = $("#id_delivery_detailFF").val();
+                    
+
+                    var arr_modulate = document.querySelectorAll("#quantity_h"); //remissions
+                    var total_modulate = 0;
+                    arr_modulate.forEach(function(element){
+                        total_modulate = parseInt(total_modulate) + parseInt(element.value);
+                    });
+                    var pack_supplies = $("#packs_supplies").val();
+                    var quantity_packages = (parseInt(pack_supplies) + parseInt(total_modulate)) - parseInt(cnt);
+
+                    var type = 0;
+                    if (<?= $request->status ?> == 17 ) {
+                        type = 1
+                    }
+                    var id_request_detail = $("#id_request_sd_detail").val();
+
+                    $.ajax({
+                        url:  "<?= base_url() ?>Dispatch/C_Dispatch/goBack_Package",
+                        type: 'POST',
+                        data: {order:order,cnt:cnt,observation:observation,id_order_package:id_order_package,number_pack:number_pack,quantity_packages:quantity_packages,id_request_sd:<?=$request->id_request_sd?>,id_delivery_detail:id_delivery_detail,type:type,id_request_detail:id_request_detail,type2:type2},
+                        success: function(data){
+                            dato = JSON.parse(data);
+                            location.reload();
+                        }
+                    });
+                }else{
+                    var request_sd_detail = $("#request_sd_detail").val();
+                    var observation = $("#observation").val();
+                    var order = $("#order_gs").val();
+                    $.ajax({
+                        url:  "<?= base_url() ?>Dispatch/C_Dispatch/goBack_Package_Supplies",
+                        type: 'POST',
+                        data: {request_sd_detail:request_sd_detail, order:order, observation:observation},
+                        success: function(data){
+                            dato = JSON.parse(data);
+                            location.reload();
+                        }
+                    });
+                }
             }
-        });
+        });   
     }
     
     // Created Ivan Contreras 27/03/2019
@@ -429,13 +488,14 @@
             pack_arr.push(element.value);
         }, this);
         
+        var id_delivery_detail = $("#id_detail-"+order+"-"+furniture).val();
         var count = 0;
         available.forEach(function(element) {
             if(element.value > 0){
                 $.ajax({
                     url:  "<?= base_url() ?>Dispatch/C_Dispatch/AddItemGroup",
                     type: 'POST',
-                    data: {id_forniture:furniture,order:order,type:type,request:<?=$request->id_request_sd?>,weight:weight_arr[count],quantity:element.value,id_order_package:order_package_arr[count],name:name_arr[count],pack:pack_arr[count]},
+                    data: {id_forniture:furniture,order:order,type:type,request:<?=$request->id_request_sd?>,weight:weight_arr[count],quantity:element.value,id_order_package:order_package_arr[count],name:name_arr[count],pack:pack_arr[count],id_delivery_detail:id_delivery_detail},
                     success: function(data){
                         var dt = JSON.parse(data);
                         if (dt.res == "OK") {
@@ -639,11 +699,13 @@
     }
 
     function Lock() {
-        $("#lock").addClass("fa-lock").removeClass("fa-unlock");
-        $(".btn-danger , #btn-aprob, #btn-add").attr("disabled", true);
-        $('input').iCheck('disable');
-        $(".input-sm").attr("disabled", true);
-        $("select").attr("disabled", true);
+        //$("#lock").addClass("fa-lock").removeClass("fa-unlock");
+        //$(".btn-danger , #btn-aprob, #btn-add").attr("disabled", true);
+        $("#btn-aprob").attr("disabled", true);
+        //$('input').iCheck('disable');
+        //$(".input-sm").attr("disabled", true);
+        $("#vehicle").attr("disabled", true);
+        //$("select").attr("disabled", true);
     }
     
     function DeleteAll(type){
@@ -657,7 +719,11 @@
             confirmButtonText: 'Eliminar!'
         }).then((result) => {
             if (result) {
-                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeleteAllPackRequestSD", {request:<?= $request->id_request_sd ?>, type: type}, function (data) {
+                var type2 = 0;
+                if (<?= $request->status ?> == 17) {
+                    type2 = 1;
+                }
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeleteAllPackRequestSD", {request:<?= $request->id_request_sd ?>, type: type,type2:type2}, function (data) {
                     if (data.res == "OK") {
                         $("#quantity_packages").val(data.num_packets);
                         $("#weight").val(data.total_weight_modulate);
@@ -665,6 +731,7 @@
                         $("#weightI").val((data.total_weight_modulate + (data.total_weight_modulate *<?= PORCENT_WEIGHT ?>)) + data.total_weight_supplies);      
                         $("#tab-body").html(data.tabs);
                         InitializeCheck();
+                        swal({title: '', text: '', type: 'success'});
                     } else {
                         swal({title: 'Error!', text: data, type: 'error'});
                     }
@@ -676,19 +743,36 @@
     }
     
     function DeleteSupplies(id_request_detail,id_order_package,order){
-        $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeleteSuppliesRequestSD", {request:<?= $request->id_request_sd ?>, id_request_detail:id_request_detail,id_order_package:id_order_package,order:order}, function (data) {
-            if (data.res == "OK") {
-                $("#quantity_packages").val(data.num_packets);
-                $("#weight").val(data.total_weight_modulate);
-                $("#weight_supplies").val(data.total_weight_supplies);
-                $("#weightI").val((data.total_weight_modulate + (data.total_weight_modulate *<?= PORCENT_WEIGHT ?>)) + data.total_weight_supplies);      
-                $("#tab-body").html(data.tabs);
-                InitializeCheck();
-            } else {
-                swal({title: 'Error!', text: data, type: 'error'});
+        swal({
+            title: 'Atención',
+            text: "Desea revertir este paquete de la solicitud?",
+            type: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si'
+        }).then((result) => {
+            if (result) {
+                var type = 0;
+                if (<?= $request->status ?> == 17) {
+                    type = 1;
+                }
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeleteSuppliesRequestSD", {request:<?= $request->id_request_sd ?>, id_request_detail:id_request_detail,id_order_package:id_order_package,order:order,type:type}, function (data) {
+                    if (data.res == "OK") {
+                        $("#quantity_packages").val(data.num_packets);
+                        $("#weight").val(data.total_weight_modulate);
+                        $("#weight_supplies").val(data.total_weight_supplies);
+                        $("#weightI").val((data.total_weight_modulate + (data.total_weight_modulate *<?= PORCENT_WEIGHT ?>)) + data.total_weight_supplies);      
+                        $("#tab-body").html(data.tabs);
+                        InitializeCheck();
+                        swal({title: '', text: '', type: 'success'});
+                    } else {
+                        swal({title: 'Error!', text: data, type: 'error'});
+                    }
+                }, 'json').fail(function (error) {
+                    swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                });
             }
-        }, 'json').fail(function (error) {
-            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
         });
     }
     
@@ -703,7 +787,11 @@
             confirmButtonText: 'Eliminar!'
         }).then((result) => {
             if (result) {
-                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeleteAllSuppliesRequestSD", {request:<?= $request->id_request_sd ?>, type: type}, function (data) {
+                var type2 = 0;
+                if (<?= $request->status ?> == 17) {
+                    type2 = 1;
+                }
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeleteAllSuppliesRequestSD", {request:<?= $request->id_request_sd ?>, type: type, type2:type2}, function (data) {
                     if (data.res == "OK") {
                         $("#tab-body").html(data.tabs);
                         InitializeCheck();
@@ -728,7 +816,11 @@
             confirmButtonText: 'Eliminar!'
         }).then((result) => {
             if (result) {
-                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeletePackRequestSD", {id_request_detail: id_request_detail, request:<?= $request->id_request_sd ?>, type: type}, function (data) {
+                var type2 = 0;
+                if (<?= $request->status ?> == 17) {
+                    type2 = 1;
+                }
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeletePackRequestSD", {id_request_detail: id_request_detail, request:<?= $request->id_request_sd ?>, type: type, type2:type2}, function (data) {
                     if (data.res == "OK") {
                         $("#quantity_packages").val(data.num_packets);
                         $("#weight").val(data.total_weight_modulate);
@@ -810,12 +902,21 @@
         });
         var pack_supplies = $("#packs_supplies").val();
         var quantity_packages = parseInt(pack_supplies) + parseInt(total_modulate);
+        var type = 0;
 
-        $.post("<?= base_url() ?>Dispatch/C_Dispatch/UpdateRequestSD2", {request:<?= $request->id_request_sd ?>, driver:driver, value:value, vehicle:vehicle,quantity_packages:quantity_packages}, function (data) {
-            swal({title: 'Exito', text: 'Cambios Guardados', type: 'success'});
-        }, 'json').fail(function (error) {
-            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
-        });
+        if((<?= $request->status ?> == 17) && (Math.round($("#weightI").val()) > $("#max_weight").val())){
+            swal({title: 'Atención', text: 'El peso integral supera la capacidad del vehiculo', type: 'error'});
+        }else{
+            if (<?= $request->status ?> == 17) {
+                type = 1;
+            }
+            $.post("<?= base_url() ?>Dispatch/C_Dispatch/UpdateRequestSD2", {request:<?= $request->id_request_sd ?>, driver:driver, value:value, vehicle:vehicle,quantity_packages:quantity_packages,type:type}, function (data) {
+                swal({title: 'Exito', text: 'Cambios Guardados', type: 'success'});
+            }, 'json').fail(function (error) {
+                swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+            });
+        }
+
     }
 
     function AddPackSupplies(id_order_package_supplies) {
@@ -871,7 +972,8 @@
                 var id_forniture = $("#tr-"+id_order_package).attr("forniture");
                 var weight = parseFloat($("#t-weight").text());
                 var type = 'Modulado';
-                $.post("<?= base_url() ?>Dispatch/C_Dispatch/AddPackSDToRequest", {order: order, id_order_package: id_order_package,id_forniture:id_forniture, quantity: quantity, request:<?= $request->id_request_sd ?>, name: name, pack: pack, weight: weight, type: type}, function (data) {
+                var id_delivery_detail = $("#id_detail-"+order+"-"+id_forniture).val();
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/AddPackSDToRequest", {order: order, id_order_package: id_order_package,id_forniture:id_forniture, quantity: quantity, request:<?= $request->id_request_sd ?>, name: name, pack: pack, weight: weight, type: type, id_delivery_detail:id_delivery_detail}, function (data) {
                     if (data.res == "OK") {
                         $("#quantity_packages").val(data.num_packets);
                         $("#weight").val(data.total_weight_modulate);
@@ -889,6 +991,7 @@
                             $("#cont-quantity-" + id_order_package).text(parseInt($("#cont-quantity-" + id_order_package).text()) + parseInt(quantity));
                             $("#cont-weight-" + id_order_package).text(parseFloat($("#cont-weight-" + id_order_package).text()) + parseFloat(weight * quantity));
                         }
+                        location.reload();
                         $('#modal-split').modal('hide');
                     } else {
                         swal({title: 'Error!', text: data.res, type: 'error'});
@@ -903,6 +1006,128 @@
             $('#modal-split').modal('hide');
             swal({title: 'Error!', text: "No hay saldo disponible", type: 'error'});
         }
+    }
+
+    function delete_item_group(){
+        swal({
+            title: 'Esta seguro de eliminar todos los items del contenedor?',
+            text: "",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Eliminar!'
+        }).then((result) => {
+            if (result) {
+                var json = JSON.parse($("#furniture_d").val());
+                var id_forniture = json.id_forniture;
+                var order = json.order;
+                var type = 0;
+                if (<?= $request->status ?> == 17) {
+                    type = 1;
+                }
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeletePackRequestSDGroup", {request:<?= $request->id_request_sd ?>, id_forniture:id_forniture,type:type,order:order}, function (data) {
+                    console.log(data);
+                    if (data.res == "OK") {
+                        $("#quantity_packages").val(data.num_packets);
+                        $("#weight").val(data.total_weight_modulate);
+                        $("#weightI").val((data.total_weight_modulate + (data.total_weight_modulate *<?= PORCENT_WEIGHT ?>)) + data.total_weight_supplies);
+                        $("#tab-body").html(data.tabs);
+                        InitializeCheck();
+                    } else {
+                        swal({title: 'Error!', text: data, type: 'error'});
+                    }
+                }, 'json').fail(function (error) {
+                    swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                });
+            }
+        }).catch(swal.noop)
+    }
+
+    function delete_item_group2(){
+        swal({
+            title: 'Esta seguro de reversar todos los items hasta producción?',
+            text: "",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Eliminar!'
+        }).then((result) => {
+            if (result) {
+                var json = JSON.parse($("#furniture_d").val());
+                var id_forniture = json.id_forniture;
+                var order = json.order;
+                var type = 0;
+                if (<?= $request->status ?> == 17) {
+                    type = 1;
+                }
+                var observation = $("#observationP").val();
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeletePackRequestSDGroup2", {request:<?= $request->id_request_sd ?>, id_forniture:id_forniture,type:type,order:order,observation:observation}, function (data) {
+                    if (data.res == "OK") {
+                        $("#quantity_packages").val(data.num_packets);
+                        $("#weight").val(data.total_weight_modulate);
+                        $("#weightI").val((data.total_weight_modulate + (data.total_weight_modulate *<?= PORCENT_WEIGHT ?>)) + data.total_weight_supplies);
+                        $("#tab-body").html(data.tabs);
+                        InitializeCheck();
+                        $("#modal_goBackP").modal("hide");
+                        swal({title: '', text: '', type: 'success'});
+                    } else {
+                        swal({title: 'Error!', text: data, type: 'error'});
+                    }
+                }, 'json').fail(function (error) {
+                    swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                });
+            }
+        }).catch(swal.noop)
+    }
+
+    function modal_goBackP(){
+        var json = JSON.parse($("#furniture_d").val());
+        var id_forniture = json.id_forniture;
+        var order = json.order;
+        $.post("<?= base_url() ?>Dispatch/C_Dispatch/get_data_goBackP", {request:<?= $request->id_request_sd ?>, id_forniture:id_forniture, order:order}, function (data) {
+            $("#content-goBackP").html(data.content);
+            $("#modal_goBackP").modal("show");
+        }, 'json').fail(function (error) {
+            swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+        });
+    }
+
+    function delete_supplies_group(){
+        swal({
+            title: 'Esta seguro de eliminar todos los items del contenedor?',
+            text: "",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Eliminar!'
+        }).then((result) => {
+            if (result) {
+                var json = JSON.parse($("#supplies_d").val());
+                var id_order_package_supplies = json.id_order_package;
+                var order = json.order;
+                var type = 0;
+                if (<?= $request->status ?> == 17) {
+                    type = 1;
+                }
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/DeleteSuppliesRequestSDGroup", {request:<?= $request->id_request_sd ?>, id_order_package_supplies:id_order_package_supplies,type:type,order:order}, function (data) {
+                    console.log(data);
+                    if (data.res == "OK") {
+                        $("#quantity_packages").val(data.num_packets);
+                        $("#weight").val(data.total_weight_modulate);
+                        $("#weightI").val((data.total_weight_modulate + (data.total_weight_modulate *<?= PORCENT_WEIGHT ?>)) + data.total_weight_supplies);
+                        $("#tab-body").html(data.tabs);
+                        InitializeCheck();
+                    } else {
+                        swal({title: 'Error!', text: data, type: 'error'});
+                    }
+                }, 'json').fail(function (error) {
+                    swal({title: 'Error Toma un screem y envialo a sistemas!', text: error.responseText, type: 'error'});
+                });
+            }
+        }).catch(swal.noop)   
     }
 
     $(document).bind("click", function (event) {

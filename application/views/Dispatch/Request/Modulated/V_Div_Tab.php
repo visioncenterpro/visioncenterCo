@@ -79,7 +79,7 @@
                                 <option value="<?=$f->id_order_package_supplies?>">Paquete  <?=$f->number_pack?></option>
                             <?php endforeach; ?>
                         </select>
-                        <?php if(count($suppliesP) > 0){ ?>
+                        <?php  if(count($suppliesP) > 0){ ?>
                             <button class="btn btn-primary" id="btn-add" onclick="add_item_group_supplies('<?=$order?>','Insumos')"><span class="fa fa-plus" aria-hidden="true"></span></button>
                         <?php }else{ ?>
                             <button class="btn btn-primary" id="btn-add" onclick="add_item_group_supplies('<?=$order?>','Insumos')" disabled="disbled"><span class="fa fa-plus" aria-hidden="true"></span></button>

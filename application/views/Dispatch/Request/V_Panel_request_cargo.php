@@ -3,13 +3,14 @@
         <div class="box">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-truck "></i> Control de cargue Despachos</h3>
+                <button class="btn btn-default" onclick="create_new()"><i class="fa fa-plus"></i> Crear nuevo</button>
             </div>
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <button class="btn btn-primary" onclick="modal_add()">Agregar Datos</button>
-                        </div>
+                        </div> -->
                         <?= $table ?>
                     </div>
                 </div>
@@ -146,4 +147,26 @@
         });
     }
 
+    function detail(id_request_cargue){
+        window.location = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo_detail/'+id_request_cargue;
+    }
+
+    function create_new(){
+        swal({
+            title: 'Desea crear un nuevo registro?',
+            text: "",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Aceptar!'
+        }).then((result) => {
+            if (result) {
+                $.post("<?= base_url() ?>Dispatch/C_Dispatch/create_data_cargo", {}, function (data) {
+                    window.location = '<?= base_url() ?>Dispatch/C_Dispatch/request_cargo_detail/'+data;
+                }, 'json').fail(function (error) {});
+            }
+        }).catch(swal.noop);
+    }
+    
 </script>

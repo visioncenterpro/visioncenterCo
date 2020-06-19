@@ -165,30 +165,58 @@ class M_Dispatch extends VS_Model {
     }
 
     function get_data_goBack(){
-        $query = ("SELECT * FROM access_order_package A INNER JOIN access_forniture AF ON
-        A.id_forniture = AF.id_forniture INNER JOIN access_type_package AT ON A.type_package = AT.id_type_package WHERE A.id_order_package = $this->id_order_package");
+        $query = ("SELECT A.*,AF.*,ATP.code FROM access_order_package A INNER JOIN access_forniture AF ON
+        A.id_forniture = AF.id_forniture INNER JOIN access_type_package ATP ON A.type_package = ATP.id_type_package WHERE A.id_order_package = $this->id_order_package");
+        $result = $this->db->query($query);
+        //echo $this->db->last_query();
+        return $result->result();
+    }
+
+    function get_data_goBackP($id_forniture){
+        $query = ("SELECT * FROM access_forniture WHERE id_forniture = $id_forniture");
         $result = $this->db->query($query);
         return $result->result();
     }
 
     function get_data_goBackSupplies(){
-        $query = ("SELECT * FROM access_order_package_supplies A WHERE A.id_order_package_supplies = $this->id_order_package");
+        $query = ("SELECT A.*,AD.*,P.*,DD.id_request_detail FROM `access_order_package_supplies` A INNER JOIN `access_order_package_supplies_detail` AD ON A.`id_order_package_supplies` = AD.`access_order_package_supplies` INNER JOIN pro_supplies P ON P.`id_supplies` = AD.`id_supplies` INNER JOIN dis_request_sd_detail DD ON DD.`id_order_package` = A.`id_order_package_supplies` WHERE A.id_order_package_supplies = $this->id_order_package");
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->result();
     }
 
     function goBack_Package(){
         $this->db->trans_begin();
 
-        for ($i=0; $i < $this->cnt; $i++) {
-            $data = array(
-                "id_request_sd" => '0',
-                "id_status"     => "17", // o 20 preguntar
-                "observation"   => $this->observation
-            );
-            $this->db->where("`order`", $this->order);
-            $this->db->where("id_order_package", $this->id_order_package);
-            $rs = $this->db->update("dis_request_sd_subdetail_package", $data);
+        $get_detail = ("SELECT D.*,A.quantity_packets AS total_p FROM dis_request_sd_detail D INNER JOIN access_order_package A ON D.`id_order_package` = A.`id_order_package` WHERE D.`id_request_detail` = $this->id_request_detail");
+        $resultId = $this->db->query($get_detail);
+        $dataD = $resultId->result();
+
+        foreach ($dataD as $key => $o2) {
+            $result3 = $this->db->select("*")
+            ->from("dis_request_sd_subdetail_package")
+            ->where("id_request_detail", $o2->id_request_detail)
+            ->where("id_request_sd", $o2->id_request_sd)
+            ->where("`order`",$o2->order)
+            ->where("id_forniture",$o2->id_forniture)
+            ->where("type","M")
+            ->get();
+            $weight = $o2->weight / $o2->total_p; //peso unitario
+            $cont = 1;
+            foreach ($result3->result() as $o3){
+                $array = array(
+                    "id_request_detail" => '',
+                    "id_request_sd"     => '',
+                    "pack"              => '',
+                    "id_status"         => '17'
+                );
+                if (number_format($o3->weight_package, 2, '.', '') == number_format($weight, 2, '.', '') && $cont <= $this->cnt && $o3->id_request_sd != '0') {
+                    $this->db->where("id_request_detail_package",$o3->id_request_detail_package);
+                    $this->db->update("dis_request_sd_subdetail_package",$array);
+                    $cont++;
+                }
+            }
+            
         }
 
         $query = ("SELECT * FROM access_order_package WHERE id_order_package = $this->id_order_package");
@@ -197,8 +225,10 @@ class M_Dispatch extends VS_Model {
 
         $data = array(
             "delivered_quantity" => ($data_result->quantity_dispatch - $this->cnt),
-            "quantity_dispatch"  => ($data_result->quantity_dispatch - $this->cnt)
+            "quantity_dispatch"  => ($data_result->quantity_dispatch - $this->cnt),
+            "packets_completed"  => ($data_result->quantity_dispatch - $this->cnt)
         );
+        // echo $data_result->quantity_dispatch."-".$this->cnt;
         $this->db->where("id_order_package", $this->id_order_package);
         $rs2 = $this->db->update("access_order_package", $data);
         //
@@ -215,18 +245,97 @@ class M_Dispatch extends VS_Model {
         $this->db->where("id_request_sd",$this->id_request_sd);
         $this->db->where("id_order_package",$this->id_order_package);
         $rs4 = $this->db->update("dis_request_sd_detail", $data);
+        //if ($this->input->post('type') == '0') {
+            $query2 = ("SELECT * FROM pro_delivery_package_detail WHERE id_delivery_package_detail = $this->id_delivery_detail");
+            $row2 = $this->db->query($query2);
+            $data_result2 = $row2->row();
+            $data = array(
+                "quantity" => ($data_result2->quantity - $this->cnt)
+            );
+            $this->db->where("id_delivery_package_detail",$this->id_delivery_detail);
+            $rs5 = $this->db->update("pro_delivery_package_detail", $data);
 
-
-        $query2 = ("SELECT * FROM pro_delivery_package_detail WHERE id_delivery_package_detail = $this->id_delivery_detail");
-        $row2 = $this->db->query($query2);
-        $data_result2 = $row2->row();
-        $data = array(
-            "quantity" => ($data_result2->quantity - $this->cnt)
-        );
-        $this->db->where("id_delivery_package_detail",$this->id_delivery_detail);
-        $rs5 = $this->db->update("pro_delivery_package_detail", $data);
+            $data = array(
+                //"status" => 16,
+                "observation" => $this->observation
+            );
+            $this->db->where("id_delivery_package",$data_result2->id_delivery_package);
+            $rs5 = $this->db->update("pro_delivery_package", $data);   
+        //}
 
         //print_r($row);
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            return "OK";
+        }
+    }
+
+    function goBack_Package_Supplies(){
+        $this->db->trans_begin();
+
+        $get_detail = ("SELECT * FROM dis_request_sd_detail WHERE id_request_detail = $this->request_sd_detail");
+        $resultId = $this->db->query($get_detail);
+        $dataD = $resultId->result();
+
+        foreach ($dataD as $key => $o2) {
+            $result3 = $this->db->select("*")
+            ->from("dis_request_sd_subdetail_package")
+            ->where("id_request_detail", $o2->id_request_detail)
+            ->where("id_request_sd", $o2->id_request_sd)
+            ->where("`order`",$o2->order)
+            ->where("id_order_package_supplies",$o2->id_order_package)
+            ->where("type","I")
+            ->get();
+            foreach ($result3->result() as $o3){
+                $array = array(
+                    "id_request_detail" => '',
+                    "id_request_sd"     => '',
+                    "pack"              => '',
+                    "id_status"         => '17'
+                );
+               
+                $this->db->where("id_request_detail_package",$o3->id_request_detail_package);
+                $this->db->update("dis_request_sd_subdetail_package",$array);
+            }
+
+            $query = ("SELECT * FROM access_order_package_supplies WHERE id_order_package_supplies = $o2->id_order_package");
+            $result = $this->db->query($query);
+            $data_result = $result->row();
+
+            $data = array(
+                "delivered_quantity" => '0',
+                "quantity_dispatch"  => '0'
+            );
+            $this->db->where("id_order_package_supplies", $data_result->id_order_package_supplies);
+            $rs = $this->db->update("access_order_package_supplies", $data);
+
+            //********************************************************************************************************************//
+
+            $query = ("SELECT * FROM pro_delivery_supplies_detail PD INNER JOIN pro_delivery_supplies P ON PD.id_delivery_supplies = P.id_delivery_supplies WHERE PD.id_order_package_supplies = $data_result->id_order_package_supplies");
+            $result = $this->db->query($query);
+            $data_result = $result->row();
+
+            $data = array(
+                "status" => 16, // no aprobado
+                "observation" => $this->observation 
+            );
+            $this->db->where("id_delivery_supplies", $data_result->id_delivery_supplies);
+            $rs = $this->db->update("pro_delivery_supplies", $data);
+
+            $data = array(
+                "quantity" => '0',
+            );
+            $this->db->where("id_delivery_supplies_detail", $data_result->id_delivery_supplies_detail);
+            $rs = $this->db->update("pro_delivery_supplies_detail", $data);
+
+        }
+
+        $this->db->where("id_request_detail",$this->request_sd_detail);
+        $this->db->delete("dis_request_sd_detail");
 
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();
@@ -304,7 +413,7 @@ class M_Dispatch extends VS_Model {
     }
     
     function InfoRequestSD($id){
-        $result = $this->db->select("s.id_request_sd,s.driver,s.license_plate,s.dispatch_date,s.start_time,s.end_time,s.dispatch_date,ifnull(sum(d.quantity_packets),0) as num_packets,ifnull(sum(if(d.`type` = 'Modulado',d.weight,0)),0)as total_weight_modulate,ifnull(sum(if(d.`type` = 'Insumos',d.weight,0)),0)as total_weight_supplies,s.id_status as status, "
+        $result = $this->db->select("s.id_request_sd,s.driver,s.license_plate,s.dispatch_date,s.start_time,s.end_time,s.dispatch_date,s.updated_subdetail,ifnull(sum(d.quantity_packets),0) as num_packets,ifnull(sum(if(d.`type` = 'Modulado',d.weight,0)),0)as total_weight_modulate,ifnull(sum(if(d.`type` = 'Insumos',d.weight,0)),0)as total_weight_supplies,s.id_status as status, "
                 . " s.id_weight_vehicle, v.max_weight")
                 ->from("dis_request_sd s")
                 ->join("dis_request_sd_detail d","s.id_request_sd = d.id_request_sd","left")
@@ -356,8 +465,8 @@ class M_Dispatch extends VS_Model {
         return $result->result();
     }
 
-    function dis_remissionXclient($client){
-        $query = ("SELECT * FROM dis_remission D WHERE D.`client` LIKE '%".$client."%'");
+    function dis_remissionXclient($client, $id_remission){
+        $query = ("SELECT * FROM dis_remission D WHERE D.`client` LIKE '%".$client."%' AND D.id_remission = $id_remission");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -376,7 +485,7 @@ class M_Dispatch extends VS_Model {
     function LoadContainerSDESP($id,$type){
         $result = $this->db->select("d.*, p.id_delivery_package_detail")
                 ->from("dis_request_sd_detail d")
-                ->join("pro_delivery_package_detail p", " d.id_order_package = p.id_order_package")
+                ->join("pro_delivery_package_detail p", " d.id_delivery_detail = p.id_delivery_package_detail")
                 ->where("d.id_request_sd",$id)
                 ->where("d.type",$type)
                 ->order_by("id_request_detail","asc")
@@ -438,6 +547,127 @@ class M_Dispatch extends VS_Model {
             return "OK";
         }
     }
+
+    function UpdateSubdetailRemissionSupplies($id_request_sd,$id_order_package_supplies,$order){
+        $result3 = $this->db->select("*")
+            ->from("dis_request_sd_subdetail_package")
+            ->where("id_request_sd",$id_request_sd)
+            ->where("id_order_package_supplies",$id_order_package_supplies)
+            ->where("`order`",$order)
+            ->where("type","I")
+            ->get();
+            $cont = 0;
+        foreach ($result3->result() as $o3){
+                
+            $array = array(
+                "id_request_detail" => '0',
+                "id_request_sd"     => '0',
+                "pack"              => ''
+            );
+                $this->db->where("id_request_detail_package",$o3->id_request_detail_package);
+                $this->db->update("dis_request_sd_subdetail_package",$array);
+            $cont++;
+            
+        }
+    }
+
+    function UpdateSubdetailRemission($id_request_sd,$id_forniture,$order){
+        $result3 = $this->db->select("*")
+            ->from("dis_request_sd_subdetail_package")
+            ->where("`order`",$order)
+            ->where("id_forniture",$id_forniture)
+            ->where("id_request_sd",$id_request_sd)
+            ->get();
+
+        //echo $this->db->last_query();
+        foreach ($result3->result() as $o3){
+            $array = array(
+                "id_request_detail" => '0',
+                "id_request_sd"     => '0',
+                "pack"              => ''
+            );
+                $this->db->where("id_request_detail_package",$o3->id_request_detail_package);
+                $this->db->update("dis_request_sd_subdetail_package",$array);
+            
+        }
+    }
+
+    function DeleteSuppliesRequestSDGroup(){
+        $this->db->trans_begin();
+        
+        $result = $this->db->select("*")
+                ->from("dis_request_sd_detail")
+                ->where("id_request_sd",$this->request)
+                ->where("id_order_package",$this->id_order_package_supplies)
+                ->where("`order`",$this->order)
+                ->where("type","Insumos")
+                ->get();
+        
+        $row = $result->row();
+        
+        $data = array(
+            "quantity_dispatch" => "0"
+        );
+        
+        $this->db->where("id_order_package_supplies", $row->id_order_package);
+        $rs = $this->db->update("access_order_package_supplies", $data);
+        
+        
+        //******************************************************************//
+        $this->db->where("id_request_detail",$row->id_request_detail);
+        $this->db->delete("dis_request_sd_detail");
+        
+        
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            return "OK";
+        }
+        
+            
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            return "OK";
+        }
+    }
+
+    function DeletePackRequestSDGroup($id_request_sd,$id_forniture){
+
+        $this->db->trans_begin();
+
+        $query = $this->db->select("*")
+            ->from("dis_request_sd_detail")
+            ->where("id_request_sd",$id_request_sd)
+            ->where("id_forniture",$id_forniture)
+            ->get();
+        foreach ($query->result() as $key => $value) {
+            $this->db->where("id_request_detail",$value->id_request_detail);
+            $this->db->delete("dis_request_sd_detail");
+            
+           
+            $result = $this->db->select("quantity_dispatch")
+                    ->from("access_order_package")
+                    ->where("id_order_package",$value->id_order_package)
+                    ->get();
+            $reg = $result->row();
+            $this->db->where("id_order_package",$value->id_order_package);
+            $this->db->update("access_order_package",array("quantity_dispatch" => "0"));
+        }
+        
+            
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            return "OK";
+        }   
+    }
             
     function DeletePackRequestSD($id_request_detail = false){
         
@@ -451,7 +681,6 @@ class M_Dispatch extends VS_Model {
                 ->from("dis_request_sd_detail")
                 ->where("id_request_detail",$this->id_request_detail)
                 ->get();
-        
         $row = $result->row();
         
         $this->db->where("id_request_detail",$this->id_request_detail);
@@ -485,7 +714,7 @@ class M_Dispatch extends VS_Model {
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();
             return "ERROR ".$this->db->last_query();
-        }else{+
+        }else{
             $this->db->trans_commit();
             return "OK";
         }
@@ -549,9 +778,18 @@ class M_Dispatch extends VS_Model {
                 //echo $this->quantity;
                 if($this->quantity > 0){
                     if($this->type == 'Modulado'){
+                        $dtd = $this->db->select("*")
+                            ->from("view_package_available_for_dispatchsd")
+                            ->where("`order`",$row->order)
+                            ->where("id_order_package",$id_order_package)
+                            ->order_by("balance_dispatch","desc")
+                            ->get();
+                        $dtRow = $dtd->row();
+
                         $this->quantity = $row->balance_dispatch;
                         $data = array(
                             "id_request_sd"=>$this->request,
+                            "id_delivery_detail"=>$dtRow->id_delivery_package_detail,
                             "id_order_package"=>$id_order_package,
                             "quantity_packets"=>$this->quantity,
                             "weight"=>$row->weight * $this->quantity,
@@ -616,6 +854,7 @@ class M_Dispatch extends VS_Model {
             $this->quantity = $reg->quantity_packets + $this->quantity;
             if($this->quantity > 0){
                 $data = array(
+                    "id_delivery_detail" => $this->id_delivery_detail,
                     "quantity_packets"  => $this->quantity,
                     "weight"            => $this->weight*$this->quantity
                 );
@@ -629,6 +868,7 @@ class M_Dispatch extends VS_Model {
             if($this->quantity > 0){
                 $data = array(
                     "id_request_sd"=>$this->request,
+                    "id_delivery_detail" => $this->id_delivery_detail,
                     "id_order_package"=>$this->id_order_package,
                     "quantity_packets"=>$this->quantity,
                     "weight"=>$this->weight*$this->quantity,
@@ -682,6 +922,8 @@ class M_Dispatch extends VS_Model {
     
     function AddItemGroup(){
         
+        
+
         $result = $this->db->select("*")
                 ->from("dis_request_sd_detail")
                 ->where("id_order_package",$this->id_order_package)
@@ -695,19 +937,30 @@ class M_Dispatch extends VS_Model {
             $this->quantity = $this->quantity;
             if($this->quantity > 0){
                 $data = array(
-                    "quantity_packets"=>$this->quantity,
-                    "weight"=>$this->weight,
+                    "id_request_detail" =>  $this->id_delivery_detail,
+                    "quantity_packets"  =>  $this->quantity + $reg->quantity_packets,
+                    "weight"            =>  $this->weight,
                 );
                 $this->db->where("id_request_detail",$reg->id_request_detail);
                 $rs = $this->db->update("dis_request_sd_detail",$data);
                 $this->old_quantity = $reg->quantity_packets;
                 $array["new"] = "FALSE";
                 $array['id'] = $reg->id_request_detail;
+
             }
         }else{
             if($this->quantity > 0){
+                $dtd = $this->db->select("*")
+                    ->from("view_package_available_for_dispatchsd")
+                    ->where("`order`",$this->order)
+                    ->where("id_order_package",$this->id_order_package)
+                    ->order_by("balance_dispatch","desc")
+                    ->get();
+                $dtRow = $dtd->row();
+
                 $data = array(
                     "id_request_sd"=>$this->request,
+                    "id_delivery_detail"=>$dtRow->id_delivery_package_detail,
                     "id_order_package"=>$this->id_order_package,
                     "quantity_packets"=>$this->quantity,
                     "weight"=>$this->weight,
@@ -745,6 +998,69 @@ class M_Dispatch extends VS_Model {
             $array["res"] = "OK";
         }
         return $array;
+    }
+
+    function update_delivery(){
+        $this->db->trans_begin();
+
+        $result = $this->db->select("*")
+                ->from("dis_request_sd_detail")
+                ->where("id_request_sd",$this->request)
+                ->where("`order`",$this->order)
+                ->where("id_forniture",$this->id_forniture)
+                ->get();
+
+        $row = $result->result();
+
+        foreach ($row as $key => $value) {
+            $get_detail = $this->db->select("*")
+                ->from("pro_delivery_package_detail")
+                ->where("id_delivery_package_detail",$value->id_delivery_detail)
+                ->get();
+            $row_detail = $get_detail->row();
+
+            $this->db->where("id_delivery_package_detail",$value->id_delivery_detail);
+            $this->db->update("pro_delivery_package_detail",array("quantity"=>0));
+            $id_delivery_package = $row_detail->id_delivery_package; 
+
+            $data = array(
+                "delivered_quantity" => 0,
+                "quantity_dispatch"  => 0,
+                "packets_completed"  => 0
+            );
+            $this->db->where("id_order_package", $value->id_order_package);
+            $rs2 = $this->db->update("access_order_package", $data);
+            
+        }
+
+        $cnt = 0;
+        $result = $this->db->select("*")
+                ->from("dis_request_sd_detail")
+                ->where("id_request_sd",$this->request)
+                ->get();
+        foreach ($result->result() as $key => $value) {
+            $cnt = $cnt + $value->quantity_packets;
+        }
+        $data = array(
+            "quantity_packages" => $cnt
+        );
+        $this->db->where("id_request_sd",$this->request);
+        $rs3 = $this->db->update("dis_request_sd", $data);
+
+        $data = array(
+            "observation" => $this->observation
+        );
+        $this->db->where("id_delivery_package",$id_delivery_package);
+        $rs3 = $this->db->update("pro_delivery_package", $data);
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return $array['error'] = "ERROR ".$this->db->last_query();
+        }else{
+            $this->db->trans_commit();
+            $array["res"] = "OK";
+            return $array;
+        }
     }
     
     function AddItemGroupSupplies(){
@@ -826,10 +1142,25 @@ class M_Dispatch extends VS_Model {
         }
     }
 
-    function get_data_remission_all(){ // cambiar a 18
+    function get_data_remission_all(){ // cambiar a 18, id_estatus = 1 para evitar que sea llamado varias veces en diferentes solicitudes de cargue
         $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_sd R ON D.id_request_sd = R.id_request_sd WHERE R.id_status = 17 AND D.id_status = 1");
         $result = $this->db->query($query);
         return $result->result();
+    }
+
+    function get_data_remission_allP(){ // cambiar a 18, id_estatus = 1 para evitar que sea llamado varias veces en diferentes solicitudes de cargue
+        $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_sd R ON D.id_request_sd = R.id_request_sd WHERE R.id_status = 17 AND D.id_status = 1 GROUP BY D.id_request_sd");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function create_data_cargo(){
+        $data = array(
+            "observation"       => 'En espera'
+        );
+
+        $this->db->insert("dis_request_cargue",$data);
+        return $this->db->insert_id();
     }
 
     function create_request_cargo(){
@@ -862,25 +1193,27 @@ class M_Dispatch extends VS_Model {
         }
     }
 
-    function create_request_cargo_detail($id_remission,$id_request_cargo,$id_request_sd){
+    function create_request_cargo_detail($id_request_cargo,$id_remission,$id_request_sd){
         $this->db->trans_begin();
 
-        $data = array(
-            "id_request_cargue" => $id_request_cargo,
-            "id_remission"      => $id_remission,
-            "id_request_sd"     => $id_request_sd
-        );
-
-        $this->db->insert("dis_request_cargue_detail",$data);
-        $id = $this->db->insert_id();
-
-
+        $query = ("SELECT * FROM dis_remission WHERE id_request_sd = $id_request_sd");
+        $result = $this->db->query($query);
         $data2 = array(
             "id_status" => '2'
         );
+        foreach ($result->result() as $key => $value) {
+            $this->db->where("id_remission", $value->id_remission);
+            $this->db->update("dis_remission",$data2);
 
-        $this->db->where("id_remission", $id_remission);
-        $this->db->update("dis_remission",$data2);
+             $data = array(
+                "id_request_cargue" => $id_request_cargo,
+                "id_remission"      => $value->id_remission,
+                "id_request_sd"     => $id_request_sd
+            );
+
+            $this->db->insert("dis_request_cargue_detail",$data);
+            $id = $this->db->insert_id();
+        }
 
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();
@@ -891,6 +1224,42 @@ class M_Dispatch extends VS_Model {
         }
     }
 
+    function delete_data_cargo_detail(){
+
+        $query = ("SELECT * FROM dis_remission D INNER JOIN dis_request_cargue_detail DR ON D.id_request_sd = DR.id_request_sd WHERE D.id_request_sd = $this->id_request_sd");
+        $result = $this->db->query($query);
+        $data = array(
+            "id_status" => '1'
+        );
+        foreach ($result->result() as $key => $value) {
+            $this->db->where("id_remission",$value->id_remission);
+            $this->db->update("dis_remission",$data);
+
+            $this->db->where("id_request_cargue_detail",$value->id_request_cargue_detail);
+            $this->db->delete("dis_request_cargue_detail");
+        }
+
+        return true;
+    }
+
+    function delete_request_cargo_detail_all(){
+        $this->db->where("id_request_cargue",$this->id_request_cargo);
+        return $this->db->delete("dis_request_cargue_detail");
+    }
+
+    function update_remission($id_request_sd){// se actualiza a estado 1 iniciado
+        $query = ("SELECT * FROM dis_remission WHERE id_request_sd = $id_request_sd");
+        $result = $this->db->query($query);
+        $data = array(
+            "id_status" => '1'
+        );
+        foreach ($result->result() as $key => $value) {
+            $this->db->where("id_remission",$value->id_remission);
+            $this->db->update("dis_remission",$data);
+        }
+        return true;
+    }
+
     function get_request_cargoXsd($id_request_sd){
         $query = ("SELECT * FROM dis_request_cargue_detail WHERE id_request_sd = $id_request_sd GROUP BY id_request_cargue");
         $result = $this->db->query($query);
@@ -898,7 +1267,7 @@ class M_Dispatch extends VS_Model {
     }
 
     function get_request_cargo($id_request_cargo){
-        $query = ("SELECT * FROM dis_request_cargue WHERE id_request_cargue = $id_request_cargo");
+        $query = ("SELECT * FROM dis_request_cargue D INNER JOIN dis_weight_vehicle DV ON D.id_weight_vehicle = DV.id_weight_vehicle WHERE D.id_request_cargue = $id_request_cargo");
         $result = $this->db->query($query);
         return $result->row();
     }
@@ -906,6 +1275,7 @@ class M_Dispatch extends VS_Model {
     function get_request_cargo_detail($id_request_cargo){
         $query = ("SELECT * FROM dis_request_cargue_detail WHERE id_request_cargue = $id_request_cargo");
         $result = $this->db->query($query);
+        //echo $this->db->last_query();
         return $result->result();
     }
 
@@ -948,7 +1318,7 @@ class M_Dispatch extends VS_Model {
     
     function get_supplies_p($order){
         $query = ("SELECT * FROM access_order_package_supplies A INNER JOIN pro_delivery_supplies_detail P ON "
-                . " A.id_order_package_supplies = P.id_order_package_supplies WHERE A.`order` = $order AND A.quantity_dispatch = 0");
+                . " A.id_order_package_supplies = P.id_order_package_supplies WHERE A.`order` = $order AND A.quantity_dispatch = 0 AND A.delivered_quantity <> 0");
         $result = $this->db->query($query);
         return $result->result();
     }
@@ -977,7 +1347,8 @@ class M_Dispatch extends VS_Model {
             "quantity_packages" => $this->quantity_packages,
             "id_weight_vehicle" => $this->vehicle,
             "modified_by" => $this->session->IdUser,
-            "last_update" => date("Y-m-d H:i:s")
+            "last_update" => date("Y-m-d H:i:s"),
+            "updated_subdetail" => '2'
         );
         $this->db->where("id_request_sd",$this->request);
         $rs = $this->db->update("dis_request_sd",$data);
@@ -988,6 +1359,127 @@ class M_Dispatch extends VS_Model {
             $array = array("res" => $this->db->last_query());
         }
         return $array;
+    }
+
+    function UpdateRequestSD3(){
+        $result2 = $this->db->select("D.*, A.quantity_packets as totalQ")
+            ->from("dis_request_sd_detail D")
+            ->join("access_order_package A","D.id_order_package = A.id_order_package","left")
+            ->where("D.id_request_sd",$this->request)
+            ->get();
+            //echo $this->db->last_query();
+        foreach ($result2->result() as $o2){
+            $result3 = $this->db->select("*")
+            ->from("dis_request_sd_subdetail_package")
+            ->where("`order`",$o2->order)
+            ->where("id_forniture",$o2->id_forniture)
+            ->get();
+            $cont = 0;
+            $weight = 0;
+            if ($o2->type == "Modulado") {
+                $weight = $o2->weight / $o2->totalQ; //peso unitario
+            }
+            foreach ($result3->result() as $o3){
+                if($cont < $o2->quantity_packets && $o3->id_request_detail == '0' && number_format($o3->weight_package, 2, '.', '') == number_format($weight, 2, '.', '')){
+                    $array = array(
+                        "id_request_detail" => $o2->id_request_detail,
+                        "id_request_sd"     => $o2->id_request_sd,
+                        "pack"              => $o2->pack
+                    );
+                    $this->db->where("id_request_detail_package",$o3->id_request_detail_package);
+                    $this->db->update("dis_request_sd_subdetail_package",$array);
+                    $cont++;
+                }
+            }
+
+            if ($o2->type == "Insumos") {
+                $resultI = $this->db->select("*")
+                    ->from("dis_request_sd_subdetail_package")
+                    ->where("`order`",$o2->order)
+                    ->where("id_order_package_supplies",$o2->id_order_package)
+                    ->where("type","I")
+                    ->get();
+                    foreach ($resultI->result() as $key => $value) {
+                        if ($value->id_request_detail == '0') {
+                            $array = array(
+                                "id_request_detail" => $o2->id_request_detail,
+                                "id_request_sd"     => $o2->id_request_sd,
+                                "id_order_package_supplies" => $o2->id_order_package,
+                                "pack"              => $o2->pack
+                            );
+                            $this->db->where("id_request_detail_package",$value->id_request_detail_package);
+                            $this->db->update("dis_request_sd_subdetail_package",$array);
+                        }
+                    }
+            }
+        }
+    }
+
+    function UpdateRequestSD4($id_request_sd){
+        $result = $this->db->select("D.*, A.quantity_packets as totalQ")
+            ->from("dis_request_sd_detail D")
+            ->join("access_order_package A","D.id_order_package = A.id_order_package")
+            ->where("D.id_request_sd",$id_request_sd)
+            ->where("type","Modulado")
+            ->get();
+
+        foreach ($result->result() as $key => $o2) {
+            $result3 = $this->db->select("*")
+            ->from("dis_request_sd_subdetail_package")
+            ->where("id_request_detail", $o2->id_request_detail)
+            ->where("id_request_sd", $o2->id_request_sd)
+            ->where("`order`",$o2->order)
+            ->where("id_forniture",$o2->id_forniture)
+            ->where("type","M")
+            ->get();
+            //echo $this->db->last_query();
+            $weight = $o2->weight / $o2->totalQ; //peso unitario
+            foreach ($result3->result() as $o3){
+                $array = array(
+                    "id_request_detail" => '',
+                    "id_request_sd"     => '',
+                    "pack"              => '',
+                    "id_status"         => '17'
+                );
+                if (number_format($o3->weight_package, 2, '.', '') == number_format($weight, 2, '.', '')) {
+                    $this->db->where("id_request_detail_package",$o3->id_request_detail_package);
+                    $this->db->update("dis_request_sd_subdetail_package",$array);
+                }
+            }
+            
+        }
+    }
+
+    function UpdateRequestSD5($id_request_detail){
+        $result = $this->db->select("D.*, A.quantity_packets as totalQ")
+            ->from("dis_request_sd_detail D")
+            ->join("access_order_package A","D.id_order_package = A.id_order_package")
+            ->where("D.id_request_detail",$id_request_detail)
+            ->get();
+
+        foreach ($result->result() as $key => $o2) {
+            $result3 = $this->db->select("*")
+            ->from("dis_request_sd_subdetail_package")
+            ->where("id_request_detail", $o2->id_request_detail)
+            ->where("id_request_sd", $o2->id_request_sd)
+            ->where("`order`",$o2->order)
+            ->where("id_forniture",$o2->id_forniture)
+            ->where("type","M")
+            ->get();
+            $weight = $o2->weight / $o2->totalQ; //peso unitario
+            foreach ($result3->result() as $o3){
+                $array = array(
+                    "id_request_detail" => '',
+                    "id_request_sd"     => '',
+                    "pack"              => ''
+                );
+                if (number_format($o3->weight_package, 2, '.', '') == number_format($weight, 2, '.', '')){
+                    $this->db->where("id_request_detail_package",$o3->id_request_detail_package);
+                    $this->db->update("dis_request_sd_subdetail_package",$array);
+                }
+            }
+            
+        }
     }
 
     function get_Request_weightxid_request($id_request){
@@ -1130,11 +1622,13 @@ class M_Dispatch extends VS_Model {
             $this->db->where("`order`",$o->order);
             $this->db->update("dis_request_sd_detail",$array);
         
-            $result2 = $this->db->select("*")
-                ->from("dis_request_sd_detail")
-                ->where("`order`",$o->order)
-                ->where("id_request_sd",$this->request)
+            $result2 = $this->db->select("D.*, A.quantity_packets as totalQ")
+                ->from("dis_request_sd_detail D")
+                ->join("access_order_package A","D.id_order_package = A.id_order_package", "left")
+                ->where("D.`order`",$o->order)
+                ->where("D.id_request_sd",$this->request)
                 ->get();
+
             foreach ($result2->result() as $o2){
                 $result3 = $this->db->select("*")
                 ->from("dis_request_sd_subdetail_package")
@@ -1142,8 +1636,9 @@ class M_Dispatch extends VS_Model {
                 ->where("id_forniture",$o2->id_forniture)
                 ->get();
                 $cont = 0;
+                $weight = $o2->weight / $o2->totalQ; //peso unitario 
                 foreach ($result3->result() as $o3){
-                    if($cont < $o2->quantity_packets && $o3->id_request_detail == '0'){
+                    if($cont < $o2->quantity_packets && $o3->id_request_detail == '0' && number_format($o3->weight_package, 2, '.', '') == number_format($weight, 2, '.', '')){
                         $array = array(
                             "id_request_detail" => $o2->id_request_detail,
                             "id_request_sd"     => $o2->id_request_sd,
@@ -1156,14 +1651,15 @@ class M_Dispatch extends VS_Model {
                     }
                 }
                 
+                // insumos
                 $result4 = $this->db->select("*")
                 ->from("dis_request_sd_subdetail_package")
                 ->where("`order`",$o2->order)
                 ->where("id_order_package_supplies",$o2->id_order_package)
+                ->where("type","I")
                 ->get();
-                $cont2 = 0; // contador de paquetes
                 foreach ($result4->result() as $o4){
-                    if($cont2 < $o2->quantity_packets && $o4->id_request_detail == '0'){
+                    if($o4->id_request_detail == '0'){
                         $array = array(
                             "id_request_detail" => $o2->id_request_detail,
                             "id_request_sd"     => $o2->id_request_sd,
@@ -1173,7 +1669,6 @@ class M_Dispatch extends VS_Model {
                         //$this->db->where("`order`",$o->order);
                         $this->db->update("dis_request_sd_subdetail_package",$array);
                         //echo $o3->id_request_detail_package."-";
-                        $cont2++;
                     }
                 }
             }
@@ -1284,5 +1779,76 @@ class M_Dispatch extends VS_Model {
         $query = ("SELECT * FROM dis_max_weight");
         $result = $this->db->query($query);
         return $result->row();
+    }
+
+    function get_request_cargue(){
+        $query = ("SELECT * FROM `dis_request_cargue`");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_data_cargo_detail($id_request_cargue){
+        $query = ("SELECT * FROM `dis_request_cargue_detail` D INNER JOIN `dis_remission` DR ON  D.`id_remission` = DR.`id_remission` WHERE D.`id_request_cargue` = $id_request_cargue GROUP BY D.`id_request_sd`");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_data_request_sd($id_request_sd){
+        $query = ("SELECT * FROM dis_request_sd WHERE id_request_sd = $id_request_sd AND driver != 'Pendiente'");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_data_request_sd_id($id_request_sd){
+        $query = ("SELECT * FROM dis_request_sd WHERE id_request_sd = $id_request_sd");
+        $result = $this->db->query($query);
+        return $result->row();
+    }
+
+    function update_request_cargue(){
+        $data = array(
+            "driver"            => $this->driver,
+            "license_plate"     => $this->license_plate,
+            "id_weight_vehicle" => $this->type_vehicle,
+            "observation"       => $this->observation
+        );
+        $this->db->where("id_request_cargue", $this->id_request_cargo);
+        $rs = $this->db->update("dis_request_cargue", $data);
+
+        $query = ("SELECT * FROM dis_request_cargue_detail d WHERE d.`id_request_cargue` = $this->id_request_cargo GROUP BY d.`id_request_sd`");
+        $result = $this->db->query($query);
+
+        foreach ($result->result() as $key => $value) {
+            $data = array(
+                "driver"            => $this->driver,
+                "license_plate"     => $this->license_plate
+            );
+            $this->db->where("id_request_sd", $value->id_request_sd);
+            $rs = $this->db->update("dis_request_sd", $data);
+        }
+    }
+
+    function get_type_vehicle($id_request_carge){
+        $query = ("SELECT * FROM dis_request_cargue_detail d WHERE d.`id_request_cargue` = $id_request_carge GROUP BY d.`id_request_sd`");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_type_vehicle2($id_request_sd){
+        $query = ("SELECT * FROM dis_request_sd D INNER JOIN dis_weight_vehicle DV ON D.`id_weight_vehicle` = DV.`id_weight_vehicle` WHERE D.id_request_sd = $id_request_sd");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_request_detail($id_request_sd){
+        $query = ("SELECT * FROM dis_request_sd_detail WHERE id_request_sd = $id_request_sd AND type = 'Modulado' GROUP BY id_forniture");
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    function get_request_detail_s($id_request_sd){
+        $query = ("SELECT * FROM dis_request_sd_detail D INNER JOIN access_order_package_supplies A ON D.id_order_package = A.id_order_package_supplies WHERE D.id_request_sd = $id_request_sd AND D.type = 'Insumos'");
+        $result = $this->db->query($query);
+        return $result->result();
     }
 }

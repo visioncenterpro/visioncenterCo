@@ -1407,7 +1407,7 @@ class C_Pdf_La extends Controller {
         $c['consolidado'] = true;
         $c['tbody'] = '<tr> 
                 <td colspan="5" style="text-align:center;background-color: #e4e4e4;">HERRAJES</td>
-            <tr/>';
+            </tr>';
         foreach ($array as $key => $i) {
             $c['tbody'] .= '<tr>
                     <td style="text-align: center">' . $item++ . '</td>
@@ -1457,7 +1457,7 @@ class C_Pdf_La extends Controller {
         
         $c['tbody'] .= '<tr>
                 <td colspan="5" style="text-align:center;background-color: #e4e4e4;">LÁMINAS</td>
-            <tr/>';
+            </tr>';
         $total_l = 0;
         foreach ($push as $key => $value) :
             $c['tbody'] .= '<tr>
@@ -1492,7 +1492,7 @@ class C_Pdf_La extends Controller {
         
         $c['tbody'] .= '<tr>
                 <td colspan="5" style="text-align:center;background-color: #e4e4e4;">CANTOS</td>
-            <tr/>';
+            </tr>';
         foreach ($array_c as $key => $value):
             $c['tbody'] .= '<tr>
                 <td style="text-align:center">'.$item++.'</td>

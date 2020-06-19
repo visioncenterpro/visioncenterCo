@@ -10,9 +10,13 @@
     <tbody>
         <?php
         $quantity_packages = 0;
+        $id_request_sd = 0;
         for ($i=0; $i < count($content); $i++) {
             foreach ($content[$i] as $key => $value) {
-                $quantity_packages = $quantity_packages + $value->quantity_packages; 
+                if($value->id_request_sd != $id_request_sd){
+                    $quantity_packages = $quantity_packages + $value->quantity_packages; 
+                }
+                $id_request_sd = $value->id_request_sd;
             } 
         } ?>
         <tr>
@@ -52,8 +56,7 @@
     </thead>
     <tbody> <!--  -->
         <?php 
-        for ($e=0; $e < count($client); $e++) {
-             ?>
+        for ($e=0; $e < count($client); $e++) { ?>
                 <tr>
                     <td style="padding: 1%; text-align: center;"> <?= $client[$e] ?></td>
                     <td style="text-align: center;"> CNT-<?= implode(",", $content2[$client[$e]]) ?></td>
