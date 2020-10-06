@@ -13,7 +13,7 @@ class C_Order_La extends Controller {
 
     public function index() {
         // $array['menus'] = $this->M_Main->ListMenu();
-
+         // prueba con Ivan  06102020
         // $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
         $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
         $this->load->view('Template/V_Header2', $Header);
