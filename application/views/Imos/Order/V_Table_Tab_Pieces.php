@@ -11,8 +11,11 @@
             <th>Alto</th>
             <th>Ancho</th>
             <th>Calibre</th>
-            <th>Peso</th>
-            <th>Area</th>
+            <!-- <th>NCheck1</th> -->
+            <th>Tipo Perforación</th>
+         
+            <!-- <th>Peso</th>
+            <th>Area</th> -->
             <th>Img</th>
             <th style="min-width:80px"></th>
         </tr>
@@ -38,8 +41,12 @@
                 <td style="text-align:center"><?= $t->FLENG ?></td>
                 <td style="text-align:center"><?= $t->FWIDTH ?></td>
                 <td style="text-align:center"><?= $t->FTHK ?></td>
-                <td style="text-align:center"><?= round($t->WEIGHT,2) ?></td>
-                <td style="text-align:center"><?= round($t->AREA,2) ?></td>
+                <!-- <td style="text-align:center">?= $t->INFO5 ?></td> -->
+                <td style="text-align:center"><?= $t->CHECKSUM2 ?></td>
+                <!-- pb -->
+                <!-- <td style="text-align:center">= round($t->WEIGHT,2) ?></td>
+                <td style="text-align:center">= round($t->AREA,2) ?></td> -->
+
                 <td ><img src="<?=SERVER_IMOS."/$t->ORDERIDGPRS/BITMAPS/$t->ID.png";?>" style="max-width:65px"></td>
                 <td ><button type="button"  class="btn btn-default" onclick="Showbarcode('<?=$idProadmin?>',<?= $t->ID ?>,'<?= $t->IDPIEZA."-".$t->FLENG."X".$t->FWIDTH ?>')"><i class="fa fa-barcode"></i></button>
                     <button type="button"  class="btn btn-default" onclick="ShowComments('<?=$idProadmin?>',<?= $t->ID ?>,'<?= $t->IDPIEZA."-".$t->FLENG."X".$t->FWIDTH ?>')"><i class="fa fa-info"></i></button> 

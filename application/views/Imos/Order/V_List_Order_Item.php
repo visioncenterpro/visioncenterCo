@@ -328,6 +328,10 @@
             //window.open('<?= base_url() ?>Imos/Order/C_Pdf/ExportLMAT/<?= $name ?>', '_blank');
         });
 
+        $(".btn-export-opt").click(function(){
+            
+        });
+
     });
 
     function ShowDetailsItem(id, order, cpid, idProadmin, nameid, med, pos) {

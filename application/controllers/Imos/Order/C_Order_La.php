@@ -388,4 +388,21 @@ class C_Order_La extends Controller {
         
         echo json_encode(array("res"=>$result["res"],"tabla"=>$table)); 
     }
+
+    function Form_Consolidated_Total(){
+        // $array['menus'] = $this->M_Main->ListMenu();
+
+        // $Header['menu'] = $this->load->view('Template/Menu/V_Menu', $array, true);
+        $Header['array_css'] = array(DATATABLES_CSS, SWEETALERT_CSS);
+        $this->load->view('Template/V_Header2', $Header);
+
+        $fields['orders'] = $this->M_Order->ListOrderImosAll();
+        $data['table'] = $this->load->view("Imos/Order/V_Table_Order_Total", $fields, true);
+        $this->load->view('Imos/Order/V_List_Order_Total_La', $data);
+
+        //$Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
+        $Footer['array_js'] = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);
+        $Footer["btn_datatable"] = BTN_DATATABLE_JS;
+        $this->load->view('Template/V_Footer2', $Footer); 
+    }
 }

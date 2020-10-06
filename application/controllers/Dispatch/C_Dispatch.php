@@ -343,7 +343,7 @@ class C_Dispatch extends Controller {
         $data['content1'] = $this->load->view('Dispatch/Request/V_Content_header_cargo_detail',$data,true);
         $data['id_request_cargo'] = $id_request_cargo;
         $data['content'] = $this->load->view('Dispatch/Request/V_Table_Request_Cargo_Detail',$data,true);
-        $this->load->view('Dispatch/Request/V_Panel_request_cargo_detail',$data,);
+        $this->load->view('Dispatch/Request/V_Panel_request_cargo_detail',$data);
 
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
         $Footer['array_js']     = array(DATATABLES_JS, DATATABLES_JS_B, SWEETALERT_JS);

@@ -206,24 +206,30 @@
     
     function add_furniture(){
         var furniture = $("#furniture").val();
-        var all = document.querySelectorAll("input[type=hidden]");
+        //var all = document.querySelectorAll("input[type=hidden]");
+        //var all = document.querySelectorAll("[id^='"+furniture+"']");
         var cont = 1;
-        all.forEach(function(element) {
-            if(element.id == furniture){
-                var pack = $("#p-"+furniture+"-"+cont).val();
-                var sum = element.value;
-                var id_order_package = $("#id_order_package_"+cont).val();
-                if(sum > 0){
-                    $.post("<?= base_url() ?>Production/Delivery/C_Delivery/Add_furniture", {delivery:<?= $delivery ?>, order:<?= $order ?>, furniture:furniture, pack:pack, sum:sum, id_order_package:id_order_package}, function (data) {
-                        var e = data;
-                        add_furniture_table(e);
-                    }, 'json');
-                }else{
-                    console.log(1);
-                }
-                cont++;
-            }
-        }, this);
+        $.post("<?= base_url() ?>Production/Delivery/C_Delivery/Add_furniture", {delivery:<?= $delivery ?>, order:<?= $order ?>, furniture:furniture}, function (data) {
+            var e = data;
+            add_furniture_table(e);
+        }, 'json');
+        //all.forEach(function(element) {
+            // add_furniture_table("OK");
+            // if(element.id == furniture){
+            //     var pack = $("#p-"+furniture+"-"+cont).val();
+            //     var sum = element.value;
+            //     var id_order_package = $("#id_order_package_"+cont+"_"+furniture).val();
+            //     if(sum > 0){
+            //         $.post("<?= base_url() ?>Production/Delivery/C_Delivery/Add_furniture", {delivery:<?= $delivery ?>, order:<?= $order ?>, furniture:furniture, pack:pack, sum:sum, id_order_package:id_order_package}, function (data) {
+            //             var e = data;
+            //             add_furniture_table(e);
+            //         }, 'json');
+            //     }else{
+            //         console.log(1);
+            //     }
+            //     cont++;
+            // }
+        //}, this);
     }
     
     function add_furniture_table(e){

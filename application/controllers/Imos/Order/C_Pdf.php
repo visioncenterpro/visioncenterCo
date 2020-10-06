@@ -550,6 +550,65 @@ class C_Pdf extends Controller {
         return array("tbody" => $tbody, "sum" => $sum, "item" => $item, "consolidate" => $array);
     }
 
+    function CreateBodyIronWorks2($id, $order, $array) {
+        $IronRecord = $this->M_Order->ListIronWorksALL2($id, $order);
+        $item = 1;
+        $sum = 0;
+        $tbody = "";
+        $proadmin = 0;
+        $conId = 0;
+        $NAME = "";
+        foreach ($IronRecord as $t) :
+            $descAX = $this->M_Order->ChargedCodeAXiron($t->ARTICLE_ID);
+            $desc = strtoupper((!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $t->TEXT_SHORT . " (Crear En AX)");
+            $und = (empty($descAX)) ? '' : $descAX->UNITID;
+            $tbody .= "<tr>
+                        <td  style='text-align:center'>" . $item . "</td>
+                        <td  style='text-align:center'>" . $t->ARTICLE_ID . "</td>
+                        <td>" . $desc . "</td>
+                        <td style='text-align:center'>" . $t->PURCHCNT . "</td>
+                        <td style='text-align:center'>" . $und . "</td>
+                     </tr>";
+            $item++;
+            $sum += $t->PURCHCNT;
+
+            if (array_key_exists($t->ARTICLE_ID, $array) && $NAME == $t->NAME) {
+                $array[$t->ARTICLE_ID]["qty"] += $t->PURCHCNT;
+            } else {
+                $array[$t->ARTICLE_ID] = array("desc" => $desc, "uni" => $und, "qty" => $t->PURCHCNT);
+            }
+            $proadmin = $t->PROADMIN_ID;
+            $conId = $t->CONID;
+            $NAME = $t->NAME;
+
+        endforeach;
+
+        $AdAditional = $this->M_Order->LoadImosAditional2($id, $order);
+
+        foreach ($AdAditional as $i) :
+            $desc = strtoupper("Adic Add." . $i->description);
+
+            $tbody .= "<tr>
+                        <td  style='text-align:center'>" . $item . "</td>
+                        <td  style='text-align:center'>" . $i->code . "</td>
+                        <td>" . $desc . "</td>
+                        <td style='text-align:center'>" . $i->qty . "</td>
+                        <td style='text-align:center'>" . $i->unity . "</td>
+                     </tr>";
+            $item++;
+            $sum += $i->qty;
+
+            if (array_key_exists($i->code, $array)) {
+                $array[$i->code]["qty"] += $i->qty;
+            } else {
+                $array[$i->code] = array("desc" => $desc, "uni" => $i->unity, "qty" => $i->qty);
+            }
+
+        endforeach;
+
+        return array("sum" => $sum, "item" => $item, "consolidate" => $array);
+    }
+
     function CreateBodyIronWorksAck($id, $idsales, $d) {
         $item = $d['item'];
         $sum = $d['sum'];
@@ -619,7 +678,12 @@ class C_Pdf extends Controller {
 //            echo '<br><br>';
             $row = $this->M_Order->LoadSheet($value->MATNAME);
             if(is_object($row)){
-            	//print_r($row);
+                if ($row->waste == "") {
+                    $row->waste = 1;
+                }
+            	if($row->area == '0' || $row->area == ""){
+                    $row->area = 1;
+                }
                 $mts = $value->MT2;	
                 $wst = $mts * $row->waste;
                 $mts_sheet = $wst/$row->area;
@@ -1431,7 +1495,188 @@ class C_Pdf extends Controller {
         foreach ($sheets as $key => $value) {
             $row = $this->M_Order->LoadSheet($value->MATNAME);
             if(is_object($row)){
+                if ($row->waste == "") {
+                    $row->waste = 1;
+                }
+                if($row->area == '0' || $row->area == ""){
+                    $row->area = 1;
+                }
+                $mts = $value->MT2;
+                $wst = $mts * $row->waste;
+                $mts_sheet = $wst/$row->area;
                 
+                //$count = $wst;
+                if($val == $value->MATNAME){
+                    $count = $count + $wst;
+                }else{
+                    $count = $wst;
+                }
+                $val = $value->MATNAME;
+                
+                if(array_key_exists($value->MATNAME, $push)){
+                    $push[$value->MATNAME]['mts_sheet'] += $mts_sheet;
+                    $push[$value->MATNAME]['wst'] = $count;
+                }else{
+                    $push[$value->MATNAME] = array("code" => $row->code,"description" => $row->description,"format"=>$row->format,"wst"=>$count,"mts_sheet"=>$mts_sheet);
+                }
+            }else{
+                $error[$value->MATNAME] = "NO EXISTE EN LA BASE DE DATOS";
+            }
+        }
+        
+        $c['tbody'] .= '<tr>
+                <td colspan="5" style="text-align:center;background-color: #e4e4e4;">LÁMINAS</td>
+            <tr/>';
+        $total_l = 0;
+        foreach ($push as $key => $value) :
+            $c['tbody'] .= '<tr>
+                <td style="text-align:center">'.$item++.'</td>
+                <td style="text-align:center">'. $value['code'].'</td>
+                <td>' . $value['description'] . '</td>
+                <td style="text-align: center">'. number_format($value['mts_sheet'],4,'.',',') .'</td>
+                <td style="text-align: center">Lam</td>
+            </tr>';
+            $total_l = $total_l + $value['mts_sheet'];
+        endforeach;
+        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Láminas</th><th>'.number_format((float)$total_l , 4, '.', '').'</th><th></th></tr>';
+        
+        
+        //cantos
+        $cantos = $this->M_Order->ListConsCanto($order);
+        
+        $total_c = 0;
+        $desp = 0.06; // cambio pd bogota
+        $array_c = array();
+        foreach ($cantos as $ca) :
+            $desc = "";
+            if (array_key_exists($ca->PRFNAME, $array_c)) {
+                //print_r($array_c[$ca->PRFNAME]["mtr"]."<br>");
+                //$array_c[$ca->PRFNAME]["mtr"] += $ca->CONTLEN;
+                $array_c[$ca->PRFNAME]["total"] += ($ca->CONTLEN + DESP);
+            } else {
+                $descAX = $this->M_Order->ChargedCodeAXiron($ca->PRFNAME);
+                if(!empty($descAX->ITEMNAME)){
+                    $desc =  $descAX->ITEMNAME;
+                }else{
+                    if($ca->PRFNAME != ""){
+                        $desc = $ca->PRFNAME. " (Crear En AX)";
+                    }else{
+                        $desc = $ca->PRFID. " (Crear En AX)";
+                    }
+                }
+                
+                //$desc = (!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $ca->PRFNAME . "(Crear En AX)";
+                $array_c[$ca->PRFNAME] = array("desc" => $desc, "mtr" => $ca->CONTLEN, "total" => ($ca->CONTLEN + DESP));
+            }
+        endforeach;
+        
+        $c['tbody'] .= '<tr>
+                <td colspan="5" style="text-align:center;background-color: #e4e4e4;">CANTOS</td>
+            <tr/>';
+        foreach ($array_c as $key => $value):
+            $c['tbody'] .= '<tr>
+                <td style="text-align:center">'.$item++.'</td>
+                <td style="text-align:center">'. $key.'</td>
+                <td>' . $value['desc'] . '</td>
+                <td style="text-align: center">' .number_format((float)$value['total'] , 2, '.', ','). '</td>
+                <td style="text-align: center">MTS</td>
+            </tr>';
+        $total_c = $total_c + $value['total'];
+        endforeach;
+        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Cantos</th><th>'.number_format((float)$total_c , 2, '.', '').'</th><th></th></tr>';
+        
+        
+        $this->load->view("Imos/Order/Pdf/V_Consolidate_Total", array("data"=>$c));
+    }
+
+    function ConsolidatedTotalContent($order){
+        $data['order'] = $order;
+        //herrajes
+        $items = $this->M_Order->ListOrderItemImosAll($order);
+        
+        $d['consolidate'] = array();
+        foreach ($items as $t) :
+            
+            $nameid = (!empty($t->INFO1) ? $t->INFO1 : (!empty($t->INFO2) ? $t->INFO2 : (!empty($t->INFO3) ? $t->INFO3 : $t->CPID)));
+            $nameid = ($nameid == 'PN') ? $t->CPID . $t->DEPTH : $nameid;
+            $data['article'] = $nameid;
+            $data['position'] = $t->POSSTR;
+            $data['med'] = $t->HEIGHT . "x" . $t->WIDTH. "x" . $t->DEPTH;
+            $d = $this->CreateBodyIronWorks($t->ID, $order, $d['consolidate']);
+            
+        endforeach;
+        $array = $d['consolidate'];
+        //var_dump($d['consolidate']);
+        
+        //adicionales
+        $ad = $this->M_Order->ListOrderItemImosAditionals($order);
+        $array = $d['consolidate'];
+        if ($ad['count'] > 0) {
+            $item = 1;
+            $sum = 0;
+            $ad['sum'] = '0';
+            $ad['html'] = "";
+            
+            foreach ($ad['result'] as $r) :
+                $descAX = $this->M_Order->ChargedCodeAXiron($r->code);
+                $desc = strtoupper((!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $r->description . "(Crear En AX)");
+                $und = (empty($descAX)) ? '' : $descAX->UNITID;
+
+                $ad['html'] .= '<tr>
+                    <td style="text-align: center">' . $item++ . '</td>
+                    <td style="text-align: center">' . $r->code . '</td>
+                    <td>' . $desc . '(Add)</td>
+                    <td style="text-align: center">' . $r->qty . '</td>
+                    <td style="text-align: center">' . $und . '</td>
+                </tr>';
+
+                $ad['sum'] += $r->qty;
+                if (array_key_exists($r->code, $array)) {
+                    $array[$r->code]["qty"] += $r->qty;
+                } else {
+                    $array[$r->code] = array("desc" => $desc.'(Add)', "uni" => $und, "qty" => $r->qty);
+                }
+
+            endforeach;
+            //$this->load->view("Imos/Order/Pdf/V_Ironworks_Order", $ad);
+        }
+        
+        $item = 1;
+        $c['tbody'] = "";
+        $c['sum'] = 0;
+        $c['consolidado'] = true;
+        $c['tbody'] = '<tr> 
+                <td colspan="5" style="text-align:center;background-color: #e4e4e4;">HERRAJES</td>
+            </tr>';
+        foreach ($array as $key => $i) {
+            $c['tbody'] .= '<tr>
+                    <td style="text-align: center">' . $item++ . '</td>
+                    <td style="text-align: center">' . $key . '</td>
+                    <td>' . $i['desc'] . '</td>
+                    <td style="text-align: center">' . $i['qty'] . '</td>
+                    <td style="text-align: center">' . $i['uni'] . '</td>
+                </tr>';
+            $c['sum'] += $i['qty'];
+        }
+        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Herrajes</th><th>'.$c['sum'].'</th><th></th></tr>';
+        //**************************
+        
+        
+        //laminas
+        $push = array();
+        $count = 0;
+        $val = "";
+        $sheets = $this->M_Order->ListConsSheet($order);
+        //print_r($sheets);
+        foreach ($sheets as $key => $value) {
+            $row = $this->M_Order->LoadSheet($value->MATNAME);
+            if(is_object($row)){
+                if ($row->waste == "") {
+                    $row->waste = 1;
+                }
+                if($row->area == '0' || $row->area == ""){
+                    $row->area = 1;
+                }
                 $mts = $value->MT2;
                 $wst = $mts * $row->waste;
                 $mts_sheet = $wst/$row->area;
@@ -1485,7 +1730,17 @@ class C_Pdf extends Controller {
                 $array_c[$ca->PRFNAME]["total"] += ($ca->CONTLEN + DESP);
             } else {
                 $descAX = $this->M_Order->ChargedCodeAXiron($ca->PRFNAME);
-                $desc = (!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $ca->PRFNAME . "(Crear En AX)";
+                $desc = "";
+                if(!empty($descAX->ITEMNAME)){
+                    $desc =  $descAX->ITEMNAME;
+                }else{
+                    if($ca->PRFNAME != ""){
+                        $desc = $ca->PRFNAME. " (Crear En AX)";
+                    }else{
+                        $desc = $ca->PRFID. " (Crear En AX)";
+                    }
+                }
+                //$desc = (!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $ca->PRFNAME . "(Crear En AX)";
                 $array_c[$ca->PRFNAME] = array("desc" => $desc, "mtr" => $ca->CONTLEN, "total" => ($ca->CONTLEN + DESP));
             }
         endforeach;
@@ -1505,10 +1760,304 @@ class C_Pdf extends Controller {
         endforeach;
         $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Cantos</th><th>'.number_format((float)$total_c , 2, '.', '').'</th><th></th></tr>';
         
-        //print_r($array);
+        return $c;
+    }
+
+    function ConsolidatedTotalOrder($array_order){
+        $data['title'] = "LISTADO DE MATERIALES DE PEDIDOS SELECCIONADOS";
+        $array_order = explode(",",$array_order);
+        for($i=0; $i < count($array_order); $i++){
+            $data['HeaderRecord'][] = $this->M_Acknow->ListHeaderAck(str_replace('_', '-', $array_order[$i]));
+            $data['Header'][] = $this->M_Order->ListOrderImosAll($array_order[$i]);
+            $data['order'][] = $array_order[$i];
+        }
+        $this->load->view("Imos/Order/Pdf/V_Order_Head_Orders", $data);
+        $array_content = array();
+        for($i=0; $i < count($array_order); $i++){
+            $array_content[] = $this->ConsolidatedTotalContent($array_order[$i]);
+        }
+        $this->load->view("Imos/Order/Pdf/V_Consolidate_Total_Orders", array("data"=>$array_content, "orders" => $array_order));
+    }
+
+    function ConsolidatedTotalContent2($order){
+        $data['order'] = $order;
+        //herrajes
+        $items = $this->M_Order->ListOrderItemImosAll($order);
         
-        $this->load->view("Imos/Order/Pdf/V_Consolidate_Total", array("data"=>$c));
-        //$this->load->view("Imos/Order/Pdf/V_Consolidate_Total", $ad);
+        $d['consolidate'] = array();
+        foreach ($items as $t) :
+            
+            $nameid = (!empty($t->INFO1) ? $t->INFO1 : (!empty($t->INFO2) ? $t->INFO2 : (!empty($t->INFO3) ? $t->INFO3 : $t->CPID)));
+            $nameid = ($nameid == 'PN') ? $t->CPID . $t->DEPTH : $nameid;
+            $data['article'] = $nameid;
+            $data['position'] = $t->POSSTR;
+            $data['med'] = $t->HEIGHT . "x" . $t->WIDTH. "x" . $t->DEPTH;
+            $d = $this->CreateBodyIronWorks($t->ID, $order, $d['consolidate']);
+            
+        endforeach;
+        $array = $d['consolidate'];
+        //var_dump($d['consolidate']);
+        
+        //adicionales
+        $ad = $this->M_Order->ListOrderItemImosAditionals($order);
+        $array = $d['consolidate'];
+        if ($ad['count'] > 0) {
+            $item = 1;
+            $sum = 0;
+            $ad['sum'] = '0';
+            $ad['html'] = "";
+            
+            foreach ($ad['result'] as $r) :
+                $descAX = $this->M_Order->ChargedCodeAXiron($r->code);
+                $desc = strtoupper((!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $r->description . "(Crear En AX)");
+                $und = (empty($descAX)) ? '' : $descAX->UNITID;
+
+                $ad['html'] .= '<tr>
+                    <td style="text-align: center">' . $item++ . '</td>
+                    <td style="text-align: center">' . $r->code . '</td>
+                    <td>' . $desc . '(Add)</td>
+                    <td style="text-align: center">' . $r->qty . '</td>
+                    <td style="text-align: center">' . $und . '</td>
+                </tr>';
+
+                $ad['sum'] += $r->qty;
+                if (array_key_exists($r->code, $array)) {
+                    $array[$r->code]["qty"] += $r->qty;
+                } else {
+                    $array[$r->code] = array("desc" => $desc.'(Add)', "uni" => $und, "qty" => $r->qty);
+                }
+
+            endforeach;
+            //$this->load->view("Imos/Order/Pdf/V_Ironworks_Order", $ad);
+        }
+        
+        $item = 1;
+        $c['tbody'] = "";
+        $c['sum'] = 0;
+        $c['consolidado'] = true;
+        $c['tbody'] = '<tr> 
+                <td colspan="5" style="text-align:center;background-color: #e4e4e4;">HERRAJES</td>
+            </tr>';
+        foreach ($array as $key => $i) {
+            $c['tbody'] .= '<tr>
+                    <td style="text-align: center">' . $item++ . '</td>
+                    <td style="text-align: center">' . $key . '</td>
+                    <td>' . $i['desc'] . '</td>
+                    <td style="text-align: center">' . $i['qty'] . '</td>
+                    <td style="text-align: center">' . $i['uni'] . '</td>
+                </tr>';
+            $c['sum'] += $i['qty'];
+        }
+        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Herrajes</th><th>'.$c['sum'].'</th><th></th></tr>';
+        //**************************
+    }
+
+    function ConsolidatedTotalOrder2($array_order){
+        $data['title'] = "LISTADO DE MATERIALES DE PEDIDOS SELECCIONADOS";
+        $array_order = explode(",",$array_order);
+
+        $c['tbody'] = array();
+        $push = array(); // laminas
+
+        // canto
+        $total_c = 0;
+        $desp = 0.06; // cambio pd bogota
+        $array_c = array();
+
+        for($i=0; $i < count($array_order); $i++){
+            $data['HeaderRecord'][] = $this->M_Acknow->ListHeaderAck(str_replace('_', '-', $array_order[$i]));
+            $data['Header'][] = $this->M_Order->ListOrderImosAll($array_order[$i]);
+            $data['order'][] = $array_order[$i];
+
+            //herrajes
+            $var = (implode(",",$array_order));
+            //print_r(str_replace(",", "',", $var));
+            $items = $this->M_Order->ListOrderItemImosAll($array_order[$i]);
+            
+            $d['consolidate'] = array();
+            foreach ($items as $t) :
+                $nameid = (!empty($t->INFO1) ? $t->INFO1 : (!empty($t->INFO2) ? $t->INFO2 : (!empty($t->INFO3) ? $t->INFO3 : $t->CPID)));
+                $nameid = ($nameid == 'PN') ? $t->CPID . $t->DEPTH : $nameid;
+                $data['article'] = $nameid;
+                $data['position'] = $t->POSSTR;
+                $data['med'] = $t->HEIGHT . "x" . $t->WIDTH. "x" . $t->DEPTH;
+
+                
+                $array_Vali[] = $this->CreateBodyIronWorks2($t->ID, $array_order[$i], $d['consolidate']);
+                
+            endforeach;
+
+            //adicionales
+            $ad[$i] = $this->M_Order->ListOrderItemImosAditionals($array_order[$i]);
+            
+            
+            // laminas
+            $count = 0;
+            $val = "";
+            $sheets[$i] = $this->M_Order->ListConsSheet($array_order[$i]);
+            foreach ($sheets[$i] as $key => $value) {
+                $row = $this->M_Order->LoadSheet($value->MATNAME);
+                if(is_object($row)){
+                    if ($row->waste == "") {
+                        $row->waste = 1;
+                    }
+                    if($row->area == '0' || $row->area == ""){
+                        $row->area = 1;
+                    }
+                    $mts = $value->MT2;
+                    $wst = $mts * $row->waste;
+                    $mts_sheet = $wst/$row->area;
+                    
+                    //$count = $wst;
+                    if($val == $value->MATNAME){
+                        $count = $count + $wst;
+                    }else{
+                        $count = $wst;
+                    }
+                    $val = $value->MATNAME;
+                    
+                    if(array_key_exists($value->MATNAME, $push)){
+                        $push[$value->MATNAME]['mts_sheet'] += $mts_sheet;
+                        $push[$value->MATNAME]['wst'] = $count;
+                    }else{
+                        $push[$value->MATNAME] = array("code" => $row->code,"description" => $row->description,"format"=>$row->format,"wst"=>$count,"mts_sheet"=>$mts_sheet);
+                    }
+                }else{
+                    $error[$value->MATNAME] = "NO EXISTE EN LA BASE DE DATOS";
+                }
+            }
+
+            // cantos
+            $cantos[$i] = $this->M_Order->ListConsCanto($array_order[$i]);
+            foreach ($cantos[$i] as $ca) :
+                if (array_key_exists($ca->PRFNAME, $array_c)) {
+                    $array_c[$ca->PRFNAME]["total"] += ($ca->CONTLEN + DESP);
+                } else {
+                    $descAX = $this->M_Order->ChargedCodeAXiron($ca->PRFNAME);
+                    $desc = "";
+                    if(!empty($descAX->ITEMNAME)){
+                        $desc =  $descAX->ITEMNAME;
+                    }else{
+                        if($ca->PRFNAME != ""){
+                            $desc = $ca->PRFNAME. " (Crear En AX)";
+                        }else{
+                            $desc = $ca->PRFID. " (Crear En AX)";
+                        }
+                    }
+                    //$desc = (!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $ca->PRFNAME . "(Crear En AX)";
+                    $array_c[$ca->PRFNAME] = array("desc" => $desc, "mtr" => $ca->CONTLEN, "total" => ($ca->CONTLEN + DESP));
+                }
+            endforeach;
+        }
+
+
+        $array = $d['consolidate'];
+        //var_dump($d['consolidate']);
+        $datavalidation = array();
+        for($i=0; $i < count($array_Vali); $i++){
+            foreach ($array_Vali[$i]['consolidate'] as $key => $v){
+                if(array_key_exists($key, $datavalidation)){
+                    $datavalidation[$key]['cnt'] += $v['qty'];
+                }else{
+                    $datavalidation[$key] = array("cnt" => $v['qty'],"desc" => $v['desc'],"uni" => $v['uni']); 
+                }
+            }
+        }
+
+        $c['sum'] = 0;
+        $c['tbody'] = "";
+        $c['consolidado'] = true;
+        $c['tbody'] = '<tr> 
+                <td colspan="5" style="text-align:center;background-color: #e4e4e4;">HERRAJES</td>
+            </tr>';
+        $item = 1;
+        $array_addiional = array();
+        //Adicionales
+        for ($i = 0; $i < count($ad); $i++){
+            
+            if ($ad[$i]['count'] > 0) {
+                
+                foreach ($ad[$i]['result'] as $r) :
+                    $descAX = $this->M_Order->ChargedCodeAXiron($r->code);
+                    $desc = strtoupper((!empty($descAX->ITEMNAME)) ? $descAX->ITEMNAME : $r->description . "(Crear En AX)");
+                    $und = (empty($descAX)) ? '' : $descAX->UNITID;
+
+                    if (array_key_exists($r->code, $array)) {
+                        $array_addiional[$r->code]["qty"] += $r->qty;
+                    } else {
+                        $array_addiional[$r->code] = array("desc" => $desc.'(Add)', "uni" => $und, "qty" => $r->qty);
+                    }
+
+                endforeach;
+            }
+        }
+        foreach($array_addiional as $key => $r){
+
+            $c['tbody'] .= '<tr>
+                <td style="text-align: center">' . $item++ . '</td>
+                <td style="text-align: center">' . $key . '</td>
+                <td>' . $r['desc'] . '(Add)</td>
+                <td style="text-align: center">' . $r['qty'] . '</td>
+                <td style="text-align: center">' . $r['uni'] . '</td>
+            </tr>';
+
+            $c['sum'] += $r['qty'];
+        }
+
+        foreach ($datavalidation as $key => $e) {
+            //echo $key."----";
+
+            $c['tbody'] .= '<tr>
+                    <td style="text-align: center">' . $item++ . '</td>
+                    <td style="text-align: center">' . $key . '</td>
+                    <td>' . $e['desc'] . '</td>
+                    <td style="text-align: center">' . $e['cnt'] . '</td>
+                    <td style="text-align: center">' . $e['uni'] . '</td>
+                </tr>';
+            $c['sum'] += $e['cnt'];
+        }
+        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Herrajes</th><th>'.$c['sum'].'</th><th></th></tr>';
+        
+        
+        //laminas
+        $c['tbody'] .= '<tr>
+                <td colspan="5" style="text-align:center;background-color: #e4e4e4;">LÁMINAS</td>
+            <tr/>';
+        $total_l = 0;
+        foreach ($push as $key => $value) :
+            $c['tbody'] .= '<tr>
+                <td style="text-align:center">'.$item++.'</td>
+                <td style="text-align:center">'. $value['code'].'</td>
+                <td>' . $value['description'] . '</td>
+                <td style="text-align: center">'. number_format($value['mts_sheet'],4,'.',',') .'</td>
+                <td style="text-align: center">Lam</td>
+            </tr>';
+            $total_l = $total_l + $value['mts_sheet'];
+        endforeach;
+        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Láminas</th><th>'.number_format((float)$total_l , 4, '.', '').'</th><th></th></tr>';
+        
+        
+        //cantos
+        $c['tbody'] .= '<tr>
+                <td colspan="5" style="text-align:center;background-color: #e4e4e4;">CANTOS</td>
+            <tr/>';
+        foreach ($array_c as $key => $value):
+            $c['tbody'] .= '<tr>
+                <td style="text-align:center">'.$item++.'</td>
+                <td style="text-align:center">'. $key.'</td>
+                <td>' . $value['desc'] . '</td>
+                <td style="text-align: center">' .number_format((float)$value['total'] , 2, '.', ','). '</td>
+                <td style="text-align: center">MTS</td>
+            </tr>';
+        $total_c = $total_c + $value['total'];
+        endforeach;
+        $c['tbody'] .= '<tr style="background-color: #e4e4e4;"><th style="text-align: right;" colspan="3">Total Cantos</th><th>'.number_format((float)$total_c , 2, '.', '').'</th><th></th></tr>';
+        
+        
+        $array_content = $c;
+        
+        $this->load->view("Imos/Order/Pdf/V_Order_Head_Orders", $data);
+        $this->load->view("Imos/Order/Pdf/V_Consolidate_Total_Orders2", array("data"=>$array_content, "orders" => $array_order));
     }
     
     function validate_LMAT(){
@@ -1618,7 +2167,7 @@ class C_Pdf extends Controller {
                 if ($row->waste == "") {
                     $row->waste = 1;
                 }
-                if ($row->area == "") {
+                if($row->area == '0' || $row->area == ""){
                     $row->area = 1;
                 }
                 $mts = $value->MT2;
@@ -1706,7 +2255,7 @@ class C_Pdf extends Controller {
             $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
             $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
             $this->excel->getActiveSheet()->setCellValue('M'.($count_data+1), $key);
-            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), $k['qty']);
+            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), round($k['qty'],2));
             $this->excel->getActiveSheet()->setCellValue('S'.($count_data+1), '0');
             
             $res = 12 - strlen($order);
@@ -1739,7 +2288,7 @@ class C_Pdf extends Controller {
             $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
             $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
             $this->excel->getActiveSheet()->setCellValue('M'.($count_data+1), $key);
-            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), $k['qty']);
+            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), round($k['qty'],2));
             $this->excel->getActiveSheet()->setCellValue('S'.($count_data+1), '0');
             
             $res = 12 - strlen($order);
@@ -1747,7 +2296,7 @@ class C_Pdf extends Controller {
             for($r = 0; $r < $res; $r++){
                 $zero  .= "0";
             }
-            $this->excel->getActiveSheet()->setCellValue('T'.($count_data+1), "LM".$zero.$order."_14660");
+            $this->excel->getActiveSheet()->setCellValue('T'.($count_data+1), "LM".$zero.$order."_14660"); 
             //$this->excel->getActiveSheet()->setCellValue('T'.($count_data+1), "LM".$zero.str_replace("_","-",$order)."_14660");
             
             //$count_data++;
@@ -1772,7 +2321,7 @@ class C_Pdf extends Controller {
             $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
             $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
             $this->excel->getActiveSheet()->setCellValue('M'.($count_data+1), $push[$code[$i]]['code']);
-            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), number_format((float)$push[$code[$i]]['mts_sheet'] , 4, '.', ''));
+            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), round($push[$code[$i]]['mts_sheet'],2));
             $this->excel->getActiveSheet()->setCellValue('S'.($count_data+1), '0');
             
             $res = 12 - strlen($order);
@@ -1794,7 +2343,7 @@ class C_Pdf extends Controller {
             $this->excel->getActiveSheet()->setCellValue('K'.($count_data+1), $count_item);
             $this->excel->getActiveSheet()->setCellValue('L'.($count_data+1), '0'); // 0 = articulo
             $this->excel->getActiveSheet()->setCellValue('M'.($count_data+1), $array_c[$code_c[$e]]['code']);
-            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), number_format((float)$array_c[$code_c[$e]]['mtr'] , 4, '.', ''));
+            $this->excel->getActiveSheet()->setCellValue('R'.($count_data+1), round($array_c[$code_c[$e]]['mtr'],2));
             $this->excel->getActiveSheet()->setCellValue('S'.($count_data+1), '0');
             
             $res = 12 - strlen($order);

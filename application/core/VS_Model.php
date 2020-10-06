@@ -130,6 +130,18 @@ class VS_Model extends CI_Model {
         //echo $this->ix->last_query();
         return $result->result();
     }
+
+    function ListOrderItemImosAll2($name) {
+        $this->ix = $this->load->database("ImosIX", TRUE);
+        $result = $this->ix->select("*")
+                ->from("IDBINFO")
+                ->where("TYPE", 2)
+                ->where_in("ORDERID", $name)
+                ->order_by("GRPPOS")
+                ->get();
+        //echo $this->ix->last_query();
+        return $result->result();
+    }
     
     function InfoOrderAll($order) {
         $rs = $this->db->select("*")
