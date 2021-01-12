@@ -74,8 +74,7 @@ class M_Order extends VS_Model {
     }
  
     function ListPiecesALL($id, $order) {
-        $result = $this->ix->select("ProductivoImosIX.dbo.Cants(ORDERID,ID) as cantos,IDGRPS,ID,ORDERIDGPRS,ORDERID,TYPGRPS,JAYM_IMOSTYP.IDPIEZA,
-        JAYM_IMOSTYP.NAMEIMOS,JAYM_IMOSTYP.NAME,FWIDTH,FLENG,AREA,WEIGHT,BARCODE,RENDERPMAT,MATNAME,FTHK,JaymIdbGRPS_GPLI_INFO.TEXT1,JaymIdbGRPS_GPLI_INFO.TEXT2,CHECKSUM2,INFO5")
+        $result = $this->ix->select("ProductivoImosIX.dbo.Cants(ORDERID,ID) as cantos,IDGRPS,ID,ORDERIDGPRS,ORDERID,TYPGRPS,JAYM_IMOSTYP.IDPIEZA,JAYM_IMOSTYP.NAMEIMOS,JAYM_IMOSTYP.NAME,FWIDTH,FLENG,AREA,WEIGHT,BARCODE,RENDERPMAT,MATNAME,FTHK,JaymIdbGRPS_GPLI_INFO.TEXT1,JaymIdbGRPS_GPLI_INFO.TEXT2")
                 ->from("JaymIdbGRPS_GPLI_INFO")
                 ->join("JAYM_IMOSTYP", "JaymIdbGRPS_GPLI_INFO.TYP = JAYM_IMOSTYP.IDTYPIMOS","LEFT")
                 ->where("ORDERIDGPRS", $order)
@@ -94,7 +93,7 @@ class M_Order extends VS_Model {
                 ->where("order",$order)
                 ->where("status <> 3")
                 ->get();
-              //echo $this->ix->last_query();
+        
         return $result->result();
     }
 
@@ -282,40 +281,6 @@ class M_Order extends VS_Model {
         //echo $this->ix->last_query();
         return $result->result();
     }
-
-    function ListIronWorksALL2($id, $order) {
-        $result = $this->ix->query("SELECT ROUND(CASE dbo.IDBPURCH.LENGTH WHEN 0 THEN COUNT(dbo.IDBPURCH.CONID) ELSE (dbo.IDBPURCH.LENGTH * 1.2 * COUNT(dbo.IDBPURCH.CONID))/1000 END ,3)AS PURCHCNT,
-        dbo.PROADMIN.ID AS PROADMIN_ID, dbo.IDBPURCH.ARTICLE_ID AS CONID, 
-        dbo.IDBPURCH.ORDER_ID AS PURCHORDER, dbo.IDBPURCH.TEXT_SHORT, dbo.IDBPURCH.SUPPLIER, dbo.IDBPURCH.LENGTH, dbo.IDBPURCH.ARTICLE_ID, 
-        dbo.IDBPURCH.COST_1, dbo.IDBGRPS.ORDERID, dbo.IDBGRPS.HIGHARTID, dbo.PROADMIN.NAME,
-        (dbo.IDBPURCH.COST_1*COUNT(dbo.IDBPURCH.CONID)) AS TOTAL
-        FROM         dbo.IDBPURCH INNER JOIN
-        dbo.IDBGRPS ON dbo.IDBPURCH.ID = dbo.IDBGRPS.ID AND dbo.IDBPURCH.ORDERID = dbo.IDBGRPS.ORDERID AND 
-        dbo.IDBPURCH.DIFFTYPE = dbo.IDBGRPS.DIFFTYPE INNER JOIN
-        dbo.PROADMIN ON dbo.IDBGRPS.ORDERID = dbo.PROADMIN.NAME
-        WHERE     (dbo.IDBGRPS.HIGHARTID IN (SELECT DISTINCT HIGHARTID FROM          dbo.IDBGRPS AS IDBGRPS_1 WHERE      (ID = dbo.IDBPURCH.ID))) AND (dbo.IDBPURCH.BOM_FLAG = 1) 
-        AND IDBGRPS.HIGHARTID='$id' 
-        GROUP BY    dbo.PROADMIN.ID,dbo.PROADMIN.NAME, dbo.IDBGRPS.ORDERID,dbo.IDBPURCH.ORDER_ID, dbo.IDBPURCH.ARTICLE_ID, dbo.IDBGRPS.HIGHARTID, 
-          dbo.IDBPURCH.SUPPLIER, dbo.IDBPURCH.COST_1,dbo.IDBPURCH.TEXT_SHORT, dbo.IDBPURCH.LENGTH
-        HAVING      (dbo.PROADMIN.NAME IN ('$order') )
-        UNION ALL
-        SELECT     ROUND(CASE dbo.IDBSPP.LENGTH WHEN 0 THEN COUNT(dbo.IDBSPP.CONID) ELSE (dbo.IDBSPP.LENGTH * 1.2 * COUNT(dbo.IDBSPP.CONID))/1000 END ,3)AS PURCHCNT,
-        dbo.PROADMIN.ID AS PROADMIN_ID, dbo.IDBSPP.ARTICLE_ID AS CONID, dbo.IDBSPP.ORDER_ID AS PURCHORDER, 
-        dbo.IDBSPP.TEXT_SHORT AS PURCHTEXT, dbo.IDBSPP.SUPPLIER AS PURCHSUPPLIER, dbo.IDBSPP.LENGTH, dbo.IDBSPP.ARTICLE_ID AS PURCHARTICLEID, 
-        dbo.IDBSPP.COST_1 AS PURCHCOST, dbo.IDBGRPS.ORDERID AS PURCH_ORDERID, dbo.IDBGRPS.HIGHARTID AS PURCH_HIGHARTID, dbo.PROADMIN.NAME,
-        (dbo.IDBSPP.COST_1*COUNT(dbo.IDBSPP.CONID)) AS TOTAL
-        FROM         dbo.IDBGRPS INNER JOIN
-        dbo.IDBSPP ON dbo.IDBGRPS.ID = dbo.IDBSPP.ID AND dbo.IDBGRPS.ORDERID = dbo.IDBSPP.ORDERID AND 
-        dbo.IDBGRPS.DIFFTYPE = dbo.IDBSPP.DIFFTYPE INNER JOIN
-        dbo.PROADMIN ON dbo.IDBGRPS.ORDERID = dbo.PROADMIN.NAME
-        WHERE     (dbo.IDBGRPS.HIGHARTID IN (SELECT DISTINCT HIGHARTID FROM          dbo.IDBGRPS AS IDBGRPS_1 WHERE      (ID = dbo.IDBSPP.ID))) AND (dbo.IDBSPP.BOM_FLAG = 1) 
-        AND IDBGRPS.HIGHARTID='$id'
-        GROUP BY    dbo.PROADMIN.ID,dbo.PROADMIN.NAME, dbo.IDBGRPS.ORDERID,dbo.IDBSPP.ORDER_ID,dbo.IDBSPP.ARTICLE_ID,dbo.IDBGRPS.HIGHARTID,
-        dbo.IDBSPP.SUPPLIER,dbo.IDBSPP.COST_1,dbo.IDBSPP.TEXT_SHORT, dbo.IDBSPP.LENGTH
-        HAVING      (dbo.PROADMIN.NAME IN('$order') )");
-        //echo $this->ix->last_query();
-        return $result->result();
-    }
     
     function Get_Sum_Ironwork($order){
         $result = $this->ix->query(" SELECT CONID,sum(PURCHCNT) AS PURCHCNT FROM Jaym_View_ListBom_1 WHERE ORDERID = '$order' "
@@ -383,21 +348,6 @@ class M_Order extends VS_Model {
         FROM sys_import_salesline l
         JOIN sys_import_salestable s on l.id_import_salestable = s.id_import_salestable
         WHERE s.`order` = '$name2' and l.`type` = 'AO' and l.`status` <> 3 ");
-        //echo $this->db->last_query();
-        return array("result"=>$result->result(), "count"=>$result->num_rows());
-    }
-
-    function ListOrderItemImosAditionals2($name){
-        $name2 = str_replace('_', '-', $name);
-        
-        $result = $this->db->query("SELECT code,'' AS description,qty,'ADICIONAL' as aditional
-        FROM imos_salesline  
-        WHERE `order` = '$name' and type = 'H' and `status` <> 3
-        UNION
-        SELECT code,description,qty,'ACKNOWLEDGMENT' as aditional
-        FROM sys_import_salesline l
-        JOIN sys_import_salestable s on l.id_import_salestable = s.id_import_salestable
-        WHERE s.`order` IN ('$name2') and l.`type` = 'AO' and l.`status` <> 3 ");
         //echo $this->db->last_query();
         return array("result"=>$result->result(), "count"=>$result->num_rows());
     }
@@ -555,17 +505,6 @@ class M_Order extends VS_Model {
                 ->from("imos_aditional_line")
                 ->where("highart", $id)
                 ->where("order", $order)
-                ->where("status <> 3")
-                ->get();
-        
-        return $result->result();
-    }
-
-    function LoadImosAditional2($id,$order){
-        $result = $this->db->select("*")
-                ->from("imos_aditional_line")
-                ->where("highart", $id)
-                ->where_in("order", $order)
                 ->where("status <> 3")
                 ->get();
         

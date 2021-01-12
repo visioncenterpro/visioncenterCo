@@ -74,7 +74,6 @@
 
     $(document).ready(function () {
         TableData("table_order");
-        //$("#table_order").DataTable();
         //$("#table_order_wrapper >.row >.col-sm-6:eq(0)").append('<label style="margin-left: 5px;"><button type="button" class="btn btn-default btn-sm " id="btn-tags"><i class="fa  fa-tags"></i> Generar Etiquetas</button></label>');
 
 

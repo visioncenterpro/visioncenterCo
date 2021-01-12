@@ -364,7 +364,6 @@
 
     function Detail_replaced(order,id_order_supplies){
         $.post("<?= base_url()?>Production/Delivery/C_Delivery/Detail_replaced",{order:order,id_order_supplies:id_order_supplies},function(data){
-            console.log(data);
             $("#content-detail_replaced").html(data.content);
             $("#modal_detail_replaced").modal("show");
         },'json').fail(function (error) {

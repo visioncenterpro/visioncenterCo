@@ -10,6 +10,4 @@
 
 <button type="button" url="<?= base_url() ?>" class="btn btn-default btn-tabla btn-export-lmat"><i class="fa fa-download"></i> Exportar LMAT</button>
 
-<button type="button" url="<?= base_url() ?>" class="btn btn-default btn-tabla btn-export-opt"><i class="fa fa-download"></i> Exportar optiplaning</button>
-
 <button type="button"  class="btn btn-default  btn-tabla return" ><i class="fa fa-backward"></i> Atras</button>

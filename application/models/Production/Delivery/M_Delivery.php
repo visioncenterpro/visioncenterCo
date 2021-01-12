@@ -1522,7 +1522,7 @@ class M_Delivery extends VS_Model {
 
         $rowDelivery = $reg->row();
 
-        $new_delivered_quantity = $rowDelivery->quantity_packets - $rowDelivery->quantity;
+        $new_delivered_quantity = $rowDelivery->delivered_quantity - $rowDelivery->quantity;
         $new_balance = $rowDelivery->balance + $rowDelivery->quantity;
 
         $this->db->where("id_delivery_package_detail", $this->id_delivery_package_detail);
@@ -1552,25 +1552,21 @@ class M_Delivery extends VS_Model {
     function add_furniture(){
         $reg = $this->db->select("*")
                 ->from("access_order_package o")
-                ->where("o.`order`", $this->order)
+                //->where("o.`order`", $this->order)
                 //->where("o.number_pack", $this->pack)
-                ->where("o.id_forniture", $this->furniture)
-                //->where("o.id_order_package", $this->id_order_package)
+                //->where("o.id_forniture", $this->furniture)
+                ->where("o.id_order_package", $this->id_order_package)
                 ->get();
 
-        $rowDelivery = $reg->result();
+        $rowDelivery = $reg->row();
         
-        foreach ($rowDelivery as $key => $value){
-            $data = array("delivered_quantity" => ($value->quantity_packets - $value->delivered_quantity));
-            $this->db->where("id_order_package", $value->id_order_package);
-            $this->db->where("`order`", $this->order);
-            $rs = $this->db->update("access_order_package", $data);
-            
-            $data = array("id_delivery_package" => $this->delivery, "id_order_package" => $value->id_order_package, "quantity" => ($value->quantity_packets - $value->delivered_quantity));
-            if($value->quantity_packets - $value->delivered_quantity != 0){
-                $rs = $this->db->insert("pro_delivery_package_detail", $data);
-            }
-        }
+        $data = array("delivered_quantity" => $this->sum);
+        $this->db->where("id_order_package", $this->id_order_package);
+        $rs = $this->db->update("access_order_package", $data);
+        
+        $data = array("id_delivery_package" => $this->delivery, "id_order_package" => $rowDelivery->id_order_package, "quantity" => $this->sum);
+
+        $rs = $this->db->insert("pro_delivery_package_detail", $data);
     }
     
     function get_data_furniture($order,$furniture){
