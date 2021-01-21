@@ -717,6 +717,7 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
+            $val_f2 = 0;
 
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
@@ -907,7 +908,7 @@ class C_Dispatch extends Controller {
             $packs_available = $this->M_Dispatch->ListPackSDAvailable($v->order);
             $furnitures = $this->M_Dispatch->ListPackSDAvailable2($v->order);
             $val_f = array();
-
+            $val_f2 = 0;
             foreach ($furnitures as $f){
                 $val = $this->M_Dispatch->ListPackSDAvailablexfurniture($f->id_forniture,$v->order);
                 foreach ($val as $vf) {

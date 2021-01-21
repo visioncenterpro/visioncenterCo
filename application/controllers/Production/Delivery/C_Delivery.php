@@ -18,6 +18,7 @@ class C_Delivery extends Controller {
         $this->load->view('Template/V_Header', $Header);
         
         $data['orders'] = $this->M_Delivery->get_orders_supplies();
+        $data['table_deleted'] = $this->load->view("Production/Delivery/Supplies/Enlist/V_Table_Deleted",$data,true);
         $this->load->view('Production/Delivery/Supplies/Enlist/V_Panel_Enlist',$data);
 
         $Footer['sidebar_tabs'] = $this->load->view('Template/V_sidebar_tabs', null, true);
@@ -82,6 +83,7 @@ class C_Delivery extends Controller {
             $rs['packs'] = $this->M_Delivery->InfoPackSupplies_RE($this->input->post("order"));
             $rs['table_pack'] = $this->load->view('Production/Delivery/Supplies/Enlist/V_Table_Pack', $rs, true);
             $rs['table'] = $this->load->view("Production/Delivery/Supplies/Enlist/V_Table_Supplies", $rs, true);
+            $rs['table_deleted'] = $this->load->view("Production/Delivery/Supplies/Enlist/V_Table_Deleted",$rs,true);
         }
 
         echo json_encode($rs);
@@ -215,6 +217,20 @@ class C_Delivery extends Controller {
         $data['content'] = $this->M_Delivery->LoadContentPendintOrderPack($order);
         $this->load->view("Production/Delivery/pdf/V_Content_Detail_Pack", $data);
     }
+
+    function pb1(){
+        // require 'vendor/autoload.php';
+
+        // use PhpOffice\PhpSpreadsheet\Spreadsheet;
+        // use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+        // $spreadsheet = new Spreadsheet();
+        // $sheet = $spreadsheet->getActiveSheet();
+        // $sheet->setCellValue('A1', 'Hello World !');
+
+        // $writer = new Xlsx($spreadsheet);
+        // $writer->save('hello world.xlsx');
+    }
     
     function excel_one(){
         $this->load->library('excel');
@@ -284,7 +300,6 @@ class C_Delivery extends Controller {
         $this->excel->getActiveSheet()->setCellValue('F5', 'Saldo');
         
         // DATA
-        //$array_order = array('20216','20223','20227');
         $array_order = $this->input->post('order');
         $count_cell = 6;
         for($i = 0; $i < 2; $i++){
@@ -2244,7 +2259,7 @@ class C_Delivery extends Controller {
                 $countRow = 1;
                 foreach ($deliverys as $value) {
                     $dpack = $this->M_Delivery->DeliveryPackage($value->id_delivery_package, $paq->id_order_package);
-                    if (count($dpack) > 0) {
+                    if (is_countable($dpack) && count($dpack) > 0) {
                         $arrayTable[1] .= '<td width="4%" class="delivery d-' . $countRow . '" style="text-align: center;"><b>' . $dpack->quantity . '</b></td>';
                         $sum += $dpack->quantity;
                     } else {
@@ -2491,7 +2506,7 @@ class C_Delivery extends Controller {
                 $countRow = 1;
                 foreach ($deliverys as $value) {
                     $dpack = $this->M_Delivery->DeliveryPackageSupplies($value->id_delivery_supplies, $paq->id_order_package_supplies);
-                    if (count($dpack) > 0) {
+                    if (is_countable($dpack) && count($dpack) > 0) {
                         $arrayTable[1] .= '<td width="4%" class="delivery d-' . $countRow . '" style="text-align: center;"><b>' . $dpack->quantity . '</b></td>';
                         $arrayTable[1] .= '<td width="4%" class="delivery u-' . $countRow . '" style="text-align: center;"><b>' . $valued->quantity_packaged . '</b></td>';
                         //$arrayTable[1] .= '<td width="4%" class="delivery u-' . $countRow . '" style="text-align: center;"><b>' . (($paq->type_package == 1) ? $paq->quantity_per_package * $dpack->quantity : $paq->quantity_supplies) . '</b></td>';
@@ -2514,7 +2529,7 @@ class C_Delivery extends Controller {
             $countRow2 = 1;
             foreach ($deliverys as $value) {
                 $dpack = $this->M_Delivery->DeliveryPackageSupplies($value->id_delivery_supplies, $paq->id_order_package_supplies);
-                if (count($dpack) > 0) {
+                if (is_countable($dpack) && count($dpack) > 0) {
                     $arrayTable[1] .= '<input type="hidden" class="delivery d-h-' . $countRow2 . '" value="' . $dpack->quantity . '" />';
                     $arrayTable[1] .= '<input type="hidden" class="delivery u-h-' . $countRow2 . '" value="' . (($paq->type_package == 1) ? $paq->quantity_per_package * $dpack->quantity : $paq->quantity_supplies) . '" />';
                 }
@@ -2530,10 +2545,6 @@ class C_Delivery extends Controller {
     }
 
     // -------------------------------------------------   ENTREGA DE MUEBLES ME ----------------------------------------------------------------
-
-    function Delivery_Standard_Furniture() {
-        
-    }
 
     function AddPieceToPack() {
         $result = $this->M_Delivery->AddPieceToPack();

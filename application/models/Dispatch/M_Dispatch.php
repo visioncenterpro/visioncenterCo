@@ -1636,6 +1636,9 @@ class M_Dispatch extends VS_Model {
                 ->where("id_forniture",$o2->id_forniture)
                 ->get();
                 $cont = 0;
+                if ($o2->totalQ == 0) {
+                    $o2->totalQ = 1;
+                }
                 $weight = $o2->weight / $o2->totalQ; //peso unitario 
                 foreach ($result3->result() as $o3){
                     if($cont < $o2->quantity_packets && $o3->id_request_detail == '0' && number_format($o3->weight_package, 2, '.', '') == number_format($weight, 2, '.', '')){
